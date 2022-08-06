@@ -1,8 +1,8 @@
-﻿namespace FuzzyLogic.MembershipFunction;
+﻿namespace FuzzyLogic.MembershipFunction.Real;
 
-public class TrapezoidFunction : IMembershipFunction
+public class RealTrapezoidFunction : ITrapezoidalFunction<double>
 {
-    public TrapezoidFunction(string name, double a, double b, double c, double d)
+    protected RealTrapezoidFunction(string name, double a, double b, double c, double d)
     {
         Name = name;
         A = a;
@@ -17,9 +17,13 @@ public class TrapezoidFunction : IMembershipFunction
     public double C { get; }
     public double D { get; }
 
-    public double? LowerBoundary() => A;
+    public double LowerBoundary() => A;
 
-    public double? UpperBoundary() => B;
+    public double UpperBoundary() => B;
+
+    public (double X0, double X1) CoreBoundaries() => (B, C);
+
+    public ((double X0, double X1) Lower, (double X0, double X1) Upper) SupportBoundaries() => ((A, B), (C, D));
 
     public FuzzyNumber MembershipDegree(double x)
     {

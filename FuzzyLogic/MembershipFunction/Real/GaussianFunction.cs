@@ -1,21 +1,17 @@
 ﻿namespace FuzzyLogic.MembershipFunction;
 
-public class GaussianFunction : IMembershipFunction
+public class GaussianFunction : IMembershipFunction<double>
 {
-    public GaussianFunction(string name, double m, double o, double minValue, double maxValue)
+    public GaussianFunction(string name, double m, double o)
     {
         Name = name;
         M = m;
         O = o;
-        MinValue = minValue;
-        MaxValue = maxValue;
     }
 
     public string Name { get; }
     public double M { get; }
     public double O { get; }
-    public double MinValue { get; }
-    public double MaxValue { get; }
 
     public FuzzyNumber MembershipDegree(double x)
     {
