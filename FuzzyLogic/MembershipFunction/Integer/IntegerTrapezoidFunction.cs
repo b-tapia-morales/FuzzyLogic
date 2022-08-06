@@ -1,8 +1,8 @@
 ﻿namespace FuzzyLogic.MembershipFunction.Integer;
 
-public class IntTrapezoidFunction : ITrapezoidalFunction<int>
+public class IntegerTrapezoidFunction : ITrapezoidalFunction<int>, IIntegerFunction
 {
-    protected IntTrapezoidFunction(string name, int a, int b, int c, int d)
+    protected IntegerTrapezoidFunction(string name, int a, int b, int c, int d)
     {
         Name = name;
         A = a;

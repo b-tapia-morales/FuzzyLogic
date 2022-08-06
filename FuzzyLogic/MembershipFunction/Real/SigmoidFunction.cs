@@ -1,6 +1,6 @@
 ﻿namespace FuzzyLogic.MembershipFunction.Real;
 
-public class SigmoidFunction : IMembershipFunction<double>
+public class SigmoidFunction : IRealFunction
 {
     public SigmoidFunction(string name, double a, double c)
     {

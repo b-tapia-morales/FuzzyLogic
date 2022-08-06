@@ -1,6 +1,6 @@
-﻿namespace FuzzyLogic.MembershipFunction;
+﻿namespace FuzzyLogic.MembershipFunction.Real;
 
-public class GaussianFunction : IMembershipFunction<double>
+public class GaussianFunction : IRealFunction
 {
     public GaussianFunction(string name, double m, double o)
     {
@@ -13,8 +13,5 @@ public class GaussianFunction : IMembershipFunction<double>
     public double M { get; }
     public double O { get; }
 
-    public FuzzyNumber MembershipDegree(double x)
-    {
-        return Math.Min(1.0, Math.Pow(Math.E, -0.5 * Math.Pow((x - M) / O, 2)));
-    }
+    public FuzzyNumber MembershipDegree(double x) => Math.Min(1.0, Math.Pow(Math.E, -0.5 * Math.Pow((x - M) / O, 2)));
 }

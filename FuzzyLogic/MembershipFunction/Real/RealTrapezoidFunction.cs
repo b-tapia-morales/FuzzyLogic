@@ -1,6 +1,6 @@
 ﻿namespace FuzzyLogic.MembershipFunction.Real;
 
-public class RealTrapezoidFunction : ITrapezoidalFunction<double>
+public class RealTrapezoidFunction : ITrapezoidalFunction<double>, IRealFunction
 {
     protected RealTrapezoidFunction(string name, double a, double b, double c, double d)
     {
