@@ -1,16 +1,8 @@
 ﻿namespace FuzzyLogic.MembershipFunction;
 
-public interface IMembershipFunction
+public interface IMembershipFunction<T>
 {
-    double? LowerBoundary() => null;
+    FuzzyNumber MembershipDegree(T t);
 
-    double? UpperBoundary() => null;
-
-    FuzzyNumber MembershipDegree(double x);
-
-    FuzzyNumber MembershipDegree(int x) => MembershipDegree((double) x);
-
-    (double X, FuzzyNumber Y) ToPoint(double x) => (x, MembershipDegree(x));
-    
-    (double X, FuzzyNumber Y) ToPoint(int x) => (x, MembershipDegree(x));
+    (T t, FuzzyNumber Y) ToPoint(T t) => (t, MembershipDegree(t));
 }
