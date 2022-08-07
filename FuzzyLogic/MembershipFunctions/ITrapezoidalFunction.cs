@@ -1,6 +1,6 @@
-﻿namespace FuzzyLogic.MembershipFunction;
+﻿namespace FuzzyLogic.MembershipFunctions;
 
-public interface ITrapezoidalFunction<T> : IMembershipFunction<T>
+public interface ITrapezoidalFunction<T> : IMembershipFunction<T> where T : unmanaged, IConvertible
 {
     T LowerBoundary();
 

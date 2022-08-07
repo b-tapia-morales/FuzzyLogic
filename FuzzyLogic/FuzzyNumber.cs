@@ -1,4 +1,6 @@
-﻿namespace FuzzyLogic;
+﻿using System.Globalization;
+
+namespace FuzzyLogic;
 
 public class FuzzyNumber
 {
@@ -26,4 +28,6 @@ public class FuzzyNumber
     public static implicit operator FuzzyNumber(double x) => new(x);
 
     public static implicit operator double(FuzzyNumber x) => x.Value;
+
+    public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);
 }

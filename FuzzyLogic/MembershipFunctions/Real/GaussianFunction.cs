@@ -1,6 +1,6 @@
-﻿namespace FuzzyLogic.MembershipFunction.Real;
+﻿namespace FuzzyLogic.MembershipFunctions.Real;
 
-public class GaussianFunction : IRealFunction
+public class GaussianFunction : IMembershipFunction<double>
 {
     public GaussianFunction(string name, double m, double o)
     {
