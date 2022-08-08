@@ -20,9 +20,9 @@ public class IntegerTrapezoidalFunction : BaseTrapezoidalFunction<int>
     public override FuzzyNumber MembershipDegree(int x)
     {
         if (x <= A) return 0.0;
-        if (x >= A && x <= B) return (x - A) / (B - A);
+        if (x >= A && x <= B) return (double) (x - A) / (B - A);
         if (x >= B && x <= C) return 1.0;
-        if (x >= C && x <= D) return (D - x) / (D - C);
+        if (x >= C && x <= D) return (double) (D - x) / (D - C);
         return 0.0;
     }
 }
