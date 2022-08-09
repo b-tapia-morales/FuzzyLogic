@@ -4,19 +4,18 @@ public class RealTrapezoidalFunction : BaseTrapezoidalFunction<double>
 {
     public RealTrapezoidalFunction(string name, double a, double b, double c, double d) : base(name, a, b, c, d)
     {
-        Name = name;
         A = a;
         B = b;
         C = c;
         D = d;
     }
 
-    public new string Name { get; }
     public new double A { get; }
     public new double B { get; }
     public new double C { get; }
     public new double D { get; }
 
+    /// <inheritdoc/>
     public override FuzzyNumber MembershipDegree(double x)
     {
         if (x <= A) return 0.0;
