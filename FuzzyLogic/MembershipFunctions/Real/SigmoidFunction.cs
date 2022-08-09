@@ -1,17 +1,15 @@
 ﻿namespace FuzzyLogic.MembershipFunctions.Real;
 
-public class SigmoidFunction : IMembershipFunction<double>
+public class SigmoidFunction : BaseMembershipFunction<double>
 {
-    public SigmoidFunction(string name, double a, double c)
+    public SigmoidFunction(string name, double a, double c) : base(name)
     {
-        Name = name;
         A = a;
         C = c;
     }
 
-    public string Name { get; }
     public double A { get; }
     public double C { get; }
 
-    public FuzzyNumber MembershipDegree(double x) => 1 / (1 + Math.Pow(Math.E, -A * (x - C)));
+    public override FuzzyNumber MembershipDegree(double x) => 1 / (1 + Math.Pow(Math.E, -A * (x - C)));
 }
