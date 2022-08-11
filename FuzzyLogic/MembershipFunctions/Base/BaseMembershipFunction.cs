@@ -9,5 +9,5 @@ public abstract class BaseMembershipFunction<T> : IMembershipFunction<T> where T
         Name = name;
     }
 
-    public abstract FuzzyNumber MembershipDegree(T t);
+    public abstract FuzzyNumber MembershipDegree(T x);
 }

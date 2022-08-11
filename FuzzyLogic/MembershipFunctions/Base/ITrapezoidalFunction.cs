@@ -7,7 +7,7 @@
 /// <see cref="BaseTrapezoidalFunction{T}"/> instead.</para>
 /// </summary>
 /// <typeparam name="T">The type must be either <see cref="int"/> or <see cref="double"/>, as originally defined
-/// in <see cref="IMembershipFunction{T}"/></typeparam>
+/// in <see cref="IMembershipFunction{T}"/>.</typeparam>
 public interface ITrapezoidalFunction<T> : IMembershipFunction<T> where T : unmanaged, IConvertible
 {
     /// <summary>
@@ -24,7 +24,7 @@ public interface ITrapezoidalFunction<T> : IMembershipFunction<T> where T : unma
     /// membership: 0 &lt; μ(X) &lt; 1) as an interval, represented as a <see cref="System.ValueTuple"/>.
     /// </summary>
     /// <returns>The interval, represented as a <see cref="System.ValueTuple"/>.</returns>
-    (T X0, T X1) LeftSupportInterval();
+    (T? X0, T X1) LeftSupportInterval();
     
     /// <summary>
     /// Returns the minimum and maximum for <i>x</i> values that belong to right side of the support of the Membership
@@ -32,5 +32,5 @@ public interface ITrapezoidalFunction<T> : IMembershipFunction<T> where T : unma
     /// membership: 0 &lt; μ(X) &lt; 1) as an interval, represented as a <see cref="System.ValueTuple"/>.
     /// </summary>
     /// <returns>The interval, represented as a <see cref="System.ValueTuple"/>.</returns>
-    (T X0, T X1) RightSupportInterval();
+    (T X0, T? X1) RightSupportInterval();
 }

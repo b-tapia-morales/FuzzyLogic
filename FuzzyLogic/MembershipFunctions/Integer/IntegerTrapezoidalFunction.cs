@@ -1,21 +1,19 @@
 ﻿namespace FuzzyLogic.MembershipFunctions.Integer;
 
-public class IntegerTrapezoidalFunction : BaseTrapezoidalFunction<int>
+public class IntegerTrapezoidalFunction : BaseTrapezoidalFunction<int>, IMembershipFunction<int>
 {
     public IntegerTrapezoidalFunction(string name, int a, int b, int c, int d) : base(name, a, b, c, d)
     {
-        Name = name;
         A = a;
         B = b;
         C = c;
         D = d;
     }
 
-    public new string Name { get; }
-    public new int A { get; }
-    public new int B { get; }
-    public new int C { get; }
-    public new int D { get; }
+    protected override int A { get; }
+    protected override int B { get; }
+    protected override int C { get; }
+    protected override int D { get; }
 
     public override FuzzyNumber MembershipDegree(int x)
     {
