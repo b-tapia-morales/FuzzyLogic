@@ -1,6 +1,8 @@
-﻿using FuzzyLogic.MembershipFunctions;
+﻿using FuzzyLogic.Condition;
+using FuzzyLogic.MembershipFunctions;
+using static FuzzyLogic.Condition.LiteralToken;
 
-namespace FuzzyLogic.Set;
+namespace FuzzyLogic.Linguistics;
 
 public class LinguisticVariable<T> where T : unmanaged, IConvertible
 {
@@ -21,7 +23,7 @@ public class LinguisticVariable<T> where T : unmanaged, IConvertible
     }
 
     public bool ContainsLinguisticValue(string name) => Functions.ContainsKey(name);
-    
+
     public IMembershipFunction<T>? RetrieveLinguisticValue(string name) =>
         Functions.TryGetValue(name, out var function) ? function : null;
 
@@ -59,29 +61,57 @@ public class LinguisticVariable<T> where T : unmanaged, IConvertible
         LinguisticValues.Add(rectangularFunction);
     }
 
-    public LinguisticVariable<T> Is(string linguisticValue) => Is(this, linguisticValue);
-
-    public LinguisticVariable<T> IsNot(string linguisticValue) => IsNot(this, linguisticValue);
-
-    public static LinguisticVariable<T> Is(LinguisticVariable<T> linguisticVariable, string linguisticValue)
+    public void AddGaussianFunction(string name, T m, T o)
     {
-        var function = linguisticVariable.RetrieveLinguisticValue(linguisticValue);
-        if (function == null)
+        var gaussianFunction = MembershipFunctionFactory.CreateGaussianFunction(name, m, o);
+        if (!Functions.TryAdd(name, gaussianFunction))
         {
             throw new InvalidOperationException();
         }
 
-        return null;
+        LinguisticValues.Add(gaussianFunction);
     }
 
-    public static LinguisticVariable<T> IsNot(LinguisticVariable<T> linguisticVariable, string linguisticValue)
+    public void AddSigmoidFunction(string name, T a, T c)
     {
-        var function = linguisticVariable.RetrieveLinguisticValue(linguisticValue);
-        if (function == null)
+        var sigmoidFunction = MembershipFunctionFactory.CreateSigmoidFunction(name, a, c);
+        if (!Functions.TryAdd(name, sigmoidFunction))
         {
             throw new InvalidOperationException();
         }
 
-        return null;
+        LinguisticValues.Add(sigmoidFunction);
+    }
+
+    public override string ToString() => Name;
+
+    public FuzzyCondition<T> Is(string linguisticValue) => Is(this, linguisticValue);
+
+    public FuzzyCondition<T> IsNot(string linguisticValue) => IsNot(this, linguisticValue);
+
+    public static FuzzyCondition<T> Is(LinguisticVariable<T> linguisticVariable, string linguisticValue)
+    {
+        ArgumentNullException.ThrowIfNull(linguisticVariable);
+        var function = linguisticVariable.RetrieveLinguisticValue(linguisticValue);
+        if (function == null)
+        {
+            throw new KeyNotFoundException(
+                $"{nameof(linguisticVariable)} does not contain a Membership Function associated to the Linguistic Value provided: {linguisticValue}");
+        }
+
+        return new FuzzyCondition<T>(Affirmation, linguisticVariable, function);
+    }
+
+    public static FuzzyCondition<T> IsNot(LinguisticVariable<T> linguisticVariable, string linguisticValue)
+    {
+        ArgumentNullException.ThrowIfNull(linguisticVariable);
+        var function = linguisticVariable.RetrieveLinguisticValue(linguisticValue);
+        if (function == null)
+        {
+            throw new KeyNotFoundException(
+                $"{nameof(linguisticVariable)} does not contain a Membership Function associated to the Linguistic Value provided: {linguisticValue}");
+        }
+
+        return new FuzzyCondition<T>(Negation, linguisticVariable, function);
     }
 }

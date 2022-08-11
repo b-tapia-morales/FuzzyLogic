@@ -12,6 +12,11 @@
 public interface IMembershipFunction<T> where T : unmanaged, IConvertible
 {
     /// <summary>
+    /// The name of the function.
+    /// </summary>
+    string Name { get; }
+
+    /// <summary>
     /// <para>Returns the minimum value allowed for an <i>x</i> value that belongs to the support of the Membership
     /// Function (that is, the region of the universe that is characterized by nonzero membership: 0 &lt; μ(X) &lt; 1).
     /// </para>
@@ -36,7 +41,7 @@ public interface IMembershipFunction<T> where T : unmanaged, IConvertible
     /// <returns>The maximum value allowed for an <i>x</i> value that belongs to the support of the Membership Function.
     /// </returns>
     T? UpperBoundary() => null;
-    
+
     /// <summary>
     /// <para>Returns the minimum and maximum values allowed for an <i>x</i> value that belongs to the support of the
     /// Membership Function as an interval, represented as a <see cref="System.ValueTuple"/>.</para>
@@ -49,16 +54,16 @@ public interface IMembershipFunction<T> where T : unmanaged, IConvertible
     /// <summary>
     /// Returns the membership degree of the <i>x</i> value provided as a parameter as a <see cref="FuzzyNumber"/>
     /// </summary>
-    /// <param name="t">The <i>x</i> value</param>
+    /// <param name="x">The <i>x</i> value</param>
     /// <returns>Its membership degree as a <see cref="FuzzyNumber"/></returns>
-    FuzzyNumber MembershipDegree(T t);
+    FuzzyNumber MembershipDegree(T x);
 
     /// <summary>
     /// Returns the <i>x</i> value provided as a parameter and its membership degree as a two-dimensional point,
     /// represented by a <see cref="System.ValueTuple"/>.
     /// </summary>
-    /// <param name="t">The <i>x</i> value.</param>
+    /// <param name="x">The <i>x</i> value.</param>
     /// <returns>The <i>x</i> value and its membership degree as a two-dimensional point, represented by a
     /// <see cref="System.ValueTuple"/>.</returns>
-    (T t, FuzzyNumber Y) ToPoint(T t) => (t, MembershipDegree(t));
+    (T x, FuzzyNumber Y) ToPoint(T x) => (x, MembershipDegree(x));
 }
