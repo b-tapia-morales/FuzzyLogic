@@ -1,4 +1,4 @@
-﻿namespace FuzzyLogic.Clause;
+﻿namespace FuzzyLogic.Condition;
 
 public enum LiteralToken
 {
