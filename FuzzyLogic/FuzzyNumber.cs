@@ -16,27 +16,39 @@ namespace FuzzyLogic;
 public sealed class FuzzyNumber : IComparable<FuzzyNumber>, IEquatable<FuzzyNumber>
 {
     /// <summary>
-    /// Represents the smallest possible value of a Fuzzy Number.
-    /// </summary>
-    public static readonly FuzzyNumber MinValue = Of(0);
-
-    /// <summary>
-    /// Represents the largest possible value of a Fuzzy Number.
-    /// </summary>
-    public static readonly FuzzyNumber MaxValue = Of(1);
-
-    /// <summary>
-    /// Represents the smallest possible value for which two Fuzzy Numbers are considered to be equal (up to the fifth
-    /// decimal digit). This field is constant.
+    ///     <param>
+    ///         Represents the smallest possible difference for which a comparison between two Fuzzy Numbers yields
+    ///         equality. In other words, two fuzzy numbers are considered to be equal if the difference between them
+    ///         is below this threshold.
+    ///     </param>
+    ///     <param>This field is constant.</param>
     /// </summary>
     public const double Tolerance = 1e-5;
 
     /// <summary>
-    ///     The base constructor of a Fuzzy Number. To create instances of a Fuzzy Number, <see cref="Of(double)"/>
+    ///     Represents the smallest possible value of a Fuzzy Number.
+    /// </summary>
+    public static readonly FuzzyNumber MinValue = Of(0);
+
+    /// <summary>
+    ///     Represents the largest possible value of a Fuzzy Number.
+    /// </summary>
+    public static readonly FuzzyNumber MaxValue = Of(1);
+
+    /// <summary>
+    ///     The base constructor of a Fuzzy Number. To create instances of a Fuzzy Number, <see cref="Of(double)" />
     ///     should be used instead.
     /// </summary>
     /// <param name="value">The <see cref="double" /> value.</param>
-    private FuzzyNumber(double value) => Value = value;
+    private FuzzyNumber(double value)
+    {
+        Value = value;
+    }
+
+    /// <summary>
+    ///     The property for the <see cref="double" /> value on which the <see cref="FuzzyNumber" /> operates.
+    /// </summary>
+    public double Value { get; }
 
     /// <summary>
     ///     Creates an instance of a Fuzzy Number. The <see cref="double" /> value must be in the range μ(X) ∈ [0, 1],
@@ -64,7 +76,7 @@ public sealed class FuzzyNumber : IComparable<FuzzyNumber>, IEquatable<FuzzyNumb
     /// </summary>
     /// <param name="value">The <see cref="double" /> value.</param>
     /// <param name="fuzzyNumber">An uninitialized instance of a Fuzzy Number</param>
-    /// <returns><see langword="true"/> if the conversion is successful, <see langword="false"/> otherwise.</returns>
+    /// <returns><see langword="true" /> if the conversion is successful, <see langword="false" /> otherwise.</returns>
     public static bool TryCreate(double value, out FuzzyNumber fuzzyNumber)
     {
         switch (value)
@@ -82,17 +94,12 @@ public sealed class FuzzyNumber : IComparable<FuzzyNumber>, IEquatable<FuzzyNumb
     }
 
     /// <summary>
-    ///     The property for the <see cref="double" /> value on which the <see cref="FuzzyNumber" /> operates.
-    /// </summary>
-    public double Value { get; }
-
-    /// <summary>
     ///     Represents the basic operation OR: A ∨ B ⇒ Max(A, B).
     /// </summary>
     /// <param name="a">A fuzzy number</param>
     /// <param name="b">A fuzzy number</param>
     /// <returns>The resulting fuzzy number after applying the OR operator.</returns>
-    public static FuzzyNumber operator |(FuzzyNumber a, FuzzyNumber b) => new(Math.Max(a.Value, b.Value));
+    public static FuzzyNumber operator |(FuzzyNumber a, FuzzyNumber b) => Math.Max(a.Value, b.Value);
 
     /// <summary>
     ///     Represents the basic operation AND: A ∧ B ⇒ Min(A, B).
@@ -100,14 +107,14 @@ public sealed class FuzzyNumber : IComparable<FuzzyNumber>, IEquatable<FuzzyNumb
     /// <param name="a">A fuzzy number</param>
     /// <param name="b">A fuzzy number</param>
     /// <returns>The resulting fuzzy number after applying the AND operator.</returns>
-    public static FuzzyNumber operator &(FuzzyNumber a, FuzzyNumber b) => new(Math.Min(a.Value, b.Value));
+    public static FuzzyNumber operator &(FuzzyNumber a, FuzzyNumber b) => Math.Min(a.Value, b.Value);
 
     /// <summary>
     ///     Represents the basic operation NOT: ¬A ⇒ 1 - A.
     /// </summary>
     /// <param name="x">A fuzzy number</param>
     /// <returns>The resulting fuzzy number after applying the NOT operator.</returns>
-    public static FuzzyNumber operator !(FuzzyNumber x) => new(1 - x.Value);
+    public static FuzzyNumber operator !(FuzzyNumber x) => (1 - x.Value);
 
     public static bool operator <(FuzzyNumber a, FuzzyNumber b) => a != b && a.Value < b.Value;
 
@@ -146,15 +153,16 @@ public sealed class FuzzyNumber : IComparable<FuzzyNumber>, IEquatable<FuzzyNumb
     /// </summary>
     /// <param name="b">The <see cref="bool" /> value.</param>
     /// <returns></returns>
-    public static implicit operator FuzzyNumber(bool b) => new(b ? 1.0 : 0.0);
-
-    public int CompareTo(FuzzyNumber? other) => Value.CompareTo(other?.Value ?? 0);
+    public static implicit operator FuzzyNumber(bool b) => (b ? 1.0 : 0.0);
 
     public bool Equals(FuzzyNumber? other) => Value.Equals(other?.Value ?? 0);
 
-    public override bool Equals(object? obj) => ReferenceEquals(this, obj) || obj is FuzzyNumber other && Equals(other);
+    public override bool Equals(object? obj) =>
+        ReferenceEquals(this, obj) || (obj is FuzzyNumber other && Equals(other));
 
     public override int GetHashCode() => Value.GetHashCode();
+
+    public int CompareTo(FuzzyNumber? other) => Value.CompareTo(other?.Value ?? 0);
 
     /// <inheritdoc />
     public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);
