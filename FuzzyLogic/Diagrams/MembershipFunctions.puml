@@ -1,0 +1,74 @@
+﻿@startuml
+
+class FuzzyNumber
+
+interface IMembershipFunction<T> {
+string Name()
+T? LowerBoundary()
+T? UpperBoundary()
+(T? X0, T? X1) BoundaryInterval()
+FuzzyNumber MembershipDegree(T x)
+(T x, FuzzyNumber Y) ToPoint(T x)
+double? LeftSidedAlphaCut(FuzzyNumber y)
+double? RightSidedAlphaCut(FuzzyNumber y)
+(double? X1, double? X2) AlphaCuts(FuzzyNumber y)
+double? LeftSidedCrossover()
+double? RightSidedCrossover()
+(double? X1, double? X2) Crossovers()
+}
+
+abstract class BaseMembershipFunction<T>
+
+IMembershipFunction <|-- BaseMembershipFunction
+
+together {
+interface IIntegerFunction
+interface IRealFunction
+}
+
+together {
+abstract class BaseSigmoidFunction<T>
+abstract class BaseGaussianFunction<T>
+abstract class BaseTrapezoidalFunction<T>
+}
+
+BaseSigmoidFunction -d--> BaseMembershipFunction
+BaseGaussianFunction -d--> BaseMembershipFunction
+BaseTrapezoidalFunction -d--> BaseMembershipFunction
+
+IMembershipFunction <|-- IIntegerFunction
+
+together {
+together {
+class IntegerSigmoidFunction
+class IntegerGaussianFunction
+class IntegerTrapezoidalFunction
+}
+together {
+class RealGaussianFunction
+class RealSigmoidFunction
+class RealTrapezoidalFunction
+}
+}
+
+IIntegerFunction <|-- IntegerSigmoidFunction
+IIntegerFunction <|-- IntegerGaussianFunction
+IIntegerFunction <|-- IntegerTrapezoidalFunction
+
+IntegerSigmoidFunction -d--> BaseSigmoidFunction
+IntegerGaussianFunction -d--> BaseGaussianFunction
+IntegerTrapezoidalFunction -d--> BaseTrapezoidalFunction
+
+IMembershipFunction <|-- IRealFunction
+
+
+
+IRealFunction <|-- RealSigmoidFunction
+IRealFunction <|-- RealGaussianFunction
+IRealFunction <|-- RealTrapezoidalFunction
+
+RealSigmoidFunction --> BaseSigmoidFunction
+RealGaussianFunction --> BaseGaussianFunction
+RealTrapezoidalFunction --> BaseTrapezoidalFunction
+
+@enduml
