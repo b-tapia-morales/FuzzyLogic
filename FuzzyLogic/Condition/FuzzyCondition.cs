@@ -1,17 +1,17 @@
 ﻿using FuzzyLogic.Linguistics;
 using FuzzyLogic.MembershipFunctions;
 using FuzzyLogic.MembershipFunctions.Base;
+using FuzzyLogic.MembershipFunctions.Real;
 
 namespace FuzzyLogic.Condition;
 
-public class FuzzyCondition<T> where T : unmanaged, IConvertible
+public class FuzzyCondition
 {
     public Literal Literal { get; }
-    public LinguisticVariable<T> LinguisticVariable { get; }
-    public IMembershipFunction<T> Function { get; }
+    public LinguisticVariable LinguisticVariable { get; }
+    public IRealFunction Function { get; }
 
-    public FuzzyCondition(LiteralToken literal, LinguisticVariable<T> linguisticVariable,
-        IMembershipFunction<T> function)
+    public FuzzyCondition(LiteralToken literal, LinguisticVariable linguisticVariable, IRealFunction function)
     {
         Literal = Literal.ReadOnlyDictionary[literal];
         LinguisticVariable = linguisticVariable;

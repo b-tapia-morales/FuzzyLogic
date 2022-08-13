@@ -1,6 +1,6 @@
 ﻿using FuzzyLogic.Linguistics;
 
-var water = new LinguisticVariable<int>("Water");
+var water = new LinguisticVariable("Water");
 water.AddTrapezoidFunction("Cold", 0, 0, 20, 40);
 water.AddTriangularFunction("Warm", 30, 50, 70);
 water.AddTrapezoidFunction("Hot", 50, 80, 100, 100);
