@@ -1,6 +1,8 @@
-﻿namespace FuzzyLogic.MembershipFunctions.Real;
+﻿using FuzzyLogic.MembershipFunctions.Base;
 
-public class RealSigmoidFunction : BaseSigmoidFunction<double>
+namespace FuzzyLogic.MembershipFunctions.Real;
+
+public class RealSigmoidFunction : BaseSigmoidFunction<double>, IRealFunction
 {
     public RealSigmoidFunction(string name, double a, double c) : base(name, a, c)
     {

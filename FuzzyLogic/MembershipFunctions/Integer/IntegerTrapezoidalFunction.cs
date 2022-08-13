@@ -1,6 +1,8 @@
-﻿namespace FuzzyLogic.MembershipFunctions.Integer;
+﻿using FuzzyLogic.MembershipFunctions.Base;
 
-public class IntegerTrapezoidalFunction : BaseTrapezoidalFunction<int>, IMembershipFunction<int>
+namespace FuzzyLogic.MembershipFunctions.Integer;
+
+public class IntegerTrapezoidalFunction : BaseTrapezoidalFunction<int>, IIntegerFunction
 {
     public IntegerTrapezoidalFunction(string name, int a, int b, int c, int d) : base(name, a, b, c, d)
     {

@@ -1,4 +1,4 @@
-﻿namespace FuzzyLogic.MembershipFunctions;
+﻿namespace FuzzyLogic.MembershipFunctions.Base;
 
 /// <summary>
 /// <para>Represents the special case of Trapezoidal functions that derive from the <see cref="IMembershipFunction{T}"/>
@@ -16,7 +16,7 @@ public interface ITrapezoidalFunction<T> : IMembershipFunction<T> where T : unma
     /// represented as a <see cref="System.ValueTuple"/>.
     /// </summary>
     /// <returns>The interval, represented as a <see cref="System.ValueTuple"/>.</returns>
-    (T X0, T X1) CoreInterval();
+    (T? X0, T? X1) CoreInterval();
 
     /// <summary>
     /// Returns the minimum and maximum for <i>x</i> values that belong to left side of the support of the Membership
@@ -24,13 +24,13 @@ public interface ITrapezoidalFunction<T> : IMembershipFunction<T> where T : unma
     /// membership: 0 &lt; μ(X) &lt; 1) as an interval, represented as a <see cref="System.ValueTuple"/>.
     /// </summary>
     /// <returns>The interval, represented as a <see cref="System.ValueTuple"/>.</returns>
-    (T? X0, T X1) LeftSupportInterval();
-    
+    (T? X0, T? X1) LeftSupportInterval();
+
     /// <summary>
     /// Returns the minimum and maximum for <i>x</i> values that belong to right side of the support of the Membership
     /// Function (that is, the region of the universe to the left of the core that is characterized by nonzero
     /// membership: 0 &lt; μ(X) &lt; 1) as an interval, represented as a <see cref="System.ValueTuple"/>.
     /// </summary>
     /// <returns>The interval, represented as a <see cref="System.ValueTuple"/>.</returns>
-    (T X0, T? X1) RightSupportInterval();
+    (T? X0, T? X1) RightSupportInterval();
 }

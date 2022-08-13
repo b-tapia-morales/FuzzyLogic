@@ -1,4 +1,5 @@
-﻿using FuzzyLogic.MembershipFunctions.Integer;
+﻿using FuzzyLogic.MembershipFunctions.Base;
+using FuzzyLogic.MembershipFunctions.Integer;
 using FuzzyLogic.MembershipFunctions.Real;
 
 namespace FuzzyLogic.MembershipFunctions;

@@ -1,4 +1,4 @@
-﻿namespace FuzzyLogic.MembershipFunctions;
+﻿namespace FuzzyLogic.MembershipFunctions.Base;
 
 /// <summary>
 /// <para>Represents the Membership Function that allows the creation of linguistic values that belong to a linguistic
@@ -59,11 +59,23 @@ public interface IMembershipFunction<T> where T : unmanaged, IConvertible
     FuzzyNumber MembershipDegree(T x);
 
     /// <summary>
-    /// Returns the <i>x</i> value provided as a parameter and its membership degree as a two-dimensional point,
-    /// represented by a <see cref="System.ValueTuple"/>.
+    /// Returns the <i>x</i> value provided as a parameter and its membership degree <i>y</i> value as a two-dimensional
+    /// point, represented by a <see cref="System.ValueTuple"/>.
     /// </summary>
     /// <param name="x">The <i>x</i> value.</param>
-    /// <returns>The <i>x</i> value and its membership degree as a two-dimensional point, represented by a
-    /// <see cref="System.ValueTuple"/>.</returns>
+    /// <returns>The <i>x</i> value and its membership degree <i>y</i> value as a two-dimensional point, represented by
+    /// a <see cref="System.ValueTuple"/>.</returns>
     (T x, FuzzyNumber Y) ToPoint(T x) => (x, MembershipDegree(x));
+
+    double? LeftSidedAlphaCut(FuzzyNumber y);
+
+    double? RightSidedAlphaCut(FuzzyNumber y);
+
+    (double? X1, double? X2) AlphaCuts(FuzzyNumber y) => (LeftSidedAlphaCut(y), RightSidedAlphaCut(y));
+
+    double? LeftSidedCrossover() => LeftSidedAlphaCut(0.5);
+
+    double? RightSidedCrossover() => RightSidedAlphaCut(0.5);
+
+    (double? X1, double? X2) Crossovers() => (LeftSidedCrossover(), RightSidedCrossover());
 }

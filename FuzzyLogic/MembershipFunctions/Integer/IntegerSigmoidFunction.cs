@@ -1,6 +1,8 @@
-﻿namespace FuzzyLogic.MembershipFunctions.Integer;
+﻿using FuzzyLogic.MembershipFunctions.Base;
 
-public class IntegerSigmoidFunction : BaseSigmoidFunction<int>
+namespace FuzzyLogic.MembershipFunctions.Integer;
+
+public class IntegerSigmoidFunction : BaseSigmoidFunction<int>, IIntegerFunction
 {
     public IntegerSigmoidFunction(string name, int a, int c) : base(name, a, c)
     {

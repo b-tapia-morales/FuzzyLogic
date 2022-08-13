@@ -1,6 +1,8 @@
-﻿namespace FuzzyLogic.MembershipFunctions.Integer;
+﻿using FuzzyLogic.MembershipFunctions.Base;
 
-public class IntegerGaussianFunction : BaseGaussianFunction<int>
+namespace FuzzyLogic.MembershipFunctions.Integer;
+
+public class IntegerGaussianFunction : BaseGaussianFunction<int>, IIntegerFunction
 {
     public IntegerGaussianFunction(string name, int m, int o) : base(name, m, o)
     {

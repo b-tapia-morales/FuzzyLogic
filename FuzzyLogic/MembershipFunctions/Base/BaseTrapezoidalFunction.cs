@@ -1,4 +1,4 @@
-﻿namespace FuzzyLogic.MembershipFunctions;
+﻿namespace FuzzyLogic.MembershipFunctions.Base;
 
 public abstract class BaseTrapezoidalFunction<T> : BaseMembershipFunction<T>, ITrapezoidalFunction<T>
     where T : unmanaged, IConvertible
@@ -20,9 +20,13 @@ public abstract class BaseTrapezoidalFunction<T> : BaseMembershipFunction<T>, IT
 
     public virtual T? UpperBoundary() => D;
 
-    public virtual (T X0, T X1) CoreInterval() => (B, C);
+    public virtual (T? X0, T? X1) CoreInterval() => (B, C);
 
-    public virtual (T? X0, T X1) LeftSupportInterval() => (LowerBoundary(), CoreInterval().X0);
+    public virtual (T? X0, T? X1) LeftSupportInterval() => (LowerBoundary(), CoreInterval().X0);
 
-    public virtual (T X0, T? X1) RightSupportInterval() => (CoreInterval().X1, UpperBoundary());
+    public virtual (T? X0, T? X1) RightSupportInterval() => (CoreInterval().X1, UpperBoundary());
+
+    public override double? LeftSidedAlphaCut(FuzzyNumber y) => throw new NotImplementedException();
+    
+    public override double? RightSidedAlphaCut(FuzzyNumber y) => throw new NotImplementedException();
 }

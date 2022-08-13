@@ -1,6 +1,8 @@
-﻿namespace FuzzyLogic.MembershipFunctions.Real;
+﻿using FuzzyLogic.MembershipFunctions.Base;
 
-public class RealGaussianFunction : BaseGaussianFunction<double>
+namespace FuzzyLogic.MembershipFunctions.Real;
+
+public class RealGaussianFunction : BaseGaussianFunction<double>, IRealFunction
 {
     public RealGaussianFunction(string name, double m, double o) : base(name, m, o)
     {

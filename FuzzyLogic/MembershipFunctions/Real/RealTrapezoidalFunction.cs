@@ -1,6 +1,8 @@
-﻿namespace FuzzyLogic.MembershipFunctions.Real;
+﻿using FuzzyLogic.MembershipFunctions.Base;
 
-public class RealTrapezoidalFunction : BaseTrapezoidalFunction<double>
+namespace FuzzyLogic.MembershipFunctions.Real;
+
+public class RealTrapezoidalFunction : BaseTrapezoidalFunction<double>, IRealFunction
 {
     public RealTrapezoidalFunction(string name, double a, double b, double c, double d) : base(name, a, b, c, d)
     {
