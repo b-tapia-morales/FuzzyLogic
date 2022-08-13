@@ -5,6 +5,8 @@ namespace FuzzyLogic.Tests.FuzzyNumberTest;
 
 public class FuzzyNumberTest
 {
+    private static readonly Random Random = new();
+    
     [Fact]
     public void InstantiationThrowsExceptionOnValueOutOfRange()
     {
@@ -56,8 +58,8 @@ public class FuzzyNumberTest
     }
 
     [Theory]
-    [InlineData(0.100001, 0.10000100)]
-    [InlineData(0.100001, 0.1000099999)]
+    [InlineData(0.10001, 0.1000099999)]
+    [InlineData(0.10001, 0.100010001)]
     [InlineData(-0.000001, 0)]
     [InlineData(+0.000001, 0)]
     [InlineData(0.999999, 1)]
@@ -77,29 +79,26 @@ public class FuzzyNumberTest
     
     public static IEnumerable<object[]> GenerateRandomValues(int n)
     {
-        var random = new Random();
         for (var i = 1; i <= n; i++)
         {
-            yield return new object[] {random.NextDouble()};
+            yield return new object[] {Random.NextDouble()};
         }
     }
     
     public static IEnumerable<object[]> GenerateRandomPairs(int n)
     {
-        var random = new Random();
         for (var i = 1; i <= n; i++)
         {
-            yield return new object[] {random.NextDouble(), random.NextDouble()};
+            yield return new object[] {Random.NextDouble(), Random.NextDouble()};
         }
     }
     
     public static IEnumerable<object[]> GenerateRandomValuesIncludingTolerance(int n)
     {
-        var random = new Random();
         for (var i = 1; i <= n; i++)
         {
-            var x = random.NextDouble();
-            yield return new object[] {x, x - 1e-6};
+            var x = Random.NextDouble();
+            yield return new object[] {x, x - Random.Next(1, 10) * 1e-6};
         }
     }
 }
