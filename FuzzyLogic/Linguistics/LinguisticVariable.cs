@@ -1,5 +1,6 @@
 ﻿using FuzzyLogic.Condition;
 using FuzzyLogic.MembershipFunctions;
+using FuzzyLogic.MembershipFunctions.Base;
 using static FuzzyLogic.Condition.LiteralToken;
 
 namespace FuzzyLogic.Linguistics;
