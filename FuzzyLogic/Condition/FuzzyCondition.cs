@@ -1,6 +1,5 @@
-﻿using FuzzyLogic.Linguistics;
-using FuzzyLogic.MembershipFunctions;
-using FuzzyLogic.MembershipFunctions.Base;
+﻿using FuzzyLogic.Clause;
+using FuzzyLogic.Linguistics;
 using FuzzyLogic.MembershipFunctions.Real;
 
 namespace FuzzyLogic.Condition;

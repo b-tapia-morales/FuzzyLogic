@@ -1,4 +1,4 @@
-﻿namespace FuzzyLogic.Rule;
+﻿namespace FuzzyLogic.Clause;
 
 public enum ConnectiveToken
 {
