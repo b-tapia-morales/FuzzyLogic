@@ -1,16 +1,18 @@
 ﻿using CsvHelper.Configuration;
 
-namespace FuzzyLogic.Memory;
+// ReSharper disable All
 
-public sealed class FactRow<T> where T : unmanaged, IConvertible
+namespace FuzzyLogic.Utils.Csv;
+
+public sealed class FactRow
 {
     public string Key { get; set; } = null!;
-    public T Value { get; set; } = default;
+    public double Value { get; set; } = 0;
 
     public override string ToString() => $"{Key} - {Value}";
 }
 
-public sealed class FactMapping<T> : ClassMap<FactRow<T>> where T : unmanaged, IConvertible
+public sealed class FactMapping : ClassMap<FactRow>
 {
     public FactMapping()
     {
