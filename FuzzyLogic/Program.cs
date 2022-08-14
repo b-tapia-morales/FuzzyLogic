@@ -1,4 +1,5 @@
 ﻿using FuzzyLogic.Linguistics;
+using FuzzyLogic.Rule;
 
 var water = new LinguisticVariable("Water");
 water.AddTrapezoidFunction("Cold", 0, 0, 20, 40);
@@ -15,3 +16,6 @@ foreach (var function in water.LinguisticValues)
     Console.WriteLine(function.ToPoint(randomInt));
     Console.WriteLine($"Random int: {randomInt} - Membership degree: {function.MembershipDegree(randomInt)}");
 }
+
+var rule = FuzzyRule.Initialize().If(water.Is("Hot")).Or(water.Is("Sorta hot")).Then(water.IsNot("Cold"));
+Console.WriteLine(rule);
