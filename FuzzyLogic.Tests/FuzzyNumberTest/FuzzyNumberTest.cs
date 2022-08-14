@@ -60,10 +60,10 @@ public class FuzzyNumberTest
     [Theory]
     [InlineData(0.10001, 0.1000099999)]
     [InlineData(0.10001, 0.100010001)]
-    [InlineData(-0.000001, 0)]
-    [InlineData(+0.000001, 0)]
-    [InlineData(0.999999, 1)]
-    [InlineData(1.000001, 1)]
+    [InlineData(0 - Tolerance * 1e-1, 0)]
+    [InlineData(0 + Tolerance * 1e-1, 0)]
+    [InlineData(1 - Tolerance * 1e-1, 1)]
+    [InlineData(1 + Tolerance * 1e-1, 1)]
     public void EdgeCasesYieldEqualityForDifferenceUnderTolerance(double first, double second)
     {
         ValuesYieldEqualityForDifferenceUnderTolerance(first, second);
@@ -98,7 +98,7 @@ public class FuzzyNumberTest
         for (var i = 1; i <= n; i++)
         {
             var x = Random.NextDouble();
-            yield return new object[] {x, x - Random.Next(1, 10) * 1e-6};
+            yield return new object[] {x, x - Random.Next(1, 10) * Tolerance * 1e-1};
         }
     }
 }
