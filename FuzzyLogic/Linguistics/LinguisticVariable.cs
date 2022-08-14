@@ -1,11 +1,12 @@
 ﻿using FuzzyLogic.Condition;
 using FuzzyLogic.MembershipFunctions;
+using FuzzyLogic.MembershipFunctions.Base;
 using FuzzyLogic.MembershipFunctions.Real;
 using static FuzzyLogic.Condition.LiteralToken;
 
 namespace FuzzyLogic.Linguistics;
 
-public class LinguisticVariable
+public class LinguisticVariable : IVariable
 {
     private readonly Dictionary<string, IRealFunction> _functions = new(StringComparer.InvariantCultureIgnoreCase);
 
@@ -32,7 +33,6 @@ public class LinguisticVariable
 
         LinguisticValues.Add(trapezoidalFunction);
     }
-
 
     public void AddTriangularFunction(string name, double a, double b, double c)
     {
@@ -78,13 +78,13 @@ public class LinguisticVariable
         LinguisticValues.Add(sigmoidFunction);
     }
 
+    public ICondition Is(string linguisticValue) => Is(this, linguisticValue);
+
+    public ICondition IsNot(string linguisticValue) => IsNot(this, linguisticValue);
+
     public override string ToString() => Name;
 
-    public FuzzyCondition Is(string linguisticValue) => Is(this, linguisticValue);
-
-    public FuzzyCondition IsNot(string linguisticValue) => IsNot(this, linguisticValue);
-
-    public static FuzzyCondition Is(LinguisticVariable linguisticVariable, string linguisticValue)
+    public static ICondition Is(LinguisticVariable linguisticVariable, string linguisticValue)
     {
         ArgumentNullException.ThrowIfNull(linguisticVariable);
         var function = linguisticVariable.RetrieveLinguisticValue(linguisticValue);
@@ -97,7 +97,7 @@ public class LinguisticVariable
         return new FuzzyCondition(Affirmation, linguisticVariable, function);
     }
 
-    public static FuzzyCondition IsNot(LinguisticVariable linguisticVariable, string linguisticValue)
+    public static ICondition IsNot(LinguisticVariable linguisticVariable, string linguisticValue)
     {
         ArgumentNullException.ThrowIfNull(linguisticVariable);
         var function = linguisticVariable.RetrieveLinguisticValue(linguisticValue);

@@ -6,7 +6,7 @@ namespace FuzzyLogic.Clause;
 public class Connective : SmartEnum<Connective>
 {
     public static readonly Connective If = new(nameof(If), "IF", Antecedent, (int) Antecedent);
-    public static readonly Connective Then = new(nameof(Then), "THEN", Consequent, (int) Antecedent);
+    public static readonly Connective Then = new(nameof(Then), "THEN", Consequent, (int) Consequent);
     public static readonly Connective And = new(nameof(And), "AND", Conjunction, (int) Conjunction);
     public static readonly Connective Or = new(nameof(Or), "OR", Disjunction, (int) Disjunction);
 

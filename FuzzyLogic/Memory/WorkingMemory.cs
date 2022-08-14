@@ -1,9 +1,16 @@
-﻿using static FuzzyLogic.Memory.EntryResolutionMethod;
+﻿using FuzzyLogic.Utils.Csv;
+using static FuzzyLogic.Memory.EntryResolutionMethod;
 
 namespace FuzzyLogic.Memory;
 
-public class WorkingMemory : IWorkingMemory<double>
+public class WorkingMemory : IWorkingMemory
 {
+    private const string CsvFileFolder = "Files";
+    private const string CsvFileName = "Facts.csv";
+
+    private static readonly string CsvFilePath =
+        Path.Combine(Directory.GetCurrentDirectory(), CsvFileFolder, CsvFileName);
+
     public WorkingMemory(EntryResolutionMethod method = Keep)
     {
         Facts = new Dictionary<string, double>();
@@ -33,7 +40,7 @@ public class WorkingMemory : IWorkingMemory<double>
 
     public override string ToString() => string.Join('\n', Facts);
 
-    public static WorkingMemory InitializeFromFile(string folderName, string fileName,
-        EntryResolutionMethod method = Keep) =>
-        new(FactRetrieval.RetrieveRows<double>(folderName, fileName).ToDictionary(e => e.Key, e => e.Value), method);
+    public static WorkingMemory InitializeFromFile(EntryResolutionMethod method = Keep) =>
+        new(RowRetrieval.RetrieveRows<FactRow, FactMapping>(CsvFilePath).ToDictionary(e => e.Key, e => e.Value),
+            method);
 }

@@ -1,4 +1,5 @@
 ﻿using FuzzyLogic.Linguistics;
+using FuzzyLogic.Memory;
 using FuzzyLogic.Rule;
 
 var water = new LinguisticVariable("Water");
@@ -17,5 +18,12 @@ foreach (var function in water.LinguisticValues)
     Console.WriteLine($"Random int: {randomInt} - Membership degree: {function.MembershipDegree(randomInt)}");
 }
 
-var rule = FuzzyRule.Initialize().If(water.Is("Hot")).Or(water.Is("Sorta hot")).Then(water.IsNot("Cold"));
+var rule = FuzzyRule
+    .Initialize()
+    .If(water.Is("Hot"))
+    .Or(water.Is("Sorta hot"))
+    .Then(water.IsNot("Cold"));
 Console.WriteLine(rule);
+
+var workingMemory = WorkingMemory.InitializeFromFile();
+Console.WriteLine(workingMemory);

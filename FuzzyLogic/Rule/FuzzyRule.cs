@@ -3,26 +3,26 @@ using FuzzyLogic.Condition;
 
 namespace FuzzyLogic.Rule;
 
-public class FuzzyRule
+public class FuzzyRule: IRule
 {
-    public FuzzyClause? Antecedent { get; set; }
-    public ICollection<FuzzyClause> Connectives { get; } = new List<FuzzyClause>();
-    public FuzzyClause? Consequent { get; set; }
+    public IClause? Antecedent { get; set; }
+    public ICollection<IClause> Connectives { get; } = new List<IClause>();
+    public IClause? Consequent { get; set; }
 
     public override string ToString() =>
         $"{Antecedent} {string.Join(' ', Connectives)} {Consequent}";
-    
-    public FuzzyRule If(FuzzyCondition condition) => If(this, condition);
 
-    public FuzzyRule And(FuzzyCondition condition) => And(this, condition);
+    public IRule If(ICondition condition) => If(this, condition);
 
-    public FuzzyRule Or(FuzzyCondition condition) => Or(this, condition);
+    public IRule And(ICondition condition) => And(this, condition);
 
-    public FuzzyRule Then(FuzzyCondition condition) => Then(this, condition);
-    
-    public static FuzzyRule Initialize() => new();
-    
-    public static FuzzyRule If(FuzzyRule rule, FuzzyCondition condition)
+    public IRule Or(ICondition condition) => Or(this, condition);
+
+    public IRule Then(ICondition condition) => Then(this, condition);
+
+    public static IRule Initialize() => new FuzzyRule();
+
+    public static IRule If(IRule rule, ICondition condition)
     {
         if (rule.Antecedent != null)
             throw new InvalidOperationException();
@@ -31,7 +31,7 @@ public class FuzzyRule
         return rule;
     }
 
-    public static FuzzyRule And(FuzzyRule rule, FuzzyCondition condition)
+    public static IRule And(FuzzyRule rule, ICondition condition)
     {
         if (rule.Antecedent == null)
             throw new InvalidOperationException();
@@ -40,7 +40,7 @@ public class FuzzyRule
         return rule;
     }
 
-    public static FuzzyRule Or(FuzzyRule rule, FuzzyCondition condition)
+    public static IRule Or(FuzzyRule rule, ICondition condition)
     {
         if (rule.Antecedent == null)
             throw new InvalidOperationException();
@@ -49,7 +49,7 @@ public class FuzzyRule
         return rule;
     }
 
-    public static FuzzyRule Then(FuzzyRule rule, FuzzyCondition condition)
+    public static IRule Then(IRule rule, ICondition condition)
     {
         if (rule.Antecedent == null)
             throw new InvalidOperationException();

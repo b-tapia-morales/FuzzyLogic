@@ -1,10 +1,9 @@
-﻿using FuzzyLogic.Clause;
-using FuzzyLogic.Linguistics;
+﻿using FuzzyLogic.Linguistics;
 using FuzzyLogic.MembershipFunctions.Real;
 
 namespace FuzzyLogic.Condition;
 
-public class FuzzyCondition
+public class FuzzyCondition: ICondition
 {
     public Literal Literal { get; }
     public LinguisticVariable LinguisticVariable { get; }

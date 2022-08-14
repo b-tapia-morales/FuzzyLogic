@@ -1,10 +1,13 @@
 ﻿namespace FuzzyLogic.Memory;
 
-public interface IWorkingMemory<T> where T : unmanaged, IConvertible
+public interface IWorkingMemory
 {
+    public Dictionary<string, double> Facts { get; }
+    public EntryResolutionMethod Method { get; }
+
     bool ContainsFact(string key);
 
-    T? RetrieveValue(string key);
+    double? RetrieveValue(string key);
 
-    void AddFact(string key, T value);
+    void AddFact(string key, double value);
 }
