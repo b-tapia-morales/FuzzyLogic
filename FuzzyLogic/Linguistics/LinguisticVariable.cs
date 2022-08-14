@@ -7,7 +7,7 @@ namespace FuzzyLogic.Linguistics;
 
 public class LinguisticVariable
 {
-    private readonly Dictionary<string, IRealFunction> _functions = new();
+    private readonly Dictionary<string, IRealFunction> _functions = new(StringComparer.InvariantCultureIgnoreCase);
 
     public string Name { get; }
     public List<IRealFunction> LinguisticValues { get; } = new();
