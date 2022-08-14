@@ -7,7 +7,7 @@ namespace FuzzyLogic.Linguistics;
 
 public class LinguisticVariable
 {
-    private static readonly Dictionary<string, IRealFunction> Functions = new();
+    private readonly Dictionary<string, IRealFunction> _functions = new();
 
     public string Name { get; }
     public List<IRealFunction> LinguisticValues { get; } = new();
@@ -17,15 +17,15 @@ public class LinguisticVariable
         Name = name;
     }
 
-    public bool ContainsLinguisticValue(string name) => Functions.ContainsKey(name);
+    public bool ContainsLinguisticValue(string name) => _functions.ContainsKey(name);
 
     public IRealFunction? RetrieveLinguisticValue(string name) =>
-        Functions.TryGetValue(name, out var function) ? function : null;
+        _functions.TryGetValue(name, out var function) ? function : null;
 
     public void AddTrapezoidFunction(string name, double a, double b, double c, double d)
     {
         var trapezoidalFunction = (IRealFunction) MembershipFunctionFactory.CreateTrapezoidalFunction(name, a, b, c, d);
-        if (!Functions.TryAdd(name, trapezoidalFunction))
+        if (!_functions.TryAdd(name, trapezoidalFunction))
         {
             throw new InvalidOperationException();
         }
@@ -37,7 +37,7 @@ public class LinguisticVariable
     public void AddTriangularFunction(string name, double a, double b, double c)
     {
         var triangularFunction = (IRealFunction) MembershipFunctionFactory.CreateTriangularFunction(name, a, b, c);
-        if (!Functions.TryAdd(name, triangularFunction))
+        if (!_functions.TryAdd(name, triangularFunction))
         {
             throw new InvalidOperationException();
         }
@@ -48,7 +48,7 @@ public class LinguisticVariable
     public void AddRectangularFunction(string name, double a, double b)
     {
         var rectangularFunction = (IRealFunction) MembershipFunctionFactory.CreateRectangularFunction(name, a, b);
-        if (!Functions.TryAdd(name, rectangularFunction))
+        if (!_functions.TryAdd(name, rectangularFunction))
         {
             throw new InvalidOperationException();
         }
@@ -59,7 +59,7 @@ public class LinguisticVariable
     public void AddGaussianFunction(string name, double m, double o)
     {
         var gaussianFunction = (IRealFunction) MembershipFunctionFactory.CreateGaussianFunction(name, m, o);
-        if (!Functions.TryAdd(name, gaussianFunction))
+        if (!_functions.TryAdd(name, gaussianFunction))
         {
             throw new InvalidOperationException();
         }
@@ -70,7 +70,7 @@ public class LinguisticVariable
     public void AddSigmoidFunction(string name, double a, double c)
     {
         var sigmoidFunction = (IRealFunction) MembershipFunctionFactory.CreateSigmoidFunction(name, a, c);
-        if (!Functions.TryAdd(name, sigmoidFunction))
+        if (!_functions.TryAdd(name, sigmoidFunction))
         {
             throw new InvalidOperationException();
         }
