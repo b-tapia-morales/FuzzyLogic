@@ -1,7 +1,7 @@
 ﻿using Ardalis.SmartEnum;
-using static FuzzyLogic.Rule.ConnectiveToken;
+using static FuzzyLogic.Clause.ConnectiveToken;
 
-namespace FuzzyLogic.Rule;
+namespace FuzzyLogic.Clause;
 
 public class Connective : SmartEnum<Connective>
 {
@@ -15,7 +15,7 @@ public class Connective : SmartEnum<Connective>
         {Antecedent, If},
         {Consequent, Then},
         {Conjunction, And},
-        {Disjunction, Or},
+        {Disjunction, Or}
     };
 
     public static readonly IReadOnlyDictionary<ConnectiveToken, Connective> ReadOnlyDictionary = Dictionary;
@@ -28,4 +28,6 @@ public class Connective : SmartEnum<Connective>
 
     public string ReadableName { get; }
     public ConnectiveToken Token { get; }
+    
+    public override string ToString() => ReadableName;
 }

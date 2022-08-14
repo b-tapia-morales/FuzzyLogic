@@ -21,7 +21,9 @@ public class Literal : SmartEnum<Literal>
         ReadableName = readableName;
         Token = token;
     }
-
+    
     public string ReadableName { get; }
     public LiteralToken Token { get; }
+    
+    public override string ToString() => ReadableName;
 }
