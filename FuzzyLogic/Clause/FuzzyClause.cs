@@ -2,7 +2,7 @@
 
 namespace FuzzyLogic.Clause;
 
-public class FuzzyClause: IClause
+public class FuzzyClause : IClause
 {
     public FuzzyClause(Connective connective, ICondition condition)
     {
@@ -12,6 +12,8 @@ public class FuzzyClause: IClause
 
     public Connective Connective { get; }
     public ICondition Condition { get; }
+
+    public string RetrieveLinguisticVariable() => Condition.LinguisticVariable.Name;
 
     public override string ToString() => $"{Connective} {Condition}";
 

@@ -1,5 +1,6 @@
 ﻿namespace FuzzyLogic.Memory;
 
+
 public interface IWorkingMemory
 {
     public Dictionary<string, double> Facts { get; }

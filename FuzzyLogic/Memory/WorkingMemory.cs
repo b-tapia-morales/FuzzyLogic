@@ -40,7 +40,10 @@ public class WorkingMemory : IWorkingMemory
 
     public override string ToString() => string.Join('\n', Facts);
 
-    public static WorkingMemory InitializeFromFile(EntryResolutionMethod method = Keep) =>
-        new(RowRetrieval.RetrieveRows<FactRow, FactMapping>(CsvFilePath).ToDictionary(e => e.Key, e => e.Value),
+    public static WorkingMemory InitializeFromFile(string folderPath, EntryResolutionMethod method = Keep) =>
+        new(RowRetrieval.RetrieveRows<FactRow, FactMapping>(folderPath).ToDictionary(e => e.Key, e => e.Value),
             method);
+
+    public static WorkingMemory InitializeFromFile(EntryResolutionMethod method = Keep) =>
+        InitializeFromFile(CsvFilePath, method);
 }
