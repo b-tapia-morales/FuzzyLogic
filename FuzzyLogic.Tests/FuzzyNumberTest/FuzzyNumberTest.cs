@@ -58,8 +58,8 @@ public class FuzzyNumberTest
     }
 
     [Theory]
-    [InlineData(0.10001, 0.1000099999)]
-    [InlineData(0.10001, 0.100010001)]
+    [InlineData(1e-1 + Tolerance, 1e-1 + 9.9999999999 * Tolerance * 1e-1)]
+    [InlineData(1e-1 + Tolerance, 1e-1 + 1.0000000001 * Tolerance * 1e-1)]
     [InlineData(0 - Tolerance * 1e-1, 0)]
     [InlineData(0 + Tolerance * 1e-1, 0)]
     [InlineData(1 - Tolerance * 1e-1, 1)]
