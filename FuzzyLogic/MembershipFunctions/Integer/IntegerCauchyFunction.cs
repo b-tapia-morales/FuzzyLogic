@@ -2,7 +2,7 @@
 
 namespace FuzzyLogic.MembershipFunctions.Integer;
 
-public sealed class IntegerCauchyFunction : BaseCauchyFunction<int>
+public class IntegerCauchyFunction : BaseCauchyFunction<int>, IIntegerFunction
 {
     public IntegerCauchyFunction(string name, int a, int b, int c) : base(name, a, b, c)
     {

@@ -2,7 +2,7 @@
 
 namespace FuzzyLogic.MembershipFunctions.Real;
 
-public class RealCauchyFunction: BaseCauchyFunction<double>
+public class RealCauchyFunction: BaseCauchyFunction<double>, IRealFunction
 {
     public RealCauchyFunction(string name, double a, double b, double c) : base(name, a, b, c)
     {
