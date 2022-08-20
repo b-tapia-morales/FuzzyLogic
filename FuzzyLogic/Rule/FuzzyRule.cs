@@ -5,9 +5,9 @@ namespace FuzzyLogic.Rule;
 
 public class FuzzyRule: IRule
 {
-    public IClause? Antecedent { get; set; }
-    public ICollection<IClause> Connectives { get; } = new List<IClause>();
-    public IClause? Consequent { get; set; }
+    public ICondition? Antecedent { get; set; }
+    public ICollection<ICondition> Connectives { get; } = new List<ICondition>();
+    public ICondition? Consequent { get; set; }
 
     public override string ToString() =>
         $"{Antecedent} {string.Join(' ', Connectives)} {Consequent}";
@@ -20,14 +20,15 @@ public class FuzzyRule: IRule
 
     public IRule Then(ICondition condition) => Then(this, condition);
 
-    public static IRule Initialize() => new FuzzyRule();
+    public static IRule Create() => new FuzzyRule();
 
     public static IRule If(IRule rule, ICondition condition)
     {
         if (rule.Antecedent != null)
             throw new InvalidOperationException();
 
-        rule.Antecedent = FuzzyClause.If(condition);
+        condition.Connective = Connective.If;
+        rule.Antecedent = condition;
         return rule;
     }
 
@@ -36,7 +37,8 @@ public class FuzzyRule: IRule
         if (rule.Antecedent == null)
             throw new InvalidOperationException();
 
-        rule.Connectives.Add(FuzzyClause.And(condition));
+        condition.Connective = Connective.And;
+        rule.Connectives.Add(condition);
         return rule;
     }
 
@@ -45,7 +47,8 @@ public class FuzzyRule: IRule
         if (rule.Antecedent == null)
             throw new InvalidOperationException();
 
-        rule.Connectives.Add(FuzzyClause.Or(condition));
+        condition.Connective = Connective.Or;
+        rule.Connectives.Add(condition);
         return rule;
     }
 
@@ -54,7 +57,8 @@ public class FuzzyRule: IRule
         if (rule.Antecedent == null)
             throw new InvalidOperationException();
 
-        rule.Consequent = FuzzyClause.Then(condition);
+        condition.Connective = Connective.Then;
+        rule.Consequent = condition;
         return rule;
     }
 }

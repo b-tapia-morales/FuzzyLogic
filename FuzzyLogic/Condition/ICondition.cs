@@ -5,7 +5,8 @@ namespace FuzzyLogic.Condition;
 
 public interface ICondition
 {
-    public Literal Literal { get; }
-    public LinguisticVariable LinguisticVariable { get; }
-    public IRealFunction Function { get; }
+    public Connective? Connective { get; set; }
+    public LinguisticVariable LinguisticVariable { get; set; }
+    public Literal Literal { get; set; }
+    public IRealFunction Function { get; set; }
 }

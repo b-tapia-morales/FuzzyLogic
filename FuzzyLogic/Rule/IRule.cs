@@ -5,9 +5,9 @@ namespace FuzzyLogic.Rule;
 
 public interface IRule
 {
-    public IClause? Antecedent { get; set; }
-    public ICollection<IClause> Connectives { get; }
-    public IClause? Consequent { get; set; }
+    public ICondition? Antecedent { get; set; }
+    public ICollection<ICondition> Connectives { get; }
+    public ICondition? Consequent { get; set; }
 
     IRule If(ICondition condition);
 
