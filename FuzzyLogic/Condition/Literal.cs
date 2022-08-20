@@ -33,3 +33,9 @@ public class Literal : SmartEnum<Literal>
 
     public override string ToString() => ReadableName;
 }
+
+public enum LiteralToken
+{
+    Affirmation = 1,
+    Negation = 2
+}

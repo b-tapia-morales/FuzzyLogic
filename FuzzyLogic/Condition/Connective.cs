@@ -1,7 +1,7 @@
 ﻿using Ardalis.SmartEnum;
-using static FuzzyLogic.Clause.ConnectiveToken;
+using static FuzzyLogic.Condition.ConnectiveToken;
 
-namespace FuzzyLogic.Clause;
+namespace FuzzyLogic.Condition;
 
 public class Connective : SmartEnum<Connective>
 {
@@ -36,4 +36,12 @@ public class Connective : SmartEnum<Connective>
     public static Connective FromReadableName(string readableName) => ReadableNameDictionary[readableName];
 
     public override string ToString() => ReadableName;
+}
+
+public enum ConnectiveToken
+{
+    Antecedent = 1,
+    Consequent = 2,
+    Conjunction = 3,
+    Disjunction = 4
 }
