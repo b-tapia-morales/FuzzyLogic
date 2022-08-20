@@ -1,6 +1,5 @@
 ﻿using FuzzyLogic.Condition;
 using FuzzyLogic.MembershipFunctions;
-using FuzzyLogic.MembershipFunctions.Base;
 using FuzzyLogic.MembershipFunctions.Real;
 using static FuzzyLogic.Condition.LiteralToken;
 
@@ -13,10 +12,7 @@ public class LinguisticVariable : IVariable
     public string Name { get; }
     public List<IRealFunction> LinguisticValues { get; } = new();
 
-    public LinguisticVariable(string name)
-    {
-        Name = name;
-    }
+    public LinguisticVariable(string name) => Name = name;
 
     public bool ContainsLinguisticValue(string name) => _functions.ContainsKey(name);
 
@@ -27,9 +23,7 @@ public class LinguisticVariable : IVariable
     {
         var trapezoidalFunction = (IRealFunction) MembershipFunctionFactory.CreateTrapezoidalFunction(name, a, b, c, d);
         if (!_functions.TryAdd(name, trapezoidalFunction))
-        {
             throw new InvalidOperationException();
-        }
 
         LinguisticValues.Add(trapezoidalFunction);
     }
@@ -38,9 +32,7 @@ public class LinguisticVariable : IVariable
     {
         var triangularFunction = (IRealFunction) MembershipFunctionFactory.CreateTriangularFunction(name, a, b, c);
         if (!_functions.TryAdd(name, triangularFunction))
-        {
             throw new InvalidOperationException();
-        }
 
         LinguisticValues.Add(triangularFunction);
     }
@@ -49,9 +41,7 @@ public class LinguisticVariable : IVariable
     {
         var rectangularFunction = (IRealFunction) MembershipFunctionFactory.CreateRectangularFunction(name, a, b);
         if (!_functions.TryAdd(name, rectangularFunction))
-        {
             throw new InvalidOperationException();
-        }
 
         LinguisticValues.Add(rectangularFunction);
     }
@@ -60,20 +50,25 @@ public class LinguisticVariable : IVariable
     {
         var gaussianFunction = (IRealFunction) MembershipFunctionFactory.CreateGaussianFunction(name, m, o);
         if (!_functions.TryAdd(name, gaussianFunction))
-        {
             throw new InvalidOperationException();
-        }
 
         LinguisticValues.Add(gaussianFunction);
+    }
+    
+    public void AddCauchyFunction(string name, double a, double b, double c)
+    {
+        var cauchyFunction = (IRealFunction) MembershipFunctionFactory.CreateCauchyFunction(name, a, b, c);
+        if (!_functions.TryAdd(name, cauchyFunction))
+            throw new InvalidOperationException();
+
+        LinguisticValues.Add(cauchyFunction);
     }
 
     public void AddSigmoidFunction(string name, double a, double c)
     {
         var sigmoidFunction = (IRealFunction) MembershipFunctionFactory.CreateSigmoidFunction(name, a, c);
         if (!_functions.TryAdd(name, sigmoidFunction))
-        {
             throw new InvalidOperationException();
-        }
 
         LinguisticValues.Add(sigmoidFunction);
     }
@@ -94,7 +89,7 @@ public class LinguisticVariable : IVariable
                 $"{nameof(linguisticVariable)} does not contain a Membership Function associated to the Linguistic Value provided: {linguisticValue}");
         }
 
-        return new FuzzyCondition(Affirmation, linguisticVariable, function);
+        return new FuzzyCondition(linguisticVariable, Affirmation, function);
     }
 
     public static ICondition IsNot(LinguisticVariable linguisticVariable, string linguisticValue)
@@ -107,6 +102,6 @@ public class LinguisticVariable : IVariable
                 $"{nameof(linguisticVariable)} does not contain a Membership Function associated to the Linguistic Value provided: {linguisticValue}");
         }
 
-        return new FuzzyCondition(Negation, linguisticVariable, function);
+        return new FuzzyCondition(linguisticVariable, Negation, function);
     }
 }

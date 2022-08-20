@@ -17,6 +17,8 @@ public interface IVariable
 
     void AddGaussianFunction(string name, double m, double o);
 
+    void AddCauchyFunction(string name, double a, double b, double c);
+
     void AddSigmoidFunction(string name, double a, double c);
 
     public ICondition Is(string linguisticValue);
