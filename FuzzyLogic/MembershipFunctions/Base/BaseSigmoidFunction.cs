@@ -30,5 +30,5 @@ public abstract class BaseSigmoidFunction<T> : BaseMembershipFunction<T> where T
         _ => AlphaCut(y)
     };
 
-    private double AlphaCut(double y) => -(Math.Log((1 / y) - 1) / A.ToDouble(null)) + C.ToDouble(null);
+    private double AlphaCut(double y) => C.ToDouble(null) + Math.Log(y / (1 - y)) / A.ToDouble(null);
 };

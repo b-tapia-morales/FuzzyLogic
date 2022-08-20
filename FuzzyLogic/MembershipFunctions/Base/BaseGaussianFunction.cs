@@ -31,8 +31,8 @@ public abstract class BaseGaussianFunction<T> : BaseMembershipFunction<T>, IMemb
         : Math.Exp(-0.5 * Math.Pow((x.ToDouble(null) - M.ToDouble(null)) / O.ToDouble(null), 2));
 
     public override double? LeftSidedAlphaCut(FuzzyNumber y) =>
-        -Math.Sqrt(-2 * Math.Pow(O.ToDouble(null), 2) * Math.Log(y)) + M.ToDouble(null);
+        M.ToDouble(null) - O.ToDouble(null) * Math.Sqrt(2 * Math.Log(1 / y.Value));
 
     public override double? RightSidedAlphaCut(FuzzyNumber y) =>
-        Math.Sqrt(-2 * Math.Pow(O.ToDouble(null), 2) * Math.Log(y)) + M.ToDouble(null);
+        M.ToDouble(null) + O.ToDouble(null) * Math.Sqrt(2 * Math.Log(1 / y.Value));
 }
