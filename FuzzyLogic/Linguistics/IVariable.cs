@@ -7,8 +7,14 @@ namespace FuzzyLogic.Linguistics;
 public interface IVariable
 {
     public string Name { get; }
-    public List<IRealFunction> LinguisticValues { get; }
+    public ICollection<IRealFunction> LinguisticValues { get; }
 
+    bool ContainsLinguisticValue(string name);
+
+    IRealFunction? RetrieveLinguisticValue(string name);
+
+    void AddAll(ICollection<IRealFunction> membershipFunctions);
+    
     void AddTrapezoidFunction(string name, double a, double b, double c, double d);
 
     void AddTriangularFunction(string name, double a, double b, double c);
@@ -21,7 +27,7 @@ public interface IVariable
 
     void AddSigmoidFunction(string name, double a, double c);
 
-    public ICondition Is(string linguisticValue);
+    public ICondition Is(string linguisticValue, HedgeToken token = HedgeToken.None);
 
-    public ICondition IsNot(string linguisticValue);
+    public ICondition IsNot(string linguisticValue, HedgeToken token = HedgeToken.None);
 }
