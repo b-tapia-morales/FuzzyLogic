@@ -6,7 +6,9 @@ public class IntegerRectangularFunction : IntegerTrapezoidalFunction
     {
     }
 
+    public override (double? X1, double? X2) LambdaCutInterval(FuzzyNumber y) => y == 1 ? (A, B) : (null, null);
+
     public override int? LowerBoundary() => null;
-    
+
     public override int? UpperBoundary() => null;
 }

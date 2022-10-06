@@ -14,21 +14,9 @@ public abstract class BaseSigmoidFunction<T> : BaseMembershipFunction<T> where T
     public override FuzzyNumber MembershipDegree(T x) =>
         1.0 / (1.0 + Math.Exp(-A.ToDouble(null) * (x.ToDouble(null) - C.ToDouble(null))));
 
-    public override double? LeftSidedAlphaCut(FuzzyNumber y) => (A.ToDouble(null), y.Value) switch
-    {
-        (_, 0.5) => 0.5,
-        (> 0, 0.0) or (< 0, 1.0) => double.NegativeInfinity,
-        (> 0, > 0.5) or (< 0, < 0.5) => null,
-        _ => AlphaCut(y)
-    };
+    public override (double? X1, double? X2) LambdaCutInterval(FuzzyNumber y) => A.ToDouble(null) < 0
+        ? (double.NegativeInfinity, LambdaCut(y))
+        : (LambdaCut(y), double.PositiveInfinity);
 
-    public override double? RightSidedAlphaCut(FuzzyNumber y) => (A.ToDouble(null), y.Value) switch
-    {
-        (_, 0.5) => 0.5,
-        (> 0, 1.0) or (< 0, 0.0) => double.PositiveInfinity,
-        (> 0, < 0.5) or (< 0, > 0.5) => null,
-        _ => AlphaCut(y)
-    };
-
-    private double AlphaCut(double y) => C.ToDouble(null) + Math.Log(y / (1 - y)) / A.ToDouble(null);
-};
+    private double LambdaCut(FuzzyNumber y) => C.ToDouble(null) + Math.Log(y / (1 - y)) / A.ToDouble(null);
+}

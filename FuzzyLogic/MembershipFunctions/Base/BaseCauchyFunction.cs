@@ -4,7 +4,6 @@ public class BaseCauchyFunction<T> : BaseMembershipFunction<T>, IMembershipFunct
 {
     protected BaseCauchyFunction(string name, T a, T b, T c) : base(name)
     {
-        CheckValues();
         A = a;
         B = b;
         C = c;
@@ -17,17 +16,13 @@ public class BaseCauchyFunction<T> : BaseMembershipFunction<T>, IMembershipFunct
     public override FuzzyNumber MembershipDegree(T x) =>
         1 / (1 + Math.Pow(Math.Abs((x.ToDouble(null) - C.ToDouble(null)) / A.ToDouble(null)), 2 * B.ToDouble(null)));
 
+    public override (double? X1, double? X2) LambdaCutInterval(FuzzyNumber y) => (LeftSidedAlphaCut(y), RightSidedAlphaCut(y));
+    
     // c - a ((1 - α) / α) ^ (1 / 2b)
-    public override double? LeftSidedAlphaCut(FuzzyNumber y) =>
+    private double LeftSidedAlphaCut(FuzzyNumber y) =>
         C.ToDouble(null) - A.ToDouble(null) * Math.Pow((1 - y.Value) / y.Value, 1 / (2 * B.ToDouble(null)));
-
+    
     // c + a ((1 - α) / α) ^ (1 / 2b)
-    public override double? RightSidedAlphaCut(FuzzyNumber y) =>
+    private double RightSidedAlphaCut(FuzzyNumber y) =>
         C.ToDouble(null) + A.ToDouble(null) * Math.Pow((1 - y.Value) / y.Value, 1 / (2 * B.ToDouble(null)));
-
-    private void CheckValues()
-    {
-        if (A.ToDouble(null) <= 0)
-            throw new ArgumentException($"The value for A must be greater than zero (Value provided was: {A}).");
-    }
 }

@@ -10,8 +10,6 @@ public abstract class BaseMembershipFunction<T> : IMembershipFunction<T> where T
     }
 
     public abstract FuzzyNumber MembershipDegree(T x);
-    
-    public abstract double? LeftSidedAlphaCut(FuzzyNumber y);
 
-    public abstract double? RightSidedAlphaCut(FuzzyNumber y);
+    public abstract (double? X1, double? X2) LambdaCutInterval(FuzzyNumber y);
 }
