@@ -1,21 +1,31 @@
 ﻿using Ardalis.SmartEnum;
-using static FuzzyLogic.Condition.ConnectiveToken;
 
 namespace FuzzyLogic.Condition;
 
 public class Connective : SmartEnum<Connective>
 {
-    public static readonly Connective If = new(nameof(If), "IF", Antecedent, (int) Antecedent);
-    public static readonly Connective Then = new(nameof(Then), "THEN", Consequent, (int) Consequent);
-    public static readonly Connective And = new(nameof(And), "AND", Conjunction, (int) Conjunction);
-    public static readonly Connective Or = new(nameof(Or), "OR", Disjunction, (int) Disjunction);
+    public static readonly Connective None = new(nameof(None), string.Empty, ConnectiveToken.None,
+        (int) ConnectiveToken.None);
+
+    public static readonly Connective If = new(nameof(If), "IF", ConnectiveToken.Antecedent,
+        (int) ConnectiveToken.Antecedent);
+
+    public static readonly Connective Then = new(nameof(Then), "THEN", ConnectiveToken.Consequent,
+        (int) ConnectiveToken.Consequent);
+
+    public static readonly Connective And = new(nameof(And), "AND", ConnectiveToken.Conjunction,
+        (int) ConnectiveToken.Conjunction);
+
+    public static readonly Connective Or = new(nameof(Or), "OR", ConnectiveToken.Disjunction,
+        (int) ConnectiveToken.Disjunction);
 
     private static readonly Dictionary<ConnectiveToken, Connective> TokenDictionary = new()
     {
-        {Antecedent, If},
-        {Consequent, Then},
-        {Conjunction, And},
-        {Disjunction, Or}
+        {ConnectiveToken.None, None},
+        {ConnectiveToken.Antecedent, If},
+        {ConnectiveToken.Consequent, Then},
+        {ConnectiveToken.Conjunction, And},
+        {ConnectiveToken.Disjunction, Or}
     };
 
     private static readonly Dictionary<string, Connective> ReadableNameDictionary =
@@ -40,6 +50,7 @@ public class Connective : SmartEnum<Connective>
 
 public enum ConnectiveToken
 {
+    None = 0,
     Antecedent = 1,
     Consequent = 2,
     Conjunction = 3,
