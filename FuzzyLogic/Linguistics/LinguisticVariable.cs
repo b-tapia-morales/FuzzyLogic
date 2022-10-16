@@ -1,113 +1,91 @@
-﻿using FuzzyLogic.Condition;
-using FuzzyLogic.MembershipFunctions;
+﻿using FuzzyLogic.MembershipFunctions;
 using FuzzyLogic.MembershipFunctions.Real;
-using static FuzzyLogic.Condition.LiteralToken;
 
 namespace FuzzyLogic.Linguistics;
 
 public class LinguisticVariable : IVariable
 {
-    private readonly Dictionary<string, IRealFunction> _functions = new(StringComparer.InvariantCultureIgnoreCase);
-
     public string Name { get; }
-    public ICollection<IRealFunction> LinguisticValues { get; } = new List<IRealFunction>();
+    public IDictionary<string, IRealFunction> LinguisticEntries { get; }
 
-    public LinguisticVariable(string name) => Name = name;
-
-    public bool ContainsLinguisticValue(string name) => _functions.ContainsKey(name);
-
-    public IRealFunction? RetrieveLinguisticValue(string name) =>
-        _functions.TryGetValue(name, out var function) ? function : null;
-
-    public void AddAll(ICollection<IRealFunction> membershipFunctions)
+    public LinguisticVariable(string name)
     {
-        if (membershipFunctions.Any(e => _functions.ContainsKey(e.Name)))
-            throw new InvalidOperationException();
-
-        foreach (var function in membershipFunctions)
-        {
-            _functions.Add(function.Name, function);
-            LinguisticValues.Add(function);
-        }
+        Name = name;
+        LinguisticEntries = new Dictionary<string, IRealFunction>(StringComparer.InvariantCultureIgnoreCase);
     }
 
-    public void AddTrapezoidFunction(string name, double a, double b, double c, double d)
+    public IVariable AddAll(IDictionary<string, IRealFunction> linguisticEntries) => AddAll(this, linguisticEntries);
+
+    public IVariable AddTrapezoidFunction(string name, double a, double b, double c, double d) =>
+        AddTrapezoidFunction(this, name, a, b, c, d);
+
+    public IVariable AddTriangularFunction(string name, double a, double b, double c) =>
+        AddTriangularFunction(this, name, a, b, c);
+
+    public IVariable AddGaussianFunction(string name, double m, double o) => AddGaussianFunction(this, name, m, o);
+
+    public IVariable AddCauchyFunction(string name, double a, double b, double c) =>
+        AddCauchyFunction(this, name, a, b, c);
+
+    public IVariable AddSigmoidFunction(string name, double a, double c) => AddSigmoidFunction(this, name, a, c);
+
+    public IVariable AddFunction(string name, IRealFunction function) => AddFunction(this, name, function);
+
+    public bool ContainsLinguisticEntry(string name) => LinguisticEntries.ContainsKey(name);
+
+    public IRealFunction? RetrieveLinguisticEntry(string name) =>
+        LinguisticEntries.TryGetValue(name, out var function) ? function : null;
+
+    public static IVariable Create(string name) => new LinguisticVariable(name);
+
+    private static IVariable AddAll(IVariable variable, IDictionary<string, IRealFunction> linguisticEntries)
+    {
+        if (linguisticEntries.Keys.Any(variable.ContainsLinguisticEntry))
+            throw new InvalidOperationException();
+
+        foreach (var entry in linguisticEntries)
+            variable.LinguisticEntries.Add(entry.Key, entry.Value);
+
+        return variable;
+    }
+
+    private static IVariable AddTrapezoidFunction(IVariable variable, string name, double a, double b, double c,
+        double d)
     {
         var function = (IRealFunction) MembershipFunctionFactory.CreateTrapezoidalFunction(name, a, b, c, d);
-        AddFunction(name, function);
+        return variable.AddFunction(name, function);
     }
 
-    public void AddTriangularFunction(string name, double a, double b, double c)
+    private static IVariable AddTriangularFunction(IVariable variable, string name, double a, double b, double c)
     {
         var function = (IRealFunction) MembershipFunctionFactory.CreateTriangularFunction(name, a, b, c);
-        AddFunction(name, function);
+        return variable.AddFunction(name, function);
     }
 
-    public void AddRectangularFunction(string name, double a, double b)
-    {
-        var function = (IRealFunction) MembershipFunctionFactory.CreateRectangularFunction(name, a, b);
-        AddFunction(name, function);
-    }
-
-    public void AddGaussianFunction(string name, double m, double o)
+    private static IVariable AddGaussianFunction(IVariable variable, string name, double m, double o)
     {
         var function = (IRealFunction) MembershipFunctionFactory.CreateGaussianFunction(name, m, o);
-        AddFunction(name, function);
+        return variable.AddFunction(name, function);
     }
 
-    public void AddCauchyFunction(string name, double a, double b, double c)
+    private static IVariable AddCauchyFunction(IVariable variable, string name, double a, double b, double c)
     {
         var function = (IRealFunction) MembershipFunctionFactory.CreateCauchyFunction(name, a, b, c);
-        AddFunction(name, function);
+        return variable.AddFunction(name, function);
     }
 
-    public void AddSigmoidFunction(string name, double a, double c)
+    private static IVariable AddSigmoidFunction(IVariable variable, string name, double a, double c)
     {
         var function = (IRealFunction) MembershipFunctionFactory.CreateSigmoidFunction(name, a, c);
-        AddFunction(name, function);
+        return variable.AddFunction(name, function);
     }
 
-    public ICondition Is(string linguisticValue, HedgeToken token = HedgeToken.None) =>
-        Is(this, linguisticValue, token);
-
-    public ICondition IsNot(string linguisticValue, HedgeToken token = HedgeToken.None) =>
-        IsNot(this, linguisticValue, token);
+    private static IVariable AddFunction(IVariable variable, string name, IRealFunction function)
+    {
+        if (!variable.LinguisticEntries.TryAdd(name, function))
+            throw new InvalidOperationException();
+        return variable;
+    }
 
     public override string ToString() => Name;
-
-    private void AddFunction(string name, IRealFunction function)
-    {
-        if (!_functions.TryAdd(name, function))
-            throw new InvalidOperationException();
-
-        LinguisticValues.Add(function);
-    }
-
-    private static ICondition Is(LinguisticVariable linguisticVariable, string linguisticValue,
-        HedgeToken token = HedgeToken.None)
-    {
-        ArgumentNullException.ThrowIfNull(linguisticVariable);
-        var function = linguisticVariable.RetrieveLinguisticValue(linguisticValue);
-        if (function == null)
-        {
-            throw new KeyNotFoundException(
-                $"{nameof(linguisticVariable)} does not contain a Membership Function associated to the Linguistic Value provided: {linguisticValue}");
-        }
-
-        return new FuzzyCondition(linguisticVariable, Affirmation, token, function);
-    }
-
-    private static ICondition IsNot(LinguisticVariable linguisticVariable, string linguisticValue,
-        HedgeToken token = HedgeToken.None)
-    {
-        ArgumentNullException.ThrowIfNull(linguisticVariable);
-        var function = linguisticVariable.RetrieveLinguisticValue(linguisticValue);
-        if (function == null)
-        {
-            throw new KeyNotFoundException(
-                $"{nameof(linguisticVariable)} does not contain a Membership Function associated to the Linguistic Value provided: {linguisticValue}");
-        }
-
-        return new FuzzyCondition(linguisticVariable, Negation, token, function);
-    }
 }
