@@ -28,7 +28,7 @@ public class WorkingMemory : IWorkingMemory
 
     public bool ContainsFact(string key) => Facts.ContainsKey(key);
 
-    public double? RetrieveValue(string key) => Facts.ContainsKey(key) ? Facts[key] : null;
+    public double? RetrieveValue(string key) => Facts.TryGetValue(key, out var value) ? value : null;
 
     public void AddFact(string key, double value)
     {
