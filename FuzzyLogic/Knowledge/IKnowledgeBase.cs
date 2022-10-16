@@ -1,14 +1,11 @@
-﻿using FuzzyLogic.Rule;
-
-namespace FuzzyLogic.Knowledge;
+﻿namespace FuzzyLogic.Knowledge;
 
 public interface IKnowledgeBase
 {
-    public ICollection<IRule> ProductionRules { get; set; }
-
-    public void ExcludeIncompleteRules();
+    ILinguisticBase LinguisticBase { get; }
+    IRuleBase RuleBase { get; }
     
-    public void ExcludeRulesWithUnavailableVariables(IDictionary<string, double> facts);
+    static abstract IKnowledgeBase Create();
     
-    public void ExcludeRulesWithUnavailableValues(IDictionary<string, double> facts);
+    static abstract IKnowledgeBase Create(ILinguisticBase linguisticBase, IRuleBase ruleBase);
 }

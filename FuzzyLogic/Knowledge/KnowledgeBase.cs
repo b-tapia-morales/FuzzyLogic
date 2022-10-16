@@ -1,28 +1,24 @@
-﻿using FuzzyLogic.Rule;
-
-namespace FuzzyLogic.Knowledge;
+﻿namespace FuzzyLogic.Knowledge;
 
 public class KnowledgeBase : IKnowledgeBase
 {
-    public ICollection<IRule> ProductionRules { get; set; } = new List<IRule>();
+    public ILinguisticBase LinguisticBase { get; }
+    public IRuleBase RuleBase { get; }
 
-    public void ExcludeIncompleteRules() => ExcludeIncompleteRules(this);
-
-    public void ExcludeRulesWithUnavailableVariables(IDictionary<string, double> facts) =>
-        throw new NotImplementedException();
-
-    public void ExcludeRulesWithUnavailableValues(IDictionary<string, double> facts) =>
-        throw new NotImplementedException();
-
-    public static IKnowledgeBase ExcludeIncompleteRules(IKnowledgeBase knowledgeBase)
+    private KnowledgeBase()
     {
-        knowledgeBase.ProductionRules = knowledgeBase.ProductionRules.Where(e => e.Consequent != null).ToList();
-        return knowledgeBase;
+        LinguisticBase = Knowledge.LinguisticBase.Create();
+        RuleBase = Knowledge.RuleBase.Create();
     }
 
-    public static IKnowledgeBase ExcludeRulesWithUnavailableVariables(IKnowledgeBase knowledgeBase,
-        IDictionary<string, double> facts) => throw new NotImplementedException();
+    private KnowledgeBase(ILinguisticBase linguisticBase, IRuleBase ruleBase)
+    {
+        LinguisticBase = linguisticBase;
+        RuleBase = ruleBase;
+    }
 
-    public static IKnowledgeBase ExcludeRulesWithUnavailableValues(IKnowledgeBase knowledgeBase,
-        IDictionary<string, double> facts) => throw new NotImplementedException();
+    public static IKnowledgeBase Create() => new KnowledgeBase();
+
+    public static IKnowledgeBase Create(ILinguisticBase linguisticBase, IRuleBase ruleBase) =>
+        new KnowledgeBase(linguisticBase, ruleBase);
 }
