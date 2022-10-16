@@ -1,23 +1,24 @@
 ﻿using Ardalis.SmartEnum;
+using FuzzyLogic.Number;
 
-namespace FuzzyLogic.Condition;
+namespace FuzzyLogic.Proposition.Enums;
 
 public class Connective : SmartEnum<Connective>
 {
-    public static readonly Connective None = new(nameof(None), string.Empty, ConnectiveToken.None,
-        (int) ConnectiveToken.None);
+    public static readonly Connective None =
+        new(nameof(None), string.Empty, null, (int) ConnectiveToken.None);
 
-    public static readonly Connective If = new(nameof(If), "IF", ConnectiveToken.Antecedent,
-        (int) ConnectiveToken.Antecedent);
+    public static readonly Connective If =
+        new(nameof(If), "IF", null, (int) ConnectiveToken.Antecedent);
 
-    public static readonly Connective Then = new(nameof(Then), "THEN", ConnectiveToken.Consequent,
-        (int) ConnectiveToken.Consequent);
+    public static readonly Connective Then =
+        new(nameof(Then), "THEN", null, (int) ConnectiveToken.Consequent);
 
-    public static readonly Connective And = new(nameof(And), "AND", ConnectiveToken.Conjunction,
-        (int) ConnectiveToken.Conjunction);
+    public static readonly Connective And =
+        new(nameof(And), "AND", (a, b) => a & b, (int) ConnectiveToken.Conjunction);
 
-    public static readonly Connective Or = new(nameof(Or), "OR", ConnectiveToken.Disjunction,
-        (int) ConnectiveToken.Disjunction);
+    public static readonly Connective Or =
+        new(nameof(Or), "OR", (a, b) => a | b, (int) ConnectiveToken.Disjunction);
 
     private static readonly Dictionary<ConnectiveToken, Connective> TokenDictionary = new()
     {
@@ -32,14 +33,15 @@ public class Connective : SmartEnum<Connective>
         TokenDictionary.ToDictionary(e => e.Value.ReadableName, e => e.Value,
             StringComparer.InvariantCultureIgnoreCase);
 
-    public Connective(string name, string readableName, ConnectiveToken token, int value) : base(name, value)
+    public Connective(string name, string readableName, Func<FuzzyNumber, FuzzyNumber, FuzzyNumber>? function,
+        int value) : base(name, value)
     {
         ReadableName = readableName;
-        Token = token;
+        Function = function;
     }
 
     public string ReadableName { get; }
-    public ConnectiveToken Token { get; }
+    public Func<FuzzyNumber, FuzzyNumber, FuzzyNumber>? Function { get; }
 
     public static Connective FromToken(ConnectiveToken token) => TokenDictionary[token];
 
