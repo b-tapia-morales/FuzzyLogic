@@ -1,5 +1,6 @@
 ﻿using Xunit;
-using static FuzzyLogic.FuzzyNumber;
+using static FuzzyLogic.Number.FuzzyNumber;
+using static FuzzyLogic.Number.IFuzzyNumber<FuzzyLogic.Number.FuzzyNumber>;
 
 namespace FuzzyLogic.Tests.FuzzyNumberTest;
 
@@ -23,13 +24,6 @@ public class FuzzyNumberTest
         Assert.False(TryCreate(-0.00001, out _));
         Assert.False(TryCreate(+1.00001, out _));
         Assert.False(TryCreate(double.MaxValue, out _));
-    }
-
-    [Fact]
-    public void MinMaxOperatorsYieldExpectedValues()
-    {
-        Assert.Equal(Of(0), MinValue & MaxValue, Tolerance);
-        Assert.Equal(Of(1), MinValue | MaxValue, Tolerance);
     }
 
     [Theory]
