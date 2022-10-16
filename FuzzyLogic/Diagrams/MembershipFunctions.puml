@@ -1,6 +1,10 @@
 ﻿@startuml
 
-class FuzzyNumber
+class FuzzyNumber {
+static abstract operator !(FuzzyNumber x)
+static abstract operator &(FuzzyNumber a, FuzzyNumber b)
+static abstract operator |(FuzzyNumber a, FuzzyNumber b)
+}
 
 interface IMembershipFunction<T> {
 string Name()
@@ -9,12 +13,8 @@ T? UpperBoundary()
 (T? X0, T? X1) BoundaryInterval()
 FuzzyNumber MembershipDegree(T x)
 (T x, FuzzyNumber Y) ToPoint(T x)
-double? LeftSidedAlphaCut(FuzzyNumber y)
-double? RightSidedAlphaCut(FuzzyNumber y)
-(double? X1, double? X2) AlphaCuts(FuzzyNumber y)
-double? LeftSidedCrossover()
-double? RightSidedCrossover()
-(double? X1, double? X2) Crossovers()
+(double X1, double X2) LambdaCutsInterval(FuzzyNumber y)
+(double X1, double X2) CrossoverPointsInterval()
 }
 
 abstract class BaseMembershipFunction<T>
