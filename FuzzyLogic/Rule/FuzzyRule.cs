@@ -1,64 +1,68 @@
-﻿using FuzzyLogic.Clause;
-using FuzzyLogic.Condition;
+﻿using FuzzyLogic.Proposition;
+using FuzzyLogic.Proposition.Enums;
 
 namespace FuzzyLogic.Rule;
 
-public class FuzzyRule: IRule
+public class FuzzyRule : IRule
 {
-    public ICondition? Antecedent { get; set; }
-    public ICollection<ICondition> Connectives { get; } = new List<ICondition>();
-    public ICondition? Consequent { get; set; }
+    public IProposition? Antecedent { get; set; }
+    public ICollection<IProposition> Connectives { get; } = new List<IProposition>();
+    public IProposition? Consequent { get; set; }
+    public bool IsFinalized { get; set; } = false;
 
     public override string ToString() =>
         $"{Antecedent} {string.Join(' ', Connectives)} {Consequent}";
 
-    public IRule If(ICondition condition) => If(this, condition);
+    public IRule If(IProposition proposition) => If(this, proposition);
 
-    public IRule And(ICondition condition) => And(this, condition);
+    public IRule And(IProposition proposition) => And(this, proposition);
 
-    public IRule Or(ICondition condition) => Or(this, condition);
+    public IRule Or(IProposition proposition) => Or(this, proposition);
 
-    public IRule Then(ICondition condition) => Then(this, condition);
+    public IRule Then(IProposition proposition) => Then(this, proposition);
 
     public static IRule Create() => new FuzzyRule();
 
-    public static IRule If(IRule rule, ICondition condition)
+    private static IRule If(IRule rule, IProposition proposition)
     {
-        if (rule.Antecedent != null)
-            throw new InvalidOperationException();
+        if (rule.IsFinalized) throw new FinalizedRuleException();
 
-        condition.Connective = Connective.If;
-        rule.Antecedent = condition;
+        if (rule.Antecedent != null) throw new DuplicatedAntecedentException();
+
+        proposition.Connective = Connective.If;
+        rule.Antecedent = proposition;
         return rule;
     }
 
-    public static IRule And(FuzzyRule rule, ICondition condition)
+    private static IRule And(IRule rule, IProposition proposition)
     {
-        if (rule.Antecedent == null)
-            throw new InvalidOperationException();
+        if (rule.IsFinalized) throw new FinalizedRuleException();
 
-        condition.Connective = Connective.And;
-        rule.Connectives.Add(condition);
+        if (rule.Antecedent == null) throw new MissingAntecedentException();
+
+        proposition.Connective = Connective.And;
+        rule.Connectives.Add(proposition);
         return rule;
     }
 
-    public static IRule Or(FuzzyRule rule, ICondition condition)
+    private static IRule Or(IRule rule, IProposition proposition)
     {
-        if (rule.Antecedent == null)
-            throw new InvalidOperationException();
+        if (rule.IsFinalized) throw new FinalizedRuleException();
 
-        condition.Connective = Connective.Or;
-        rule.Connectives.Add(condition);
+        if (rule.Antecedent == null) throw new MissingAntecedentException();
+
+        proposition.Connective = Connective.Or;
+        rule.Connectives.Add(proposition);
         return rule;
     }
 
-    public static IRule Then(IRule rule, ICondition condition)
+    public static IRule Then(IRule rule, IProposition proposition)
     {
-        if (rule.Antecedent == null)
-            throw new InvalidOperationException();
+        if (rule.Antecedent == null) throw new MissingAntecedentException();
 
-        condition.Connective = Connective.Then;
-        rule.Consequent = condition;
+        proposition.Connective = Connective.Then;
+        rule.Consequent = proposition;
+        rule.IsFinalized = true;
         return rule;
     }
 }

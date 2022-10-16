@@ -1,19 +1,19 @@
-﻿using FuzzyLogic.Clause;
-using FuzzyLogic.Condition;
+﻿using FuzzyLogic.Proposition;
 
 namespace FuzzyLogic.Rule;
 
 public interface IRule
 {
-    public ICondition? Antecedent { get; set; }
-    public ICollection<ICondition> Connectives { get; }
-    public ICondition? Consequent { get; set; }
+    public IProposition? Antecedent { get; set; }
+    public ICollection<IProposition> Connectives { get; }
+    public IProposition? Consequent { get; set; }
+    public bool IsFinalized { get; set; }
 
-    IRule If(ICondition condition);
+    IRule If(IProposition proposition);
 
-    IRule And(ICondition condition);
+    IRule And(IProposition proposition);
 
-    IRule Or(ICondition condition);
+    IRule Or(IProposition proposition);
 
-    IRule Then(ICondition condition);
+    IRule Then(IProposition proposition);
 }
