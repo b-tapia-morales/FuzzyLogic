@@ -31,7 +31,7 @@ public enum DelimiterToken
     Comma = 1,
     Semicolon = 2,
     Pipe = 3,
-    Tab = 4,
+    Tab = 4
 }
 
 public sealed class Delimiter : SmartEnum<Delimiter>
