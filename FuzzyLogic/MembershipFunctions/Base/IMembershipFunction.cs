@@ -1,4 +1,7 @@
-﻿namespace FuzzyLogic.MembershipFunctions.Base;
+﻿using System.Numerics;
+using FuzzyLogic.Number;
+
+namespace FuzzyLogic.MembershipFunctions.Base;
 
 /// <summary>
 ///     <para>
@@ -15,7 +18,7 @@
 ///     defined as <see langword="unmanaged" />). Support for other types other than the strictly aforementioned is not
 ///     allowed.
 /// </typeparam>
-public interface IMembershipFunction<T> where T : unmanaged, IConvertible
+public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConvertible
 {
     /// <summary>
     ///     The name of the function.
@@ -71,11 +74,49 @@ public interface IMembershipFunction<T> where T : unmanaged, IConvertible
     (T? X0, T? X1) BoundaryInterval() => (LowerBoundary(), UpperBoundary());
 
     /// <summary>
-    ///     Returns the membership degree of the <i>x</i> value provided as a parameter as a <see cref="FuzzyNumber" />
+    ///     Returns the membership function itself, represented as a <see cref="Func{T,TResult}" /> delegate.
+    /// </summary>
+    /// <returns>The membership function, represented as a <see cref="Func{T,TResult}" /> delegate.</returns>
+    Func<T, double> SimpleFunction();
+
+    /// <summary>
+    ///     <para>
+    ///         Returns a new membership function, represented as a <see cref="Func{T,TResult}" /> delegate, originating
+    ///         from performing a Lambda-cut over the original membership function at the height point <i>y</i>,
+    ///         represented as a <see cref="FuzzyNumber" />
+    ///     </para>
+    ///     <para>
+    ///         <b>Special case</b>: μ(x) = 0 ⇒ The zero function.
+    ///     </para>
+    ///     <para>
+    ///         <b>Special case</b>: μ(x) = 1 ⇒ The original membership function.
+    ///     </para>
+    /// </summary>
+    /// <param name="y">The height point at which the Lambda-cut is performed, represented as a <see cref="FuzzyNumber" />.</param>
+    /// <returns>The new membership function, represented as a <see cref="Func{T,TResult}" /> delegate.</returns>
+    /// <seealso cref="SimpleFunction" />
+    Func<T, double> LambdaCutFunction(FuzzyNumber y) => x =>
+    {
+        if (y == 0) return 0.0;
+        if (y == 1) return SimpleFunction().Invoke(x);
+        var (leftCut, rightCut) = LambdaCutInterval(y);
+        return x.ToDouble(null) < leftCut || x.ToDouble(null) > rightCut ? SimpleFunction().Invoke(x) : y;
+    };
+
+    /// <summary>
+    ///     <para>
+    ///         Returns the membership degree, represented as a <see cref="FuzzyNumber" />, of the <i>x</i> value provided as a
+    ///         parameter.
+    ///     </para>
+    ///     <para>
+    ///         This method is equivalent to using the <see cref="Func{TResult}.Invoke" /> method on the resulting delegate
+    ///         of the <see cref="SimpleFunction" /> method.
+    ///     </para>
     /// </summary>
     /// <param name="x">The <i>x</i> value</param>
-    /// <returns>Its membership degree as a <see cref="FuzzyNumber" /></returns>
-    FuzzyNumber MembershipDegree(T x);
+    /// <returns>The membership degree, represented as a <see cref="FuzzyNumber" /></returns>
+    /// <seealso cref="SimpleFunction" />
+    FuzzyNumber MembershipDegree(T x) => SimpleFunction().Invoke(x);
 
     /// <summary>
     ///     Returns the <i>x</i> value provided as a parameter and its membership degree <i>y</i> value as a two-dimensional
@@ -92,7 +133,7 @@ public interface IMembershipFunction<T> where T : unmanaged, IConvertible
     /// </summary>
     /// <param name="y"></param>
     /// <returns></returns>
-    (double? X1, double? X2) LambdaCutInterval(FuzzyNumber y);
+    (double X1, double X2) LambdaCutInterval(FuzzyNumber y);
 
-    (double? X1, double? X2) CrossoverCutInterval() => LambdaCutInterval(0.5);
+    (double X1, double X2) CrossoverCutInterval() => LambdaCutInterval(0.5);
 }

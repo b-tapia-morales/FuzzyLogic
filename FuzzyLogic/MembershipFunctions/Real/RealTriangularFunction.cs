@@ -1,8 +1,17 @@
-﻿namespace FuzzyLogic.MembershipFunctions.Real;
+﻿using FuzzyLogic.MembershipFunctions.Base;
 
-public class RealTriangularFunction : RealTrapezoidalFunction
+namespace FuzzyLogic.MembershipFunctions.Real;
+
+public class RealTriangularFunction : BaseTriangularFunction<double>, IRealFunction
 {
-    public RealTriangularFunction(string name, double a, double b, double c) : base(name, a, b, b, c)
+    public RealTriangularFunction(string name, double a, double b, double c) : base(name, a, b, c)
     {
+        A = a;
+        B = b;
+        C = c;
     }
+
+    protected override double A { get; }
+    protected override double B { get; }
+    protected override double C { get; }
 }

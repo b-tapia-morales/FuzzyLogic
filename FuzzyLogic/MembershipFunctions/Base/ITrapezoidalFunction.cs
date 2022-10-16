@@ -1,4 +1,6 @@
-﻿namespace FuzzyLogic.MembershipFunctions.Base;
+﻿using System.Numerics;
+
+namespace FuzzyLogic.MembershipFunctions.Base;
 
 /// <summary>
 /// <para>Represents the special case of Trapezoidal functions that derive from the <see cref="IMembershipFunction{T}"/>
@@ -8,7 +10,7 @@
 /// </summary>
 /// <typeparam name="T">The type must be either <see cref="int"/> or <see cref="double"/>, as originally defined
 /// in <see cref="IMembershipFunction{T}"/>.</typeparam>
-public interface ITrapezoidalFunction<T> : IMembershipFunction<T> where T : unmanaged, IConvertible
+public interface ITrapezoidalFunction<T> : IMembershipFunction<T> where T : unmanaged, INumber<T>, IConvertible
 {
     /// <summary>
     /// Returns the minimum and maximum for <i>x</i> values that belong to the core of the Membership Function

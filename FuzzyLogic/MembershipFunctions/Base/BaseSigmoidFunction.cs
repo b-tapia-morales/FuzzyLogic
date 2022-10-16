@@ -1,6 +1,9 @@
-﻿namespace FuzzyLogic.MembershipFunctions.Base;
+﻿using System.Numerics;
+using FuzzyLogic.Number;
 
-public abstract class BaseSigmoidFunction<T> : BaseMembershipFunction<T> where T : unmanaged, IConvertible
+namespace FuzzyLogic.MembershipFunctions.Base;
+
+public abstract class BaseSigmoidFunction<T> : BaseMembershipFunction<T> where T : unmanaged, INumber<T>, IConvertible
 {
     protected BaseSigmoidFunction(string name, T a, T c) : base(name)
     {
@@ -11,10 +14,10 @@ public abstract class BaseSigmoidFunction<T> : BaseMembershipFunction<T> where T
     protected virtual T A { get; }
     protected virtual T C { get; }
 
-    public override FuzzyNumber MembershipDegree(T x) =>
-        1.0 / (1.0 + Math.Exp(-A.ToDouble(null) * (x.ToDouble(null) - C.ToDouble(null))));
+    public override Func<T, double> SimpleFunction() =>
+        x => 1.0 / (1.0 + Math.Exp(-A.ToDouble(null) * (x.ToDouble(null) - C.ToDouble(null))));
 
-    public override (double? X1, double? X2) LambdaCutInterval(FuzzyNumber y) => A.ToDouble(null) < 0
+    public override (double X1, double X2) LambdaCutInterval(FuzzyNumber y) => A.ToDouble(null) < 0
         ? (double.NegativeInfinity, LambdaCut(y))
         : (LambdaCut(y), double.PositiveInfinity);
 

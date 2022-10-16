@@ -1,8 +1,10 @@
-﻿namespace FuzzyLogic.MembershipFunctions.Integer;
+﻿using FuzzyLogic.MembershipFunctions.Base;
 
-public class IntegerTriangularFunction : IntegerTrapezoidalFunction
+namespace FuzzyLogic.MembershipFunctions.Integer;
+
+public class IntegerTriangularFunction : BaseTriangularFunction<int>, IIntegerFunction
 {
-    public IntegerTriangularFunction(string name, int a, int b, int c) : base(name, a, b, b, c)
+    public IntegerTriangularFunction(string name, int a, int b, int c) : base(name, a, b, c)
     {
     }
 }

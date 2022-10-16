@@ -1,7 +1,10 @@
-﻿namespace FuzzyLogic.MembershipFunctions.Base;
+﻿using System.Numerics;
+using FuzzyLogic.Number;
+
+namespace FuzzyLogic.MembershipFunctions.Base;
 
 public abstract class BaseGaussianFunction<T> : BaseMembershipFunction<T>, IMembershipFunction<T>
-    where T : unmanaged, IConvertible
+    where T : unmanaged, INumber<T>, IConvertible
 {
     protected BaseGaussianFunction(string name, T m, T o) : base(name)
     {
@@ -26,12 +29,11 @@ public abstract class BaseGaussianFunction<T> : BaseMembershipFunction<T>, IMemb
         _ => throw new InvalidOperationException("Type must be either int or double")
     };
 
-    public override FuzzyNumber MembershipDegree(T x) =>
-        Math.Abs(x.ToDouble(null) - M.ToDouble(null)) < FuzzyNumber.Tolerance
-            ? 1.0
-            : Math.Exp(-0.5 * Math.Pow((x.ToDouble(null) - M.ToDouble(null)) / O.ToDouble(null), 2));
+    public override Func<T, double> SimpleFunction() =>
+        x => Math.Exp(-0.5 * Math.Pow((x.ToDouble(null) - M.ToDouble(null)) / O.ToDouble(null), 2));
 
-    public override (double? X1, double? X2) LambdaCutInterval(FuzzyNumber y) => (LeftSidedLambdaCut(y), RightSidedLambdaCut(y));
+    public override (double X1, double X2) LambdaCutInterval(FuzzyNumber y) =>
+        (LeftSidedLambdaCut(y), RightSidedLambdaCut(y));
 
     private double LeftSidedLambdaCut(FuzzyNumber y) =>
         M.ToDouble(null) - O.ToDouble(null) * Math.Sqrt(2 * Math.Log(1 / y.Value));

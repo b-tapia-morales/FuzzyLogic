@@ -1,7 +1,10 @@
-﻿namespace FuzzyLogic.MembershipFunctions.Base;
+﻿using System.Numerics;
+using FuzzyLogic.Number;
+
+namespace FuzzyLogic.MembershipFunctions.Base;
 
 public abstract class BaseTrapezoidalFunction<T> : BaseMembershipFunction<T>, ITrapezoidalFunction<T>
-    where T : unmanaged, IConvertible
+    where T : unmanaged, INumber<T>, IConvertible
 {
     protected BaseTrapezoidalFunction(string name, T a, T b, T c, T d) : base(name)
     {
@@ -16,7 +19,15 @@ public abstract class BaseTrapezoidalFunction<T> : BaseMembershipFunction<T>, IT
     protected virtual T C { get; }
     protected virtual T D { get; }
 
-    public override (double? X1, double? X2) LambdaCutInterval(FuzzyNumber y) => y == 1
+    public override Func<T, double> SimpleFunction() => x =>
+    {
+        if (x > A && x < B) return (x.ToDouble(null) - A.ToDouble(null)) / (B.ToDouble(null) - A.ToDouble(null));
+        if (x >= B && x <= C) return 1.0;
+        if (x > C && x < D) return (D.ToDouble(null) - x.ToDouble(null)) / (D.ToDouble(null) - C.ToDouble(null));
+        return 0.0;
+    };
+
+    public override (double X1, double X2) LambdaCutInterval(FuzzyNumber y) => y == 1
         ? (B.ToDouble(null), C.ToDouble(null))
         : (LeftSidedLambdaCut(y), RightSidedLambdaCut(y));
 

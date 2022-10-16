@@ -1,6 +1,9 @@
-﻿namespace FuzzyLogic.MembershipFunctions.Base;
+﻿using System.Numerics;
+using FuzzyLogic.Number;
 
-public abstract class BaseMembershipFunction<T> : IMembershipFunction<T> where T : unmanaged, IConvertible
+namespace FuzzyLogic.MembershipFunctions.Base;
+
+public abstract class BaseMembershipFunction<T> : IMembershipFunction<T> where T : unmanaged, INumber<T>, IConvertible
 {
     public string Name { get; }
 
@@ -9,7 +12,7 @@ public abstract class BaseMembershipFunction<T> : IMembershipFunction<T> where T
         Name = name;
     }
 
-    public abstract FuzzyNumber MembershipDegree(T x);
+    public abstract Func<T, double> SimpleFunction();
 
-    public abstract (double? X1, double? X2) LambdaCutInterval(FuzzyNumber y);
+    public abstract (double X1, double X2) LambdaCutInterval(FuzzyNumber y);
 }
