@@ -8,9 +8,15 @@ public interface IRuleBase
 
     IRuleBase AddRule(IRule rule);
 
-    IRuleBase FilterConclusions(string name);
+    ICollection<IRule> FindRulesWithPremise(string variableName);
+
+    ICollection<IRule> FindRulesWithConclusion(string variableName);
 
     IRuleBase FilterInvalidRules();
 
+    IRuleBase FilterDuplicatedConclusions(string variableName);
+
     static abstract IRuleBase Create();
+
+    static abstract IRuleBase Initialize(ILinguisticBase linguisticBase);
 }
