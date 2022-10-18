@@ -1,4 +1,5 @@
 ﻿using FuzzyLogic.Linguistics;
+using static System.StringComparer;
 
 namespace FuzzyLogic.Knowledge;
 
@@ -6,10 +7,8 @@ public class LinguisticBase : ILinguisticBase
 {
     public IDictionary<string, IVariable> LinguisticVariables { get; }
 
-    public LinguisticBase()
-    {
-        LinguisticVariables = new Dictionary<string, IVariable>(StringComparer.InvariantCultureIgnoreCase);
-    }
+    public LinguisticBase() =>
+        LinguisticVariables = new Dictionary<string, IVariable>(InvariantCultureIgnoreCase);
 
     public ILinguisticBase AddLinguisticVariable(IVariable variable) =>
         AddLinguisticVariable(this, variable);
@@ -24,6 +23,8 @@ public class LinguisticBase : ILinguisticBase
         LinguisticVariables.TryGetValue(name, out var variable) ? variable : null;
 
     public static ILinguisticBase Create() => new LinguisticBase();
+
+    public static ILinguisticBase Initialize() => Create();
 
     private static ILinguisticBase AddLinguisticVariable(ILinguisticBase linguisticBase, IVariable variable)
     {
