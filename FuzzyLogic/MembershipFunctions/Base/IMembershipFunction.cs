@@ -83,14 +83,19 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     ///     <para>
     ///         Returns a new membership function, represented as a <see cref="Func{T,TResult}" /> delegate, originating
     ///         from performing a Lambda-cut over the original membership function at the height point <i>y</i>,
-    ///         represented as a <see cref="FuzzyNumber" />
+    ///         represented as a <see cref="FuzzyNumber" />.
     ///     </para>
     ///     <para>
-    ///         <b>Special case</b>: μ(x) = 0 ⇒ The zero function.
+    ///         <b>Special cases</b>:
     ///     </para>
-    ///     <para>
-    ///         <b>Special case</b>: μ(x) = 1 ⇒ The original membership function.
-    ///     </para>
+    ///     <list type="bullet">
+    ///         <item>
+    ///             <description>μ(x) = 0 ⇒ The zero function.</description>
+    ///         </item>
+    ///         <item>
+    ///             <description>μ(x) = 1 ⇒ The original membership function.</description>
+    ///         </item>
+    ///     </list>
     /// </summary>
     /// <param name="y">The height point at which the Lambda-cut is performed, represented as a <see cref="FuzzyNumber" />.</param>
     /// <returns>The new membership function, represented as a <see cref="Func{T,TResult}" /> delegate.</returns>
