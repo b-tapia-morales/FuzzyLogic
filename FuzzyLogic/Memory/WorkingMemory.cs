@@ -26,6 +26,10 @@ public class WorkingMemory : IWorkingMemory
     public IDictionary<string, double> Facts { get; }
     public EntryResolutionMethod Method { get; }
 
+    public static IWorkingMemory Create() => new WorkingMemory();
+
+    public IWorkingMemory Clone() => (WorkingMemory) MemberwiseClone();
+
     public bool ContainsFact(string key) => Facts.ContainsKey(key);
 
     public double? RetrieveValue(string key) => Facts.TryGetValue(key, out var value) ? value : null;

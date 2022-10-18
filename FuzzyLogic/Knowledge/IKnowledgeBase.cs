@@ -4,6 +4,8 @@ public interface IKnowledgeBase
 {
     ILinguisticBase LinguisticBase { get; }
     IRuleBase RuleBase { get; }
+
+    IKnowledgeBase Clone();
     
     static abstract IKnowledgeBase Create();
     

@@ -15,7 +15,11 @@ public interface IWorkingMemory
     ///     The method that resolves conflicting entries with the same declared key.
     /// </summary>
     public EntryResolutionMethod Method { get; }
+    
+    IWorkingMemory Clone();
 
+    static abstract IWorkingMemory Create();
+    
     /// <summary>
     ///     Checks if there is an entry stored with the key provided as a parameter.
     /// </summary>

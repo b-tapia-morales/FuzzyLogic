@@ -5,7 +5,7 @@ public class KnowledgeBase : IKnowledgeBase
     public ILinguisticBase LinguisticBase { get; }
     public IRuleBase RuleBase { get; }
 
-    private KnowledgeBase()
+    protected KnowledgeBase()
     {
         LinguisticBase = Knowledge.LinguisticBase.Create();
         RuleBase = Knowledge.RuleBase.Create();
@@ -16,6 +16,8 @@ public class KnowledgeBase : IKnowledgeBase
         LinguisticBase = linguisticBase;
         RuleBase = ruleBase;
     }
+
+    public IKnowledgeBase Clone() => (KnowledgeBase) MemberwiseClone();
 
     public static IKnowledgeBase Create() => new KnowledgeBase();
 
