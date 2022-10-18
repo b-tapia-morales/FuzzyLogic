@@ -1,6 +1,7 @@
 ﻿using FuzzyLogic.Knowledge;
 using FuzzyLogic.Linguistics;
 using FuzzyLogic.Memory;
+using FuzzyLogic.Number;
 using FuzzyLogic.Proposition;
 using FuzzyLogic.Proposition.Enums;
 using FuzzyLogic.Rule;
@@ -27,8 +28,9 @@ var rules = RuleBase
         FuzzyRule
             .Create()
             .If(FuzzyProposition.Is(linguistics, "Water", "Hot", HedgeToken.Slightly))
+            .Or(FuzzyProposition.Is(linguistics, "Water", "Warm", HedgeToken.Very))
             .And(FuzzyProposition.Is(linguistics, "Power", "High"))
-            .Then(FuzzyProposition.Is(linguistics, "Water", "Warm"))
+            .Then(FuzzyProposition.Is(linguistics, "Power", "Low"))
     ).AddRule(
         FuzzyRule
             .Create()
@@ -46,3 +48,24 @@ Console.WriteLine(workingMemory);
 var function = linguistics.RetrieveLinguisticEntry("Water", "Cold")!.LambdaCutFunction(0.2);
 var value = NewtonCotesTrapeziumRule.IntegrateAdaptive(function, 0, 40, 1e-10);
 Console.WriteLine(value);
+
+var facts = new Dictionary<string, double>
+{
+    ["Water"] = 52,
+    ["Power"] = 30
+};
+
+var accessedRule = rules.ProductionRules.ElementAt(0);
+Console.WriteLine(accessedRule);
+
+var fuzzyNumbers = accessedRule.ApplyOperators(facts);
+foreach (var fuzzyNumber in fuzzyNumbers)
+{
+    Console.WriteLine(fuzzyNumber);
+}
+
+var finalNumber = accessedRule.AggregateOperators(facts);
+Console.WriteLine(finalNumber ?? FuzzyNumber.MinValue());
+
+var lambdaCut = accessedRule.ApplyImplication(facts);
+Console.WriteLine(lambdaCut == null ? 0 : NewtonCotesTrapeziumRule.IntegrateAdaptive(lambdaCut, 0, 40, 1e-10));
