@@ -3,11 +3,11 @@ using static FuzzyLogic.Number.IFuzzyNumber<FuzzyLogic.Number.LukasiewiczNumber>
 
 namespace FuzzyLogic.Number;
 
-public record LukasiewiczNumber : IFuzzyNumber<LukasiewiczNumber>
+public readonly record struct LukasiewiczNumber : IFuzzyNumber<LukasiewiczNumber>
 {
     private static readonly LukasiewiczNumber Min = Of(0);
     private static readonly LukasiewiczNumber Max = Of(1);
-    
+
     private LukasiewiczNumber(double value) => Value = value;
 
     public double Value { get; }
@@ -33,7 +33,7 @@ public record LukasiewiczNumber : IFuzzyNumber<LukasiewiczNumber>
             return false;
         }
     }
-    
+
     public static LukasiewiczNumber MinValue() => Min;
 
     public static LukasiewiczNumber MaxValue() => Max;
@@ -45,6 +45,9 @@ public record LukasiewiczNumber : IFuzzyNumber<LukasiewiczNumber>
 
     public static LukasiewiczNumber operator |(LukasiewiczNumber a, LukasiewiczNumber b) =>
         Math.Max(0, a.Value + b.Value - 1);
+
+    public static LukasiewiczNumber Implication(LukasiewiczNumber a, LukasiewiczNumber b) =>
+        Math.Min(1, 1 - a.Value + b.Value);
 
     /// <summary>
     ///     Defines a implicit conversion from a <see cref="double" /> value to a <see cref="LukasiewiczNumber" />.
@@ -60,7 +63,7 @@ public record LukasiewiczNumber : IFuzzyNumber<LukasiewiczNumber>
     /// <param name="x">The <see cref="double" /> value.</param>
     /// <returns>The <see cref="LukasiewiczNumber" /> value.</returns>
     public static implicit operator double(LukasiewiczNumber x) => x.Value;
-    
+
     /// <inheritdoc />
     public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);
 

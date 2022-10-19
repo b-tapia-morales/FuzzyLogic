@@ -11,14 +11,14 @@ public class Connective : SmartEnum<Connective>
     public static readonly Connective If =
         new(nameof(If), "IF", null, (int) ConnectiveToken.Antecedent);
 
-    public static readonly Connective Then =
-        new(nameof(Then), "THEN", null, (int) ConnectiveToken.Consequent);
-
     public static readonly Connective And =
         new(nameof(And), "AND", (a, b) => a & b, (int) ConnectiveToken.Conjunction);
 
     public static readonly Connective Or =
         new(nameof(Or), "OR", (a, b) => a | b, (int) ConnectiveToken.Disjunction);
+    
+    public static readonly Connective Then =
+        new(nameof(Then), "THEN", FuzzyNumber.Implication, (int) ConnectiveToken.Consequent);
 
     private static readonly Dictionary<ConnectiveToken, Connective> TokenDictionary = new()
     {

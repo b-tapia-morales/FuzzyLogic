@@ -71,6 +71,10 @@ public interface IFuzzyNumber<T> where T : IFuzzyNumber<T>
 
     /// <summary>
     ///     Represents the basic operation NOT: ¬A.
+    ///     <para>
+    ///         This operator isn't necessarily defined explicitly. If that's the case, the operation defaults to the
+    ///         standard negation: ¬A ≡ 1 - A.
+    ///     </para>
     /// </summary>
     /// <param name="x">A fuzzy number</param>
     /// <returns>The resulting fuzzy number after applying the NOT operator.</returns>
@@ -91,4 +95,16 @@ public interface IFuzzyNumber<T> where T : IFuzzyNumber<T>
     /// <param name="b">A fuzzy number</param>
     /// <returns>The resulting fuzzy number after applying the AND operator.</returns>
     static abstract T operator |(T a, T b);
+
+    /// <summary>
+    ///     <para>Represents the operation of residuum THEN: A ⇒ B.</para>
+    ///     <para>
+    ///         This operator isn't necessarily defined explicitly. If that's the case, the operation defaults to the
+    ///         Zadeh implication: A ⇒ B ≡ max{1 − a, min{a, b}}
+    ///     </para>
+    /// </summary>
+    /// <param name="a">A fuzzy number</param>
+    /// <param name="b">A fuzzy number</param>
+    /// <returns>The resulting fuzzy number after applying the THEN operator.</returns>
+    static abstract T Implication(T a, T b);
 }
