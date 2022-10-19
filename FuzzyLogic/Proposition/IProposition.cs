@@ -1,6 +1,7 @@
 ﻿using FuzzyLogic.Knowledge;
 using FuzzyLogic.Linguistics;
 using FuzzyLogic.MembershipFunctions.Real;
+using FuzzyLogic.Number;
 using FuzzyLogic.Proposition.Enums;
 
 namespace FuzzyLogic.Proposition;
@@ -12,4 +13,6 @@ public interface IProposition
     Literal Literal { get; }
     LinguisticHedge LinguisticHedge { get; }
     IRealFunction Function { get; }
+
+    FuzzyNumber ApplyUnaryOperators(double crispNumber);
 }

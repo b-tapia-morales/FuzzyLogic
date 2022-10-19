@@ -1,6 +1,7 @@
 ﻿using FuzzyLogic.Knowledge;
 using FuzzyLogic.Linguistics;
 using FuzzyLogic.MembershipFunctions.Real;
+using FuzzyLogic.Number;
 using FuzzyLogic.Proposition.Enums;
 
 namespace FuzzyLogic.Proposition;
@@ -22,6 +23,14 @@ public class FuzzyProposition : IProposition
     public Literal Literal { get; }
     public LinguisticHedge LinguisticHedge { get; }
     public IRealFunction Function { get; }
+
+    public FuzzyNumber ApplyUnaryOperators(double crispNumber)
+    {
+        var membershipFunction = Function.SimpleFunction();
+        var hedgeFunction = LinguisticHedge.Function;
+        var literalFunction = Literal.Function!;
+        return literalFunction(hedgeFunction(membershipFunction(crispNumber)));
+    }
 
     public override string ToString()
     {
