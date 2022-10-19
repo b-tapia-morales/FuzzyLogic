@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using FuzzyLogic.MembershipFunctions.Real;
 using FuzzyLogic.Number;
 using FuzzyLogic.Proposition;
 using FuzzyLogic.Proposition.Enums;
@@ -40,13 +39,10 @@ public class FuzzyRule : IRule
 
         return from proposition in propositions
             let crispNumber = facts[proposition.LinguisticVariable.Name]
-            let membershipFunction = proposition.Function.SimpleFunction()
-            let hedgeFunction = proposition.LinguisticHedge.Function
-            let literalFunction = proposition.Literal.Function!
-            select literalFunction(hedgeFunction(membershipFunction(crispNumber)));
+            select proposition.ApplyUnaryOperators(crispNumber);
     }
 
-    public FuzzyNumber? AggregateOperators(IDictionary<string, double> facts)
+    public FuzzyNumber? EvaluateAntecedentWeight(IDictionary<string, double> facts)
     {
         var numbers = new Queue<FuzzyNumber>(ApplyOperators(facts));
         if (!numbers.Any())
@@ -68,8 +64,23 @@ public class FuzzyRule : IRule
 
     public Func<double, double>? ApplyImplication(IDictionary<string, double> facts)
     {
-        var ruleWeight = AggregateOperators(facts);
-        return ruleWeight == null ? null : Consequent!.Function.LambdaCutFunction(ruleWeight);
+        var ruleWeight = EvaluateAntecedentWeight(facts);
+        return ruleWeight == null ? null : Consequent!.Function.LambdaCutFunction(ruleWeight.GetValueOrDefault());
+    }
+
+    public FuzzyNumber? EvaluateConsequentWeight(IDictionary<string, double> facts)
+    {
+        if (Consequent == null || !facts.ContainsKey(Consequent.LinguisticVariable.Name))
+            return null;
+        var crispNumber = facts[Consequent.LinguisticVariable.Name];
+        return Consequent.ApplyUnaryOperators(crispNumber);
+    }
+
+    public FuzzyNumber? EvaluateRuleWeight(IDictionary<string, double> facts)
+    {
+        if (!IsApplicable(facts)) return null;
+        return FuzzyNumber.Implication(EvaluateAntecedentWeight(facts).GetValueOrDefault(),
+            EvaluateConsequentWeight(facts).GetValueOrDefault());
     }
 
     public static IRule Create() => new FuzzyRule();
