@@ -12,4 +12,8 @@ public class RealGaussianFunction : BaseGaussianFunction<double>, IRealFunction
 
     protected override double M { get; }
     protected override double O { get; }
+    
+    public override double LowerBoundary() => double.NegativeInfinity;
+
+    public override double UpperBoundary() => double.PositiveInfinity;
 }

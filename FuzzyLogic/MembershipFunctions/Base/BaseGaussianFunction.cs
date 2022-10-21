@@ -15,19 +15,13 @@ public abstract class BaseGaussianFunction<T> : BaseMembershipFunction<T>, IMemb
     protected virtual T M { get; }
     protected virtual T O { get; }
 
-    public T? LowerBoundary() => (M, O) switch
-    {
-        (int m, int o) => (T) Convert.ChangeType(m - 3 * o, typeof(int)),
-        (double m, double o) => (T) Convert.ChangeType(m - 3 * o, typeof(double)),
-        _ => throw new InvalidOperationException("Type must be either int or double")
-    };
+    public override bool IsOpenLeft() => true;
 
-    public T? UpperBoundary() => (M, O) switch
-    {
-        (int m, int o) => (T) Convert.ChangeType(m + 3 * o, typeof(int)),
-        (double m, double o) => (T) Convert.ChangeType(m + 3 * o, typeof(double)),
-        _ => throw new InvalidOperationException("Type must be either int or double")
-    };
+    public override bool IsOpenRight() => true;
+
+    public override bool IsSymmetric() => true;
+    
+    public override bool IsNormal() => true;
 
     public override Func<T, double> SimpleFunction() =>
         x => Math.Exp(-0.5 * Math.Pow((x.ToDouble(null) - M.ToDouble(null)) / O.ToDouble(null), 2));

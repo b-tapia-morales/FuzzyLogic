@@ -12,4 +12,8 @@ public class RealSigmoidFunction : BaseSigmoidFunction<double>, IRealFunction
 
     protected override double A { get; }
     protected override double C { get; }
+    
+    public override double LowerBoundary() => double.NegativeInfinity;
+
+    public override double UpperBoundary() => double.PositiveInfinity;
 }

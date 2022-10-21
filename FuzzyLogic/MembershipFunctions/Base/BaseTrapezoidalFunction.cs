@@ -1,11 +1,15 @@
 ﻿using System.Numerics;
 using FuzzyLogic.Number;
+using FuzzyLogic.Utils;
 
 namespace FuzzyLogic.MembershipFunctions.Base;
 
 public abstract class BaseTrapezoidalFunction<T> : BaseMembershipFunction<T>, ITrapezoidalFunction<T>
     where T : unmanaged, INumber<T>, IConvertible
 {
+    protected const double DistanceTolerance = 1e-2;
+    private bool? _isSymmetric;
+
     protected BaseTrapezoidalFunction(string name, T a, T b, T c, T d) : base(name)
     {
         A = a;
@@ -19,6 +23,19 @@ public abstract class BaseTrapezoidalFunction<T> : BaseMembershipFunction<T>, IT
     protected virtual T C { get; }
     protected virtual T D { get; }
 
+    public override bool IsOpenLeft() => false;
+
+    public override bool IsOpenRight() => false;
+
+    public override bool IsSymmetric()
+    {
+        _isSymmetric ??= Math.Abs(MathUtils.Distance(A.ToDouble(null), B.ToDouble(null), 0, 1) -
+                                  MathUtils.Distance(C.ToDouble(null), D.ToDouble(null), 1, 0)) < DistanceTolerance;
+        return _isSymmetric.Value;
+    }
+
+    public override bool IsNormal() => true;
+
     public override Func<T, double> SimpleFunction() => x =>
     {
         if (x > A && x < B) return (x.ToDouble(null) - A.ToDouble(null)) / (B.ToDouble(null) - A.ToDouble(null));
@@ -31,9 +48,9 @@ public abstract class BaseTrapezoidalFunction<T> : BaseMembershipFunction<T>, IT
         ? (B.ToDouble(null), C.ToDouble(null))
         : (LeftSidedLambdaCut(y), RightSidedLambdaCut(y));
 
-    public virtual T? LowerBoundary() => A;
+    public override T LowerBoundary() => A;
 
-    public virtual T? UpperBoundary() => D;
+    public override T UpperBoundary() => D;
 
     public virtual (T? X0, T? X1) CoreInterval() => (B, C);
 

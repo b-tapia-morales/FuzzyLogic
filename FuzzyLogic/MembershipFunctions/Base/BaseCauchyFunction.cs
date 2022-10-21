@@ -3,7 +3,7 @@ using FuzzyLogic.Number;
 
 namespace FuzzyLogic.MembershipFunctions.Base;
 
-public class BaseCauchyFunction<T> : BaseMembershipFunction<T>, IMembershipFunction<T>
+public abstract class BaseCauchyFunction<T> : BaseMembershipFunction<T>, IMembershipFunction<T>
     where T : unmanaged, INumber<T>, IConvertible
 {
     protected BaseCauchyFunction(string name, T a, T b, T c) : base(name)
@@ -16,6 +16,14 @@ public class BaseCauchyFunction<T> : BaseMembershipFunction<T>, IMembershipFunct
     protected virtual T A { get; }
     protected virtual T B { get; }
     protected virtual T C { get; }
+
+    public override bool IsOpenLeft() => true;
+
+    public override bool IsOpenRight() => true;
+
+    public override bool IsSymmetric() => true;
+    
+    public override bool IsNormal() => true;
 
     public override Func<T, double> SimpleFunction() => x =>
         1 / (1 + Math.Pow(Math.Abs((x.ToDouble(null) - C.ToDouble(null)) / A.ToDouble(null)), 2 * B.ToDouble(null)));

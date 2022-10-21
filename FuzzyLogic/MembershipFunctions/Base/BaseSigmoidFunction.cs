@@ -14,6 +14,14 @@ public abstract class BaseSigmoidFunction<T> : BaseMembershipFunction<T> where T
     protected virtual T A { get; }
     protected virtual T C { get; }
 
+    public override bool IsOpenLeft() => true;
+
+    public override bool IsOpenRight() => true;
+
+    public override bool IsSymmetric() => false;
+    
+    public override bool IsNormal() => false;
+
     public override Func<T, double> SimpleFunction() =>
         x => 1.0 / (1.0 + Math.Exp(-A.ToDouble(null) * (x.ToDouble(null) - C.ToDouble(null))));
 

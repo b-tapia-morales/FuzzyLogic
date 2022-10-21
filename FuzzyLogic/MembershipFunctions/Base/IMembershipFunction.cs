@@ -5,7 +5,7 @@ namespace FuzzyLogic.MembershipFunctions.Base;
 
 /// <summary>
 ///     <para>
-///         Represents the Membership Function that allows the creation of linguistic values that belong to a linguistic
+///         Represents the Membership Function that allows the creation of linguistic entries that belong to a linguistic
 ///         variable.
 ///     </para>
 ///     <para>
@@ -26,6 +26,42 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     string Name { get; }
 
     /// <summary>
+    ///     Determines whether the function is Open Left. A function is said to be open left if the membership degree for
+    ///     <i>x</i> values as <i>x</i> approaches -∞ and +∞ is 1 and 0 respectively.
+    /// </summary>
+    /// <returns>true if the function is Open Left; otherwise, false</returns>
+    bool IsOpenLeft();
+
+    /// <summary>
+    ///     Determines whether the function is Open Right. A function is said to be open right if the membership degree for
+    ///     <i>x</i> values as <i>x</i> approaches -∞ and +∞ is 0 and 1 respectively.
+    /// </summary>
+    /// <returns>true if the function is Open Right; otherwise, false</returns>
+    bool IsOpenRight();
+
+    /// <summary>
+    ///     Determines whether the function is Closed. A function is said to be closed if the membership degree for
+    ///     <i>x</i> values as <i>x</i> approaches both -∞ and +∞ is 0; in other words, if it is neither
+    ///     <see cref="IsOpenLeft">Open Left</see> nor <see cref="IsOpenRight">Open Right</see>.
+    /// </summary>
+    /// <returns>true if the function is Closed; otherwise, false</returns>
+    bool IsClosed() => !IsOpenLeft() && !IsOpenRight();
+
+    /// <summary>
+    ///     Determines whether the function is Symmetric. A function is said to be symmetric if μ(x + c) = μ(x - c), ∀x ∈ X
+    ///     when evaluated around a center point c.
+    /// </summary>
+    /// <returns>true if the function is Symmetric; otherwise, false</returns>
+    bool IsSymmetric();
+
+    /// <summary>
+    ///     Determines whether the function is Normal. A function is said to be normal if ∃x: μ(x) = 1; in other words, if
+    ///     there's at least one <i>x</i> value such that its membership degree equals to one.
+    /// </summary>
+    /// <returns>true if the function is Normal; otherwise, false</returns>
+    bool IsNormal();
+
+    /// <summary>
     ///     <para>
     ///         Returns the minimum value allowed for an <i>x</i> value that belongs to the support of the Membership
     ///         Function (that is, the region of the universe that is characterized by nonzero membership:
@@ -41,7 +77,7 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// <returns>
     ///     The minimum value allowed for an <i>x</i> value that belongs to the support of the Membership Function.
     /// </returns>
-    T? LowerBoundary() => null;
+    T LowerBoundary();
 
     /// <summary>
     ///     <para>
@@ -58,7 +94,7 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// <returns>
     ///     The maximum value allowed for an <i>x</i> value that belongs to the support of the Membership Function.
     /// </returns>
-    T? UpperBoundary() => null;
+    T UpperBoundary();
 
     /// <summary>
     ///     <para>
@@ -102,11 +138,46 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// <seealso cref="SimpleFunction" />
     Func<T, double> LambdaCutFunction(FuzzyNumber y) => x =>
     {
+        var value = x.ToDouble(null);
         if (y == 0) return 0.0;
         if (y == 1) return SimpleFunction().Invoke(x);
         var (leftCut, rightCut) = LambdaCutInterval(y);
-        return x.ToDouble(null) < leftCut || x.ToDouble(null) > rightCut ? SimpleFunction().Invoke(x) : y;
+        return value < leftCut || value > rightCut ? SimpleFunction().Invoke(x) : y;
     };
+
+    /// <summary>
+    ///     <para>
+    ///         Returns a new membership function, represented as a <see cref="Func{T,TResult}" /> delegate, originating
+    ///         from performing a Lambda-cut over the original membership function at the height point <i>y</i>,
+    ///         represented as a <see cref="FuzzyNumber" />.
+    ///     </para>
+    ///     <para>
+    ///         This Lambda-cut differs from the original
+    ///         <see cref="LambdaCutFunction(FuzzyLogic.Number.FuzzyNumber)">LambdaCutFunction</see> in that it also performs
+    ///         horizontal cuts over the membership function. This can be specially relevant if the function
+    ///         <see cref="IsClosed">is not closed</see>, since it could have no lower or upper bound for <i>x</i> values
+    ///         other than -∞ and +∞.
+    ///     </para>
+    ///     <list type="bullet">
+    ///         <item>
+    ///             <description>x &lt; x₀ ∨ x &gt; x₁ ⇒ The zero function.</description>
+    ///         </item>
+    ///         <item>
+    ///             <description>μ(x) = 0 ⇒ The zero function.</description>
+    ///         </item>
+    ///         <item>
+    ///             <description>μ(x) = 1 ⇒ The original membership function.</description>
+    ///         </item>
+    ///     </list>
+    /// </summary>
+    /// <param name="y">The height point at which the Lambda-cut is performed, represented as a <see cref="FuzzyNumber" />.</param>
+    /// <param name="x0">The lower bound for the left horizontal cut.</param>
+    /// <param name="x1">The upper bound for the right horizontal cut.</param>
+    /// <returns></returns>
+    /// <seealso cref="LambdaCutFunction(FuzzyLogic.Number.FuzzyNumber)">LambdaCutFunction</seealso>
+    /// <seealso cref="IsClosed">IsClosed</seealso>
+    Func<T, double> LambdaCutFunction(FuzzyNumber y, double x0, double x1) => x =>
+        (x.ToDouble(null) < x0 || x.ToDouble(null) > x1) ? 0.0 : LambdaCutFunction(y).Invoke(x);
 
     /// <summary>
     ///     <para>
@@ -134,11 +205,33 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// </returns>
     (T x, FuzzyNumber Y) ToPoint(T x) => (x, MembershipDegree(x));
 
+
     /// <summary>
+    ///     <para>
+    ///         Returns the left and right sided coordinates, represented as a <see cref="System.ValueTuple" />, for a
+    ///         Lambda-cut performed at the height point <i>y</i>, represented as a <see cref="FuzzyNumber" />.
+    ///     </para>
+    ///     <para>
+    ///         Note that it should not be assumed that the lower or upper boundaries of this interval necessarily exist.
+    ///         It will depend on whether the function itself is <see cref="IsOpenLeft">Open Left</see> or
+    ///         <see cref="IsOpenRight">Open Right</see>.
+    ///     </para>
     /// </summary>
-    /// <param name="y"></param>
-    /// <returns></returns>
+    /// <param name="y">The height point at which the Lambda-cut is performed, represented as a <see cref="FuzzyNumber" />.</param>
+    /// <returns>The interval, represented as a <see cref="System.ValueTuple" /></returns>
     (double X1, double X2) LambdaCutInterval(FuzzyNumber y);
 
+    /// <summary>
+    ///     <para>
+    ///         Returns the left and right sided coordinates, represented as a <see cref="System.ValueTuple" />, for a
+    ///         Lambda-cut performed at the the crossover points.
+    ///     </para>
+    ///     <para>
+    ///         This method is equivalent to calling the <see cref="LambdaCutInterval(FuzzyNumber)">LambdaCutInterval</see>
+    ///         method with <i>0.5</i> as a parameter, which represents the height point at which the Lambda-cut is
+    ///         performed.
+    ///     </para>
+    /// </summary>
+    /// <returns>The crossover points interval, represented as a <see cref="System.ValueTuple" /></returns>
     (double X1, double X2) CrossoverCutInterval() => LambdaCutInterval(0.5);
 }

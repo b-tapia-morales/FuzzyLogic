@@ -12,6 +12,18 @@ public abstract class BaseMembershipFunction<T> : IMembershipFunction<T> where T
         Name = name;
     }
 
+    public abstract bool IsOpenLeft();
+
+    public abstract bool IsOpenRight();
+
+    public abstract bool IsSymmetric();
+
+    public abstract bool IsNormal();
+    
+    public abstract T LowerBoundary();
+
+    public abstract T UpperBoundary();
+
     public abstract Func<T, double> SimpleFunction();
 
     public abstract (double X1, double X2) LambdaCutInterval(FuzzyNumber y);
