@@ -52,31 +52,31 @@ public class LinguisticVariable : IVariable
     private static IVariable AddTrapezoidFunction(IVariable variable, string name, double a, double b, double c,
         double d)
     {
-        var function = (IRealFunction) MembershipFunctionFactory.CreateTrapezoidalFunction(name, a, b, c, d);
+        var function = (IRealFunction) new RealTrapezoidalFunction(name, a, b, c, d);
         return variable.AddFunction(name, function);
     }
 
     private static IVariable AddTriangularFunction(IVariable variable, string name, double a, double b, double c)
     {
-        var function = (IRealFunction) MembershipFunctionFactory.CreateTriangularFunction(name, a, b, c);
+        var function = (IRealFunction) new RealTriangularFunction(name, a, b, c);
         return variable.AddFunction(name, function);
     }
 
     private static IVariable AddGaussianFunction(IVariable variable, string name, double m, double o)
     {
-        var function = (IRealFunction) MembershipFunctionFactory.CreateGaussianFunction(name, m, o);
+        var function = (IRealFunction) new RealGaussianFunction(name, m, o);
         return variable.AddFunction(name, function);
     }
 
     private static IVariable AddCauchyFunction(IVariable variable, string name, double a, double b, double c)
     {
-        var function = (IRealFunction) MembershipFunctionFactory.CreateCauchyFunction(name, a, b, c);
+        var function = (IRealFunction) new RealCauchyFunction(name, a, b, c);
         return variable.AddFunction(name, function);
     }
 
     private static IVariable AddSigmoidFunction(IVariable variable, string name, double a, double c)
     {
-        var function = (IRealFunction) MembershipFunctionFactory.CreateSigmoidFunction(name, a, c);
+        var function = (IRealFunction) new RealSigmoidFunction(name, a, c);
         return variable.AddFunction(name, function);
     }
 
