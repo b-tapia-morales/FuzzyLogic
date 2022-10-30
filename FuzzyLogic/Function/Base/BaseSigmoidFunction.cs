@@ -3,12 +3,20 @@ using FuzzyLogic.Number;
 
 namespace FuzzyLogic.MembershipFunctions.Base;
 
-public abstract class BaseSigmoidFunction<T> : BaseMembershipFunction<T> where T : unmanaged, INumber<T>, IConvertible
+public abstract class BaseSigmoidFunction<T> : BaseMembershipFunction<T>, IAsymptoteFunction<T>
+    where T : unmanaged, INumber<T>, IConvertible
 {
+    private const double MinLambdaCut = 1e-2;
+    private const double MaxLambdaCut = 1 - MinLambdaCut;
+    private readonly T _minCrispValue;
+    private readonly T _maxCrispValue;
+
     protected BaseSigmoidFunction(string name, T a, T c) : base(name)
     {
         A = a;
         C = c;
+        _minCrispValue = (T) Convert.ChangeType(LambdaCut(MinLambdaCut), typeof(T));
+        _maxCrispValue = (T) Convert.ChangeType(LambdaCut(MaxLambdaCut), typeof(T));
     }
 
     protected virtual T A { get; }
@@ -19,7 +27,7 @@ public abstract class BaseSigmoidFunction<T> : BaseMembershipFunction<T> where T
     public override bool IsOpenRight() => true;
 
     public override bool IsSymmetric() => false;
-    
+
     public override bool IsNormal() => false;
 
     public override Func<T, double> SimpleFunction() =>
@@ -30,4 +38,8 @@ public abstract class BaseSigmoidFunction<T> : BaseMembershipFunction<T> where T
         : (LambdaCut(y), double.PositiveInfinity);
 
     private double LambdaCut(FuzzyNumber y) => C.ToDouble(null) + Math.Log(y / (1 - y)) / A.ToDouble(null);
+
+    public T ApproximateLowerBoundary() => (T) Convert.ChangeType(_minCrispValue, typeof(T));
+
+    public T ApproximateUpperBoundary() => (T) Convert.ChangeType(_maxCrispValue, typeof(T));
 }

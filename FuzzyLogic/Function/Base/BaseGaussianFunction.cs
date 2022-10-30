@@ -3,7 +3,7 @@ using FuzzyLogic.Number;
 
 namespace FuzzyLogic.MembershipFunctions.Base;
 
-public abstract class BaseGaussianFunction<T> : BaseMembershipFunction<T>, IMembershipFunction<T>
+public abstract class BaseGaussianFunction<T> : BaseMembershipFunction<T>, IAsymptoteFunction<T>
     where T : unmanaged, INumber<T>, IConvertible
 {
     protected BaseGaussianFunction(string name, T m, T o) : base(name)
@@ -20,7 +20,7 @@ public abstract class BaseGaussianFunction<T> : BaseMembershipFunction<T>, IMemb
     public override bool IsOpenRight() => true;
 
     public override bool IsSymmetric() => true;
-    
+
     public override bool IsNormal() => true;
 
     public override Func<T, double> SimpleFunction() =>
@@ -28,6 +28,10 @@ public abstract class BaseGaussianFunction<T> : BaseMembershipFunction<T>, IMemb
 
     public override (double X1, double X2) LambdaCutInterval(FuzzyNumber y) =>
         (LeftSidedLambdaCut(y), RightSidedLambdaCut(y));
+
+    public T ApproximateLowerBoundary() => (T) Convert.ChangeType(M.ToDouble(null) + 3 - O.ToDouble(null), typeof(T));
+
+    public T ApproximateUpperBoundary() => (T) Convert.ChangeType(M.ToDouble(null) + 3 + O.ToDouble(null), typeof(T));
 
     private double LeftSidedLambdaCut(FuzzyNumber y) =>
         M.ToDouble(null) - O.ToDouble(null) * Math.Sqrt(2 * Math.Log(1 / y.Value));

@@ -12,16 +12,10 @@ public class RuleBase : IRuleBase
     public IRuleBase AddRule(IRule rule) => AddRule(this, rule);
 
     public ICollection<IRule> FindRulesWithPremise(string variableName) =>
-        ProductionRules
-            .Where(e => e.Antecedent != null &&
-                        string.Equals(e.Antecedent.LinguisticVariable.Name, variableName, InvariantCultureIgnoreCase))
-            .ToList();
+        ProductionRules.Where(e => e.IsInPremise(variableName)).ToList();
 
     public ICollection<IRule> FindRulesWithConclusion(string variableName) =>
-        ProductionRules
-            .Where(e => e.Consequent != null &&
-                        string.Equals(e.Consequent.LinguisticVariable.Name, variableName, InvariantCultureIgnoreCase))
-            .ToList();
+        ProductionRules.Where(e => e.IsInConclusion(variableName)).ToList();
 
     public IRuleBase FilterDuplicatedConclusions(string variableName) => FilterConclusions(this, variableName);
 

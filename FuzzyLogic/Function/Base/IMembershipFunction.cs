@@ -107,7 +107,7 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     ///     </para>
     /// </summary>
     /// <returns>The interval, represented as a <see cref="System.ValueTuple" />.</returns>
-    (T? X0, T? X1) BoundaryInterval() => (LowerBoundary(), UpperBoundary());
+    (T X0, T X1) BoundaryInterval() => (LowerBoundary(), UpperBoundary());
 
     /// <summary>
     ///     Returns the membership function itself, represented as a <see cref="Func{T,TResult}" /> delegate.
