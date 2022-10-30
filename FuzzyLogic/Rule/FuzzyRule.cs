@@ -2,6 +2,7 @@
 using FuzzyLogic.Number;
 using FuzzyLogic.Proposition;
 using FuzzyLogic.Proposition.Enums;
+using static System.StringComparison;
 
 namespace FuzzyLogic.Rule;
 
@@ -30,19 +31,23 @@ public class FuzzyRule : IRule
         facts.ContainsKey(Antecedent.LinguisticVariable.Name) &&
         Connectives.All(e => facts.ContainsKey(e.LinguisticVariable.Name));
 
-    public IEnumerable<FuzzyNumber> ApplyOperators(IDictionary<string, double> facts)
-    {
-        if (!IsApplicable(facts))
-            return ImmutableList<FuzzyNumber>.Empty;
+    public bool IsInPremise(string variableName) =>
+        Antecedent != null &&
+        string.Equals(Antecedent.LinguisticVariable.Name, variableName, InvariantCultureIgnoreCase) ||
+        Connectives.Any(e => string.Equals(e.LinguisticVariable.Name, variableName, InvariantCultureIgnoreCase));
 
-        var propositions = Connectives.Prepend(Antecedent!);
+    public bool IsInConclusion(string variableName) =>
+        Consequent != null &&
+        string.Equals(Consequent.LinguisticVariable.Name, variableName, InvariantCultureIgnoreCase);
 
-        return from proposition in propositions
-            let crispNumber = facts[proposition.LinguisticVariable.Name]
-            select proposition.ApplyUnaryOperators(crispNumber);
-    }
+    public IEnumerable<FuzzyNumber> ApplyOperators(IDictionary<string, double> facts) =>
+        !IsApplicable(facts)
+            ? ImmutableList<FuzzyNumber>.Empty
+            : Connectives
+                .Prepend(Antecedent!)
+                .Select(e => e.ApplyUnaryOperators(facts[e.LinguisticVariable.Name]));
 
-    public FuzzyNumber? EvaluateAntecedentWeight(IDictionary<string, double> facts)
+    public FuzzyNumber? EvaluatePremiseWeight(IDictionary<string, double> facts)
     {
         var numbers = new Queue<FuzzyNumber>(ApplyOperators(facts));
         if (!numbers.Any())
@@ -53,10 +58,10 @@ public class FuzzyRule : IRule
         var connectives = new Queue<Connective>(Connectives.Select(e => e.Connective));
         while (numbers.Count > 1)
         {
-            var first = numbers.Dequeue();
-            var second = numbers.Dequeue();
-            var connectorFunction = connectives.Dequeue().Function!;
-            numbers.Enqueue(connectorFunction(first, second));
+            var firstNumber = numbers.Dequeue();
+            var secondNumber = numbers.Dequeue();
+            var connective = connectives.Dequeue().Function!;
+            numbers.Enqueue(connective(firstNumber, secondNumber));
         }
 
         return numbers.Dequeue();
@@ -64,11 +69,11 @@ public class FuzzyRule : IRule
 
     public Func<double, double>? ApplyImplication(IDictionary<string, double> facts)
     {
-        var ruleWeight = EvaluateAntecedentWeight(facts);
+        var ruleWeight = EvaluatePremiseWeight(facts);
         return ruleWeight == null ? null : Consequent!.Function.LambdaCutFunction(ruleWeight.GetValueOrDefault());
     }
 
-    public FuzzyNumber? EvaluateConsequentWeight(IDictionary<string, double> facts)
+    public FuzzyNumber? EvaluateConclusionWeight(IDictionary<string, double> facts)
     {
         if (Consequent == null || !facts.ContainsKey(Consequent.LinguisticVariable.Name))
             return null;
@@ -79,8 +84,8 @@ public class FuzzyRule : IRule
     public FuzzyNumber? EvaluateRuleWeight(IDictionary<string, double> facts)
     {
         if (!IsApplicable(facts)) return null;
-        return FuzzyNumber.Implication(EvaluateAntecedentWeight(facts).GetValueOrDefault(),
-            EvaluateConsequentWeight(facts).GetValueOrDefault());
+        return FuzzyNumber.Implication(EvaluatePremiseWeight(facts).GetValueOrDefault(),
+            EvaluateConclusionWeight(facts).GetValueOrDefault());
     }
 
     public static IRule Create() => new FuzzyRule();
