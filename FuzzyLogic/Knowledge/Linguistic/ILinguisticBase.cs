@@ -1,7 +1,8 @@
-﻿using FuzzyLogic.Linguistics;
-using FuzzyLogic.MembershipFunctions.Real;
+﻿using FuzzyLogic.Function.Interface;
+using FuzzyLogic.Function.Real;
+using FuzzyLogic.Variable;
 
-namespace FuzzyLogic.Knowledge;
+namespace FuzzyLogic.Knowledge.Linguistic;
 
 /// <summary>
 ///     A class representation for a data-storage base in which all linguistic variables and their corresponding

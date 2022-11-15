@@ -1,15 +1,31 @@
-﻿using FuzzyLogic.MembershipFunctions;
-using FuzzyLogic.MembershipFunctions.Real;
+﻿using FuzzyLogic.Function.Base;
+using FuzzyLogic.Function.Interface;
+using FuzzyLogic.Function.Real;
 
-namespace FuzzyLogic.Linguistics;
+namespace FuzzyLogic.Variable;
 
 public class LinguisticVariable : IVariable
 {
+    public double LowerBoundary { get; }
+    public double UpperBoundary { get; }
+    public bool HasClosedInterval { get; }
     public string Name { get; }
     public IDictionary<string, IRealFunction> LinguisticEntries { get; }
 
-    public LinguisticVariable(string name)
+    private LinguisticVariable(string name)
     {
+        LowerBoundary = double.MinValue;
+        UpperBoundary = double.MaxValue;
+        HasClosedInterval = false;
+        Name = name;
+        LinguisticEntries = new Dictionary<string, IRealFunction>(StringComparer.InvariantCultureIgnoreCase);
+    }
+
+    private LinguisticVariable(string name, double lowerBoundary, double upperBoundary)
+    {
+        LowerBoundary = lowerBoundary;
+        UpperBoundary = upperBoundary;
+        HasClosedInterval = true;
         Name = name;
         LinguisticEntries = new Dictionary<string, IRealFunction>(StringComparer.InvariantCultureIgnoreCase);
     }
@@ -36,55 +52,70 @@ public class LinguisticVariable : IVariable
     public IRealFunction? RetrieveLinguisticEntry(string name) =>
         LinguisticEntries.TryGetValue(name, out var function) ? function : null;
 
-    public static IVariable Create(string name) => new LinguisticVariable(name);
+    public static IVariable Create(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) throw new EmptyVariableException();
+        return new LinguisticVariable(name);
+    }
+
+    public static IVariable Create(string name, double lowerBoundary, double upperBoundary)
+    {
+        if (string.IsNullOrWhiteSpace(name)) throw new EmptyVariableException();
+        return new LinguisticVariable(name, lowerBoundary, upperBoundary);
+    }
 
     private static IVariable AddAll(IVariable variable, IDictionary<string, IRealFunction> linguisticEntries)
     {
-        if (linguisticEntries.Keys.Any(variable.ContainsLinguisticEntry))
-            throw new InvalidOperationException();
+        if (linguisticEntries == null) throw new ArgumentNullException(nameof(linguisticEntries));
+        if (linguisticEntries.Keys.Any(string.IsNullOrWhiteSpace)) throw new EmptyEntryException();
+        if (linguisticEntries.Keys.Any(variable.ContainsLinguisticEntry)) throw new DuplicatedEntryException();
 
         foreach (var entry in linguisticEntries)
+        {
             variable.LinguisticEntries.Add(entry.Key, entry.Value);
+        }
 
         return variable;
     }
 
     private static IVariable AddTrapezoidFunction(IVariable variable, string name, double a, double b, double c,
-        double d)
-    {
-        var function = (IRealFunction) new RealTrapezoidalFunction(name, a, b, c, d);
-        return variable.AddFunction(name, function);
-    }
+        double d) =>
+        variable.AddFunction(name, new RealTrapezoidalFunction(name, a, b, c, d));
 
-    private static IVariable AddTriangularFunction(IVariable variable, string name, double a, double b, double c)
-    {
-        var function = (IRealFunction) new RealTriangularFunction(name, a, b, c);
-        return variable.AddFunction(name, function);
-    }
+    private static IVariable AddTriangularFunction(IVariable variable, string name, double a, double b, double c) =>
+        variable.AddFunction(name, new RealTriangularFunction(name, a, b, c));
 
-    private static IVariable AddGaussianFunction(IVariable variable, string name, double m, double o)
-    {
-        var function = (IRealFunction) new RealGaussianFunction(name, m, o);
-        return variable.AddFunction(name, function);
-    }
+    private static IVariable AddGaussianFunction(IVariable variable, string name, double m, double o) =>
+        variable.AddFunction(name, new RealGaussianFunction(name, m, o));
 
-    private static IVariable AddCauchyFunction(IVariable variable, string name, double a, double b, double c)
-    {
-        var function = (IRealFunction) new RealCauchyFunction(name, a, b, c);
-        return variable.AddFunction(name, function);
-    }
+    private static IVariable AddCauchyFunction(IVariable variable, string name, double a, double b, double c) =>
+        variable.AddFunction(name, new RealCauchyFunction(name, a, b, c));
 
-    private static IVariable AddSigmoidFunction(IVariable variable, string name, double a, double c)
-    {
-        var function = (IRealFunction) new RealSigmoidFunction(name, a, c);
-        return variable.AddFunction(name, function);
-    }
+    private static IVariable AddSigmoidFunction(IVariable variable, string name, double a, double c) =>
+        variable.AddFunction(name, new RealSigmoidFunction(name, a, c));
 
     private static IVariable AddFunction(IVariable variable, string name, IRealFunction function)
     {
-        if (!variable.LinguisticEntries.TryAdd(name, function))
-            throw new InvalidOperationException();
+        CheckLinguisticEntry(variable, name);
+        CheckRange(variable, function);
+        variable.LinguisticEntries[name] = function;
         return variable;
+    }
+
+    private static void CheckLinguisticEntry(IVariable variable, string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) throw new EmptyEntryException();
+        if (variable.ContainsLinguisticEntry(name)) throw new DuplicatedEntryException(name);
+    }
+
+    public static void CheckRange(IVariable variable, IRealFunction function)
+    {
+        var (lower, upper) = function is IAsymptoteFunction<double> asymptote
+            ? asymptote.ApproximateBoundaryInterval()
+            : function.BoundaryInterval();
+        if (upper <= variable.LowerBoundary)
+            throw new WarningVariableException(variable.Name,
+                (variable.LowerBoundary, variable.UpperBoundary), function.Name, (lower, upper), function.GetType());
     }
 
     public override string ToString() => Name;

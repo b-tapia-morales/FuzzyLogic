@@ -1,7 +1,8 @@
 ﻿using System.Numerics;
+using FuzzyLogic.Function.Interface;
 using FuzzyLogic.Number;
 
-namespace FuzzyLogic.MembershipFunctions.Base;
+namespace FuzzyLogic.Function.Base;
 
 public abstract class BaseMembershipFunction<T> : IMembershipFunction<T> where T : unmanaged, INumber<T>, IConvertible
 {

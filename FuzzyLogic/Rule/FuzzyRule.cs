@@ -31,14 +31,16 @@ public class FuzzyRule : IRule
         facts.ContainsKey(Antecedent.LinguisticVariable.Name) &&
         Connectives.All(e => facts.ContainsKey(e.LinguisticVariable.Name));
 
-    public bool IsInPremise(string variableName) =>
+    public bool PremiseContainsVariable(string variableName) =>
         Antecedent != null &&
         string.Equals(Antecedent.LinguisticVariable.Name, variableName, InvariantCultureIgnoreCase) ||
         Connectives.Any(e => string.Equals(e.LinguisticVariable.Name, variableName, InvariantCultureIgnoreCase));
 
-    public bool IsInConclusion(string variableName) =>
+    public bool ConclusionContainsVariable(string variableName) =>
         Consequent != null &&
         string.Equals(Consequent.LinguisticVariable.Name, variableName, InvariantCultureIgnoreCase);
+
+    public int PremiseLength() => (Antecedent == null ? 1 : 0) + Connectives.Count;
 
     public IEnumerable<FuzzyNumber> ApplyOperators(IDictionary<string, double> facts) =>
         !IsApplicable(facts)

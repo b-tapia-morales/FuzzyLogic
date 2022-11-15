@@ -1,8 +1,9 @@
-﻿using FuzzyLogic.Knowledge;
-using FuzzyLogic.Linguistics;
-using FuzzyLogic.MembershipFunctions.Real;
+﻿using FuzzyLogic.Function.Interface;
+using FuzzyLogic.Function.Real;
+using FuzzyLogic.Knowledge.Linguistic;
 using FuzzyLogic.Number;
 using FuzzyLogic.Proposition.Enums;
+using FuzzyLogic.Variable;
 
 namespace FuzzyLogic.Proposition;
 

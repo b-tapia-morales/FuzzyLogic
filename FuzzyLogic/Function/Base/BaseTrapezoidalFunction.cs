@@ -1,8 +1,9 @@
 ﻿using System.Numerics;
+using FuzzyLogic.Function.Interface;
 using FuzzyLogic.Number;
 using FuzzyLogic.Utils;
 
-namespace FuzzyLogic.MembershipFunctions.Base;
+namespace FuzzyLogic.Function.Base;
 
 public abstract class BaseTrapezoidalFunction<T> : BaseMembershipFunction<T>, ITrapezoidalFunction<T>
     where T : unmanaged, INumber<T>, IConvertible
@@ -27,12 +28,9 @@ public abstract class BaseTrapezoidalFunction<T> : BaseMembershipFunction<T>, IT
 
     public override bool IsOpenRight() => false;
 
-    public override bool IsSymmetric()
-    {
-        _isSymmetric ??= Math.Abs(MathUtils.Distance(A.ToDouble(null), B.ToDouble(null), 0, 1) -
-                                  MathUtils.Distance(C.ToDouble(null), D.ToDouble(null), 1, 0)) < DistanceTolerance;
-        return _isSymmetric.Value;
-    }
+    public override bool IsSymmetric() => _isSymmetric ??= Math.Abs(
+        MathUtils.Distance(A.ToDouble(null), B.ToDouble(null), 0, 1) -
+        MathUtils.Distance(C.ToDouble(null), D.ToDouble(null), 1, 0)) < DistanceTolerance;
 
     public override bool IsNormal() => true;
 

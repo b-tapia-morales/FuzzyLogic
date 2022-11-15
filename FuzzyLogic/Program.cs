@@ -1,20 +1,23 @@
-﻿using FuzzyLogic.Knowledge;
-using FuzzyLogic.Linguistics;
+﻿using FuzzyLogic.Engine;
+using FuzzyLogic.Knowledge;
+using FuzzyLogic.Knowledge.Linguistic;
+using FuzzyLogic.Knowledge.Rule;
 using FuzzyLogic.Memory;
 using FuzzyLogic.Number;
 using FuzzyLogic.Proposition;
 using FuzzyLogic.Proposition.Enums;
 using FuzzyLogic.Rule;
+using FuzzyLogic.Variable;
 using MathNet.Numerics.Integration;
 
 var linguistics = LinguisticBase
     .Create()
     .AddLinguisticVariable(
         LinguisticVariable
-            .Create("Water")
+            .Create("Water", 0, 120)
             .AddTrapezoidFunction("Cold", 0, 0, 20, 40)
             .AddTriangularFunction("Warm", 30, 50, 70)
-            .AddTrapezoidFunction("Hot", 50, 80, 100, 100)
+            .AddGaussianFunction("Hot", 80, 12)
     ).AddLinguisticVariable(
         LinguisticVariable
             .Create("Power")
@@ -27,7 +30,6 @@ var rules = RuleBase
     .AddRule(
         FuzzyRule
             .Create()
-            .If(FuzzyProposition.Is(linguistics, "Water", "Hot", HedgeToken.Slightly))
             .Or(FuzzyProposition.Is(linguistics, "Water", "Warm", HedgeToken.Very))
             .And(FuzzyProposition.Is(linguistics, "Power", "High"))
             .Then(FuzzyProposition.Is(linguistics, "Power", "Low"))
@@ -42,11 +44,16 @@ var rules = RuleBase
 foreach (var rule in rules.ProductionRules)
     Console.WriteLine(rule);
 
-var workingMemory = WorkingMemory.InitializeFromFile();
+var ruleCons = rules.FindRulesWithConclusion("Water");
+
+foreach (var rule in ruleCons)
+    Console.WriteLine(rule);
+
+var workingMemory = WorkingMemory.CreateFromFile(Path.Combine(Environment.CurrentDirectory, @"Files\Facts.csv"));
 Console.WriteLine(workingMemory);
 
-var function = linguistics.RetrieveLinguisticEntry("Water", "Cold")!.LambdaCutFunction(0.2);
-var value = NewtonCotesTrapeziumRule.IntegrateAdaptive(function, 0, 40, 1e-10);
+var function = linguistics.RetrieveLinguisticEntry("Water", "Hot")!;
+var value = NewtonCotesTrapeziumRule.IntegrateAdaptive(function.LambdaCutFunction(0.5), 64, 116, 1e-10);
 Console.WriteLine(value);
 
 var facts = new Dictionary<string, double>
@@ -64,8 +71,15 @@ foreach (var fuzzyNumber in fuzzyNumbers)
     Console.WriteLine(fuzzyNumber);
 }
 
-var finalNumber = accessedRule.AggregateOperators(facts);
+var finalNumber = accessedRule.EvaluatePremiseWeight(facts);
 Console.WriteLine(finalNumber ?? FuzzyNumber.MinValue());
 
 var lambdaCut = accessedRule.ApplyImplication(facts);
 Console.WriteLine(lambdaCut == null ? 0 : NewtonCotesTrapeziumRule.IntegrateAdaptive(lambdaCut, 0, 40, 1e-10));
+
+var engine = InferenceEngine.Create(KnowledgeBase.Create(linguistics, rules), WorkingMemory.Create(facts));
+
+foreach (var variable in engine.ApplicableFromAvailableFacts())
+{
+    Console.WriteLine(variable);
+}

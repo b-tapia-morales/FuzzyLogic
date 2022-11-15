@@ -1,4 +1,6 @@
-﻿using FuzzyLogic.Number;
+﻿using FuzzyLogic.Function.Base;
+using FuzzyLogic.Function.Interface;
+using FuzzyLogic.Number;
 using FuzzyLogic.Proposition;
 
 namespace FuzzyLogic.Rule;
@@ -107,10 +109,6 @@ public interface IRule
     ///     The rule has already been <see cref="IsFinalized">Finalized</see>.
     /// </exception>
     IRule Then(IProposition proposition);
-    
-    bool IsInPremise(string variableName);
-
-    bool IsInConclusion(string variableName);
 
     /// <summary>
     ///     Determines whether the rule is valid according to propositional logic; that is, it must have both an
@@ -141,6 +139,12 @@ public interface IRule
     /// <returns>true if the rule is applicable; otherwise, null</returns>
     bool IsApplicable(IDictionary<string, double> facts);
     
+    bool PremiseContainsVariable(string variableName);
+
+    bool ConclusionContainsVariable(string variableName);
+
+    int PremiseLength();
+    
     /// <summary>
     ///     <para>
     ///         Applies all the unary operators to each proposition in the premise part of the rule. A unary operator
@@ -154,7 +158,7 @@ public interface IRule
     ///             <description>
     ///                 The <see cref="Double">Crisp number</see> (given as a fact from the function parameter) is
     ///                 transformed to a <see cref="FuzzyLogic.Number.FuzzyNumber" /> by evaluating its
-    ///                 <see cref="MembershipFunctions.Base.IMembershipFunction{T}.MembershipDegree">
+    ///                 <see cref="IMembershipFunction{T}.MembershipDegree">
     ///                     Membership Degree.
     ///                 </see>
     ///             </description>
@@ -226,7 +230,7 @@ public interface IRule
     /// <seealso cref="IsApplicable">IsApplicable</seealso>
     /// <seealso cref="ApplyOperators">ApplyOperators</seealso>
     /// <seealso cref="EvaluatePremiseWeight">EvaluatePremiseWeight</seealso>
-    /// <seealso cref="MembershipFunctions.Base.IMembershipFunction{T}.LambdaCutFunction(FuzzyNumber)">LambdaCutFunction</seealso>
+    /// <seealso cref="IMembershipFunction{T}.LambdaCutFunction(FuzzyNumber)">LambdaCutFunction</seealso>
     Func<double, double>? ApplyImplication(IDictionary<string, double> facts);
 
     FuzzyNumber? EvaluateConclusionWeight(IDictionary<string, double> facts);

@@ -1,4 +1,6 @@
-﻿namespace FuzzyLogic.Memory;
+﻿using static FuzzyLogic.Memory.EntryResolutionMethod;
+
+namespace FuzzyLogic.Memory;
 
 /// <summary>
 ///     Contains the facts that are provided by the user or inferred from other rules. The implementing classes must
@@ -15,11 +17,13 @@ public interface IWorkingMemory
     ///     The method that resolves conflicting entries with the same declared key.
     /// </summary>
     public EntryResolutionMethod Method { get; }
-    
-    IWorkingMemory Clone();
 
-    static abstract IWorkingMemory Create();
-    
+    static abstract IWorkingMemory Create(EntryResolutionMethod method = Replace);
+
+    static abstract IWorkingMemory Create(IDictionary<string, double> facts, EntryResolutionMethod method = Replace);
+
+    static abstract IWorkingMemory CreateFromFile(string filePath, EntryResolutionMethod method = Replace);
+
     /// <summary>
     ///     Checks if there is an entry stored with the key provided as a parameter.
     /// </summary>

@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using FuzzyLogic.Utils;
 
-namespace FuzzyLogic.MembershipFunctions.Base;
+namespace FuzzyLogic.Function.Base;
 
 public abstract class BaseTriangularFunction<T> : BaseTrapezoidalFunction<T>
     where T : unmanaged, INumber<T>, IConvertible

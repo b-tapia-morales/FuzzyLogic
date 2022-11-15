@@ -1,6 +1,7 @@
-﻿using FuzzyLogic.Rule;
+﻿using FuzzyLogic.Knowledge.Linguistic;
+using FuzzyLogic.Rule;
 
-namespace FuzzyLogic.Knowledge;
+namespace FuzzyLogic.Knowledge.Rule;
 
 public interface IRuleBase
 {
@@ -8,11 +9,11 @@ public interface IRuleBase
 
     IRuleBase AddRule(IRule rule);
 
+    IRuleBase AddAll(ICollection<IRule> rules);
+
     ICollection<IRule> FindRulesWithPremise(string variableName);
 
     ICollection<IRule> FindRulesWithConclusion(string variableName);
-
-    IRuleBase FilterInvalidRules();
 
     IRuleBase FilterDuplicatedConclusions(string variableName);
 

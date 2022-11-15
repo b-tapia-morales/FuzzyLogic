@@ -1,7 +1,7 @@
-﻿using FuzzyLogic.Linguistics;
+﻿using FuzzyLogic.Variable;
 using static System.StringComparer;
 
-namespace FuzzyLogic.Knowledge;
+namespace FuzzyLogic.Knowledge.Linguistic;
 
 public class LinguisticBase : ILinguisticBase
 {

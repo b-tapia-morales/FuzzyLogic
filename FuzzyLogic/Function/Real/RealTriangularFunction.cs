@@ -1,6 +1,7 @@
-﻿using FuzzyLogic.MembershipFunctions.Base;
+﻿using FuzzyLogic.Function.Base;
+using FuzzyLogic.Function.Interface;
 
-namespace FuzzyLogic.MembershipFunctions.Real;
+namespace FuzzyLogic.Function.Real;
 
 public class RealTriangularFunction : BaseTriangularFunction<double>, IRealFunction
 {

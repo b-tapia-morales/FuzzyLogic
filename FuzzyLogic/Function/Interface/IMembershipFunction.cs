@@ -1,7 +1,8 @@
 ﻿using System.Numerics;
+using FuzzyLogic.Function.Base;
 using FuzzyLogic.Number;
 
-namespace FuzzyLogic.MembershipFunctions.Base;
+namespace FuzzyLogic.Function.Interface;
 
 /// <summary>
 ///     <para>

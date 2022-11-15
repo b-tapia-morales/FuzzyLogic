@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
+using FuzzyLogic.Function.Base;
 
-namespace FuzzyLogic.MembershipFunctions.Base;
+namespace FuzzyLogic.Function.Interface;
 
 /// <summary>
 /// <para>Represents the special case of Trapezoidal functions that derive from the <see cref="IMembershipFunction{T}"/>

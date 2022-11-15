@@ -1,11 +1,15 @@
 ﻿using System.Numerics;
+using FuzzyLogic.Function.Interface;
 using FuzzyLogic.Number;
 
-namespace FuzzyLogic.MembershipFunctions.Base;
+namespace FuzzyLogic.Function.Base;
 
-public abstract class BaseCauchyFunction<T> : BaseMembershipFunction<T>, IMembershipFunction<T>
+public abstract class BaseCauchyFunction<T> : BaseMembershipFunction<T>, IAsymptoteFunction<T>
     where T : unmanaged, INumber<T>, IConvertible
 {
+    private T? _minCrispValue;
+    private T? _maxCrispValue;
+
     protected BaseCauchyFunction(string name, T a, T b, T c) : base(name)
     {
         A = a;
@@ -22,7 +26,7 @@ public abstract class BaseCauchyFunction<T> : BaseMembershipFunction<T>, IMember
     public override bool IsOpenRight() => true;
 
     public override bool IsSymmetric() => true;
-    
+
     public override bool IsNormal() => true;
 
     public override Func<T, double> SimpleFunction() => x =>
@@ -30,6 +34,12 @@ public abstract class BaseCauchyFunction<T> : BaseMembershipFunction<T>, IMember
 
     public override (double X1, double X2) LambdaCutInterval(FuzzyNumber y) =>
         (LeftSidedAlphaCut(y), RightSidedAlphaCut(y));
+
+    public T ApproximateLowerBoundary() =>
+        _minCrispValue ??= (T) Convert.ChangeType(LeftSidedAlphaCut(IAsymptoteFunction<T>.MinLambdaCut), typeof(T));
+
+    public T ApproximateUpperBoundary() =>
+        _maxCrispValue ??= (T) Convert.ChangeType(RightSidedAlphaCut(IAsymptoteFunction<T>.MinLambdaCut), typeof(T));
 
     // c - a ((1 - α) / α) ^ (1 / 2b)
     private double LeftSidedAlphaCut(FuzzyNumber y) =>
