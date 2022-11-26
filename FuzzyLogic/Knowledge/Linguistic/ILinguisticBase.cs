@@ -1,5 +1,4 @@
 ﻿using FuzzyLogic.Function.Interface;
-using FuzzyLogic.Function.Real;
 using FuzzyLogic.Variable;
 
 namespace FuzzyLogic.Knowledge.Linguistic;

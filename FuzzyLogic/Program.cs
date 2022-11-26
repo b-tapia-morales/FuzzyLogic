@@ -49,7 +49,7 @@ var ruleCons = rules.FindRulesWithConclusion("Water");
 foreach (var rule in ruleCons)
     Console.WriteLine(rule);
 
-var workingMemory = WorkingMemory.CreateFromFile(Path.Combine(Environment.CurrentDirectory, @"Files\Facts.csv"));
+var workingMemory = WorkingMemory.InitializeFromFile(Path.Combine(Environment.CurrentDirectory, @"Files\Facts.csv"));
 Console.WriteLine(workingMemory);
 
 var function = linguistics.RetrieveLinguisticEntry("Water", "Hot")!;
@@ -77,7 +77,7 @@ Console.WriteLine(finalNumber ?? FuzzyNumber.MinValue());
 var lambdaCut = accessedRule.ApplyImplication(facts);
 Console.WriteLine(lambdaCut == null ? 0 : NewtonCotesTrapeziumRule.IntegrateAdaptive(lambdaCut, 0, 40, 1e-10));
 
-var engine = InferenceEngine.Create(KnowledgeBase.Create(linguistics, rules), WorkingMemory.Create(facts));
+var engine = InferenceEngine.Create(KnowledgeBase.Create(linguistics, rules), WorkingMemory.Create());
 
 foreach (var variable in engine.ApplicableFromAvailableFacts())
 {

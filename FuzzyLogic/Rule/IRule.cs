@@ -1,5 +1,4 @@
-﻿using FuzzyLogic.Function.Base;
-using FuzzyLogic.Function.Interface;
+﻿using FuzzyLogic.Function.Interface;
 using FuzzyLogic.Number;
 using FuzzyLogic.Proposition;
 

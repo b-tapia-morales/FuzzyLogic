@@ -1,5 +1,4 @@
 ﻿using FuzzyLogic.Function.Interface;
-using FuzzyLogic.Function.Real;
 using FuzzyLogic.Number;
 using FuzzyLogic.Proposition.Enums;
 using FuzzyLogic.Variable;
