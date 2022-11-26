@@ -1,4 +1,7 @@
-﻿namespace FuzzyLogic.Knowledge;
+﻿using FuzzyLogic.Knowledge.Linguistic;
+using FuzzyLogic.Knowledge.Rule;
+
+namespace FuzzyLogic.Knowledge;
 
 public class KnowledgeBase : IKnowledgeBase
 {
@@ -7,8 +10,8 @@ public class KnowledgeBase : IKnowledgeBase
 
     protected KnowledgeBase()
     {
-        LinguisticBase = Knowledge.LinguisticBase.Create();
-        RuleBase = Knowledge.RuleBase.Create();
+        LinguisticBase = Linguistic.LinguisticBase.Create();
+        RuleBase = Rule.RuleBase.Create();
     }
 
     private KnowledgeBase(ILinguisticBase linguisticBase, IRuleBase ruleBase)

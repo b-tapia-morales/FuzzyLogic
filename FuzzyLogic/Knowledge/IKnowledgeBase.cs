@@ -1,4 +1,7 @@
-﻿namespace FuzzyLogic.Knowledge;
+﻿using FuzzyLogic.Knowledge.Linguistic;
+using FuzzyLogic.Knowledge.Rule;
+
+namespace FuzzyLogic.Knowledge;
 
 public interface IKnowledgeBase
 {

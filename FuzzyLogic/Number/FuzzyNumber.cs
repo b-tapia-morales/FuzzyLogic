@@ -3,7 +3,7 @@ using static FuzzyLogic.Number.IFuzzyNumber<FuzzyLogic.Number.FuzzyNumber>;
 
 namespace FuzzyLogic.Number;
 
-public record FuzzyNumber : IFuzzyNumber<FuzzyNumber>
+public readonly record struct FuzzyNumber : IFuzzyNumber<FuzzyNumber>
 {
     private static readonly FuzzyNumber Min = Of(0);
     private static readonly FuzzyNumber Max = Of(1);
@@ -43,6 +43,9 @@ public record FuzzyNumber : IFuzzyNumber<FuzzyNumber>
     public static FuzzyNumber operator &(FuzzyNumber a, FuzzyNumber b) => new(Math.Min(a.Value, b.Value));
 
     public static FuzzyNumber operator !(FuzzyNumber x) => new(1 - x.Value);
+    
+    public static FuzzyNumber Implication(FuzzyNumber a, FuzzyNumber b) =>
+        Math.Max(1 - a.Value, Math.Min(a.Value, b.Value));
 
     /// <summary>
     ///     Defines a implicit conversion from a <see cref="double" /> value to a <see cref="FuzzyNumber" />. Note that

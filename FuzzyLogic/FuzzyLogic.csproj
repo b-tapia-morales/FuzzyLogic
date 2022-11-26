@@ -15,13 +15,15 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Files\Facts.csv">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+      <Folder Include="Engine\Defuzzify" />
+      <Folder Include="Utils" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Utils" />
+      <None Remove="Files\Facts.csv" />
+      <Content Include="Files\Facts.csv">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>

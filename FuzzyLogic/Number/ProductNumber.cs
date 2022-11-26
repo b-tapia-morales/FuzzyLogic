@@ -3,7 +3,7 @@ using static FuzzyLogic.Number.IFuzzyNumber<FuzzyLogic.Number.ProductNumber>;
 
 namespace FuzzyLogic.Number;
 
-public record ProductNumber : IFuzzyNumber<ProductNumber>
+public readonly record struct ProductNumber : IFuzzyNumber<ProductNumber>
 {
     private static readonly ProductNumber Min = Of(0);
     private static readonly ProductNumber Max = Of(1);
@@ -33,7 +33,7 @@ public record ProductNumber : IFuzzyNumber<ProductNumber>
             return false;
         }
     }
-    
+
     public static ProductNumber MinValue() => Min;
 
     public static ProductNumber MaxValue() => Max;
@@ -43,6 +43,9 @@ public record ProductNumber : IFuzzyNumber<ProductNumber>
     public static ProductNumber operator &(ProductNumber a, ProductNumber b) => (a.Value * b.Value);
 
     public static ProductNumber operator |(ProductNumber a, ProductNumber b) => (a.Value + b.Value - a.Value * b.Value);
+
+    public static ProductNumber Implication(ProductNumber a, ProductNumber b) =>
+        a.Value <= b.Value ? 1 : (b.Value / a.Value);
 
     /// <summary>
     ///     Defines a implicit conversion from a <see cref="double" /> value to a <see cref="ProductNumber" />.

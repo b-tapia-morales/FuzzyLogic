@@ -1,4 +1,5 @@
-﻿using FuzzyLogic.Number;
+﻿using FuzzyLogic.Function.Interface;
+using FuzzyLogic.Number;
 using FuzzyLogic.Proposition;
 
 namespace FuzzyLogic.Rule;
@@ -126,7 +127,7 @@ public interface IRule
     ///         </item>
     ///         <item>
     ///             <description>
-    ///                 All variable names used to form <see cref="IProposition">Propositions</see> in the antecedent part of
+    ///                 All variable names used to form <see cref="IProposition">Propositions</see> in the premise part of
     ///                 the rule are contained as <see cref="IDictionary{TKey,TValue}.Keys">Keys</see> in the dictionary of
     ///                 facts.
     ///             </description>
@@ -136,10 +137,16 @@ public interface IRule
     /// <param name="facts">A <see cref="IDictionary{TKey,TValue}">Dictionary</see> of facts</param>
     /// <returns>true if the rule is applicable; otherwise, null</returns>
     bool IsApplicable(IDictionary<string, double> facts);
+    
+    bool PremiseContainsVariable(string variableName);
 
+    bool ConclusionContainsVariable(string variableName);
+
+    int PremiseLength();
+    
     /// <summary>
     ///     <para>
-    ///         Applies all the unary operators to each proposition in the antecedent part of the rule. A unary operator
+    ///         Applies all the unary operators to each proposition in the premise part of the rule. A unary operator
     ///         only needs of an atomic term in order to be applied. In this context, examples of a unary operator are the
     ///         <see cref="Proposition.Enums.Literal.Is">Affirmation</see> and the
     ///         <see cref="Proposition.Enums.Literal.IsNot">Negation</see> of a proposition.
@@ -150,7 +157,7 @@ public interface IRule
     ///             <description>
     ///                 The <see cref="Double">Crisp number</see> (given as a fact from the function parameter) is
     ///                 transformed to a <see cref="FuzzyLogic.Number.FuzzyNumber" /> by evaluating its
-    ///                 <see cref="MembershipFunctions.Base.IMembershipFunction{T}.MembershipDegree">
+    ///                 <see cref="IMembershipFunction{T}.MembershipDegree">
     ///                     Membership Degree.
     ///                 </see>
     ///             </description>
@@ -179,9 +186,9 @@ public interface IRule
 
     /// <summary>
     ///     <para>
-    ///         Applies all the binary operators to each <see cref="FuzzyLogic.Number.FuzzyNumber" /> in the antecedent
+    ///         Applies all the binary operators to each <see cref="FuzzyLogic.Number.FuzzyNumber" /> in the premise
     ///         part of the rule and aggregates them into a single Fuzzy Number, which can be understood as the weight of the
-    ///         rule itself. This process succeeds the application of unary operators in the
+    ///         premise itself. This process succeeds the application of unary operators in the
     ///         <see cref="ApplyOperators">ApplyOperators</see> method, which is why it operates directly over fuzzy numbers
     ///         instead of propositions.
     ///     </para>
@@ -203,13 +210,13 @@ public interface IRule
     /// </returns>
     /// <seealso cref="IsApplicable">IsApplicable</seealso>
     /// <seealso cref="ApplyOperators">ApplyOperators</seealso>
-    FuzzyNumber? AggregateOperators(IDictionary<string, double> facts);
+    FuzzyNumber? EvaluatePremiseWeight(IDictionary<string, double> facts);
 
     /// <summary>
     ///     <para>
     ///         Returns a new membership function, represented as a <see cref="Func{T,TResult}" /> delegate, originating
-    ///         applying the implication method, which uses the rule weight determined in the
-    ///         <see cref="AggregateOperators">AggregateOperators</see> method, as the height point to apply a Lambda Cut
+    ///         from applying the implication method, which uses the premise weight determined in the
+    ///         <see cref="EvaluatePremiseWeight">EvaluatePremiseWeight</see> method, as the height point to apply a Lambda Cut
     ///         over the original membership function in the consequent part of the rule.
     ///     </para>
     ///     <para>
@@ -218,10 +225,14 @@ public interface IRule
     ///     </para>
     /// </summary>
     /// <param name="facts">A <see cref="IDictionary{TKey,TValue}">Dictionary</see> of facts</param>
-    /// <returns></returns>
+    /// <returns>The new membership function, represented as a <see cref="Func{T,TResult}" /> delegate.</returns>
     /// <seealso cref="IsApplicable">IsApplicable</seealso>
     /// <seealso cref="ApplyOperators">ApplyOperators</seealso>
-    /// <seealso cref="AggregateOperators">AggregateOperators</seealso>
-    /// <seealso cref="MembershipFunctions.Base.IMembershipFunction{T}.LambdaCutFunction">LambdaCutFunction</seealso>
+    /// <seealso cref="EvaluatePremiseWeight">EvaluatePremiseWeight</seealso>
+    /// <seealso cref="IMembershipFunction{T}.LambdaCutFunction(FuzzyNumber)">LambdaCutFunction</seealso>
     Func<double, double>? ApplyImplication(IDictionary<string, double> facts);
+
+    FuzzyNumber? EvaluateConclusionWeight(IDictionary<string, double> facts);
+
+    FuzzyNumber? EvaluateRuleWeight(IDictionary<string, double> facts);
 }
