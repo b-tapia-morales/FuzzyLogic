@@ -110,6 +110,8 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// <returns>The interval, represented as a <see cref="System.ValueTuple" />.</returns>
     (T X0, T X1) BoundaryInterval() => (LowerBoundary(), UpperBoundary());
 
+    (T X0, T X1) ClosedInterval() => ClosedInterval(this);
+
     /// <summary>
     ///     Returns the membership function itself, represented as a <see cref="Func{T,TResult}" /> delegate.
     /// </summary>
@@ -235,4 +237,11 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// </summary>
     /// <returns>The crossover points interval, represented as a <see cref="System.ValueTuple" /></returns>
     (double X1, double X2) CrossoverCutInterval() => LambdaCutInterval(0.5);
+
+    private static (T X0, T X1) ClosedInterval(IMembershipFunction<T> function)
+    {
+        return function is IAsymptoteFunction<T> asymptoteFunction
+            ? asymptoteFunction.ApproximateBoundaryInterval()
+            : function.BoundaryInterval();
+    }
 }
