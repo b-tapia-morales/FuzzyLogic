@@ -8,9 +8,9 @@ public interface IEngine
     IKnowledgeBase KnowledgeBase { get; set; }
     IWorkingMemory WorkingMemory { get; set; }
 
-    IEngine ExcludeRulesWithKnownFacts();
+    //IEngine ExcludeRulesWithKnownFacts();
 
-    IEnumerable<string> ApplicableFromAvailableFacts();
+    //IEnumerable<string> ApplicableFromAvailableFacts();
 
     static abstract IEngine Create(IKnowledgeBase @base, IWorkingMemory memory);
 }

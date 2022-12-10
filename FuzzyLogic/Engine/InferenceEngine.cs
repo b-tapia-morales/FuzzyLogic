@@ -1,4 +1,6 @@
-﻿using FuzzyLogic.Knowledge;
+﻿using System.Collections.Immutable;
+using FuzzyLogic.Function.Interface;
+using FuzzyLogic.Knowledge;
 using FuzzyLogic.Memory;
 
 namespace FuzzyLogic.Engine;
@@ -14,19 +16,40 @@ public class InferenceEngine : IEngine
         WorkingMemory = memory;
     }
 
-    public IEngine ExcludeRulesWithKnownFacts() => ExcludeRulesWithKnownFacts(this);
-
-    public IEnumerable<string> ApplicableFromAvailableFacts() =>
-        KnowledgeBase.RuleBase.ProductionRules.Where(e => e.IsApplicable(WorkingMemory.Facts))
-            .Select(e => e.Consequent!.LinguisticVariable.Name);
-
     public static IEngine Create(IKnowledgeBase @base, IWorkingMemory memory) =>
         new InferenceEngine(@base, memory);
 
-    private static IEngine ExcludeRulesWithKnownFacts(IEngine engine)
+    public static ICollection<(double X0, double X1)> CreateIntervals(ICollection<IRealFunction> functions)
     {
-        engine.KnowledgeBase.RuleBase.ProductionRules = engine.KnowledgeBase.RuleBase.ProductionRules.Where(e =>
-            engine.WorkingMemory.Facts.ContainsKey(e.Consequent!.LinguisticVariable.Name)).ToList();
-        return engine;
+        var intervalEndpoints = new SortedSet<double>();
+        foreach (var function in functions)
+        {
+            var interval = function.ClosedInterval();
+            intervalEndpoints.Add(interval.X0);
+            intervalEndpoints.Add(interval.X1);
+        }
+
+        return intervalEndpoints.Skip(1).Zip(intervalEndpoints, (a, b) => (b, a)).ToList();
+    }
+
+    public static IDictionary<(double X0, double X1), ICollection<IRealFunction>> CreateIntervalTable(
+        ICollection<IRealFunction> functions)
+    {
+        var intervalEndpoints = CreateIntervals(functions);
+        var intervalTable = new SortedDictionary<(double X0, double X1), ICollection<IRealFunction>>();
+        foreach (var interval in intervalEndpoints)
+        {
+            intervalTable.Add(interval, new List<IRealFunction>());
+            foreach (var function in functions)
+            {
+                var (x0, x1) = function.ClosedInterval();
+                if (interval.X0 < x0 || interval.X1 > x1) continue;
+                var list = intervalTable[interval];
+                list.Add(function);
+                intervalTable[interval] = list;
+            }
+        }
+
+        return intervalTable;
     }
 }
