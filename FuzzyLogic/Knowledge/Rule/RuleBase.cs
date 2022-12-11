@@ -14,6 +14,9 @@ public class RuleBase : IRuleBase
 
     public IRuleBase AddAll(ICollection<IRule> rules) => AddAllRules(this, rules);
 
+    public ICollection<IRule> FindApplicableRules(IDictionary<string, double> facts) =>
+        ProductionRules.Where(e => e.IsApplicable(facts)).ToList();
+
     public ICollection<IRule> FindRulesWithPremise(string variableName) =>
         ProductionRules.Where(e => e.PremiseContainsVariable(variableName)).ToList();
 

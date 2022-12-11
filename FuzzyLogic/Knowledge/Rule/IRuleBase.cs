@@ -11,6 +11,8 @@ public interface IRuleBase
 
     IRuleBase AddAll(ICollection<IRule> rules);
 
+    ICollection<IRule> FindApplicableRules(IDictionary<string, double> facts);
+    
     ICollection<IRule> FindRulesWithPremise(string variableName);
 
     ICollection<IRule> FindRulesWithConclusion(string variableName);
