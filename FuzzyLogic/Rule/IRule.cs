@@ -137,13 +137,13 @@ public interface IRule
     /// <param name="facts">A <see cref="IDictionary{TKey,TValue}">Dictionary</see> of facts</param>
     /// <returns>true if the rule is applicable; otherwise, null</returns>
     bool IsApplicable(IDictionary<string, double> facts);
-    
+
     bool PremiseContainsVariable(string variableName);
 
     bool ConclusionContainsVariable(string variableName);
 
     int PremiseLength();
-    
+
     /// <summary>
     ///     <para>
     ///         Applies all the unary operators to each proposition in the premise part of the rule. A unary operator
@@ -235,4 +235,6 @@ public interface IRule
     FuzzyNumber? EvaluateConclusionWeight(IDictionary<string, double> facts);
 
     FuzzyNumber? EvaluateRuleWeight(IDictionary<string, double> facts);
+
+    double? CalculateArea(IDictionary<string, double> facts, double errorMargin = 1e-5);
 }

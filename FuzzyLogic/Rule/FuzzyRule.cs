@@ -2,6 +2,7 @@
 using FuzzyLogic.Number;
 using FuzzyLogic.Proposition;
 using FuzzyLogic.Proposition.Enums;
+using MathNet.Numerics.Integration;
 using static System.StringComparison;
 
 namespace FuzzyLogic.Rule;
@@ -88,6 +89,14 @@ public class FuzzyRule : IRule
         if (!IsApplicable(facts)) return null;
         return FuzzyNumber.Implication(EvaluatePremiseWeight(facts).GetValueOrDefault(),
             EvaluateConclusionWeight(facts).GetValueOrDefault());
+    }
+
+    public double? CalculateArea(IDictionary<string, double> facts, double errorMargin = 1e-5)
+    {
+        if (!IsApplicable(facts)) return null;
+        var lambdaCutFunction = ApplyImplication(facts);
+        var (x0, x1) = Consequent!.Function.ClosedInterval();
+        return NewtonCotesTrapeziumRule.IntegrateAdaptive(lambdaCutFunction, x0, x1, errorMargin);
     }
 
     public static IRule Create() => new FuzzyRule();
