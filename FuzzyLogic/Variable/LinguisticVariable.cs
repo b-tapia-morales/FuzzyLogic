@@ -29,10 +29,28 @@ public class LinguisticVariable : IVariable
         LinguisticEntries = new Dictionary<string, IRealFunction>(StringComparer.InvariantCultureIgnoreCase);
     }
 
+    public static IVariable Create(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) throw new EmptyVariableException();
+        return new LinguisticVariable(name);
+    }
+
+    public static IVariable Create(string name, double lowerBoundary, double upperBoundary)
+    {
+        if (string.IsNullOrWhiteSpace(name)) throw new EmptyVariableException();
+        return new LinguisticVariable(name, lowerBoundary, upperBoundary);
+    }
+
     public IVariable AddAll(IDictionary<string, IRealFunction> linguisticEntries) => AddAll(this, linguisticEntries);
 
     public IVariable AddTrapezoidFunction(string name, double a, double b, double c, double d) =>
         AddTrapezoidFunction(this, name, a, b, c, d);
+
+    public IVariable AddLeftTrapezoidFunction(string name, double a, double b) =>
+        AddLeftTrapezoidFunction(this, name, a, b);
+
+    public IVariable AddRightTrapezoidFunction(string name, double a, double b) =>
+        AddRightTrapezoidFunction(this, name, a, b);
 
     public IVariable AddTriangularFunction(string name, double a, double b, double c) =>
         AddTriangularFunction(this, name, a, b, c);
@@ -51,18 +69,6 @@ public class LinguisticVariable : IVariable
     public IRealFunction? RetrieveLinguisticEntry(string name) =>
         LinguisticEntries.TryGetValue(name, out var function) ? function : null;
 
-    public static IVariable Create(string name)
-    {
-        if (string.IsNullOrWhiteSpace(name)) throw new EmptyVariableException();
-        return new LinguisticVariable(name);
-    }
-
-    public static IVariable Create(string name, double lowerBoundary, double upperBoundary)
-    {
-        if (string.IsNullOrWhiteSpace(name)) throw new EmptyVariableException();
-        return new LinguisticVariable(name, lowerBoundary, upperBoundary);
-    }
-
     private static IVariable AddAll(IVariable variable, IDictionary<string, IRealFunction> linguisticEntries)
     {
         if (linguisticEntries == null) throw new ArgumentNullException(nameof(linguisticEntries));
@@ -80,6 +86,12 @@ public class LinguisticVariable : IVariable
     private static IVariable AddTrapezoidFunction(IVariable variable, string name, double a, double b, double c,
         double d) =>
         variable.AddFunction(name, new RealTrapezoidalFunction(name, a, b, c, d));
+
+    private static IVariable AddLeftTrapezoidFunction(IVariable variable, string name, double a, double b) =>
+        variable.AddFunction(name, new RealLeftTrapezoidalFunction(name, a, b));
+
+    private static IVariable AddRightTrapezoidFunction(IVariable variable, string name, double a, double b) =>
+        variable.AddFunction(name, new RealLeftTrapezoidalFunction(name, a, b));
 
     private static IVariable AddTriangularFunction(IVariable variable, string name, double a, double b, double c) =>
         variable.AddFunction(name, new RealTriangularFunction(name, a, b, c));

@@ -31,6 +31,10 @@ public interface IVariable
 
     IVariable AddTrapezoidFunction(string name, double a, double b, double c, double d);
 
+    IVariable AddLeftTrapezoidFunction(string name, double a, double b);
+    
+    IVariable AddRightTrapezoidFunction(string name, double a, double b);
+
     IVariable AddTriangularFunction(string name, double a, double b, double c);
 
     IVariable AddGaussianFunction(string name, double m, double o);
