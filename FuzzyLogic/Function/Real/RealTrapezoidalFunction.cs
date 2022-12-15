@@ -5,7 +5,7 @@ namespace FuzzyLogic.Function.Real;
 
 public class RealTrapezoidalFunction : BaseTrapezoidalFunction<double>, IRealFunction
 {
-    public RealTrapezoidalFunction(string name, double a, double b, double c, double d) : base(name, a, b, c, d)
+    public RealTrapezoidalFunction(string name, double a, double b, double c, double d): base(name, a, b, c, d)
     {
         A = a;
         B = b;

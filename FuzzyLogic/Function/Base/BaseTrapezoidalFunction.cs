@@ -8,7 +8,6 @@ namespace FuzzyLogic.Function.Base;
 public abstract class BaseTrapezoidalFunction<T> : BaseMembershipFunction<T>, ITrapezoidalFunction<T>
     where T : unmanaged, INumber<T>, IConvertible
 {
-    protected const double DistanceTolerance = 1e-2;
     private bool? _isSymmetric;
 
     protected BaseTrapezoidalFunction(string name, T a, T b, T c, T d) : base(name)
@@ -28,11 +27,18 @@ public abstract class BaseTrapezoidalFunction<T> : BaseMembershipFunction<T>, IT
 
     public override bool IsOpenRight() => false;
 
-    public override bool IsSymmetric() => _isSymmetric ??= Math.Abs(
-        MathUtils.Distance(A.ToDouble(null), B.ToDouble(null), 0, 1) -
-        MathUtils.Distance(C.ToDouble(null), D.ToDouble(null), 1, 0)) < DistanceTolerance;
-
     public override bool IsNormal() => true;
+
+    public override bool IsSymmetric() => _isSymmetric ??=
+        Math.Abs(
+            MathUtils.Distance(A.ToDouble(null), B.ToDouble(null), 0, 1) -
+            MathUtils.Distance(C.ToDouble(null), D.ToDouble(null), 1, 0)) < ITrapezoidalFunction<T>.DistanceTolerance;
+
+    public override T LowerBoundary() => A;
+
+    public override T UpperBoundary() => D;
+
+    public (T? X0, T? X1) CoreInterval() => (B, C);
 
     public override Func<T, double> SimpleFunction() => x =>
     {
@@ -45,16 +51,6 @@ public abstract class BaseTrapezoidalFunction<T> : BaseMembershipFunction<T>, IT
     public override (double X1, double X2) LambdaCutInterval(FuzzyNumber y) => y == 1
         ? (B.ToDouble(null), C.ToDouble(null))
         : (LeftSidedLambdaCut(y), RightSidedLambdaCut(y));
-
-    public override T LowerBoundary() => A;
-
-    public override T UpperBoundary() => D;
-
-    public virtual (T? X0, T? X1) CoreInterval() => (B, C);
-
-    public virtual (T? X0, T? X1) LeftSupportInterval() => (LowerBoundary(), CoreInterval().X0);
-
-    public virtual (T? X0, T? X1) RightSupportInterval() => (CoreInterval().X1, UpperBoundary());
 
     private double LeftSidedLambdaCut(FuzzyNumber y) =>
         y.Value * (B.ToDouble(null) - A.ToDouble(null)) + A.ToDouble(null);
