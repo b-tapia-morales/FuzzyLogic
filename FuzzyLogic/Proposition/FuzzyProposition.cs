@@ -42,7 +42,7 @@ public class FuzzyProposition : IProposition
     public static IProposition Is(ILinguisticBase @base, string variableName, string entryName,
         HedgeToken hedgeToken = HedgeToken.None)
     {
-        var variable = @base.RetrieveLinguisticVariable(variableName) ?? throw new InvalidOperationException();
+        var variable = @base.Retrieve(variableName) ?? throw new InvalidOperationException();
         var entry = variable.RetrieveLinguisticEntry(entryName) ?? throw new InvalidOperationException();
         return new FuzzyProposition(variable, LiteralToken.Affirmation, hedgeToken, entry);
     }
@@ -50,7 +50,7 @@ public class FuzzyProposition : IProposition
     public static IProposition IsNot(ILinguisticBase @base, string variableName, string entryName,
         HedgeToken hedgeToken = HedgeToken.None)
     {
-        var variable = @base.RetrieveLinguisticVariable(variableName) ?? throw new InvalidOperationException();
+        var variable = @base.Retrieve(variableName) ?? throw new InvalidOperationException();
         var entry = variable.RetrieveLinguisticEntry(entryName) ?? throw new InvalidOperationException();
         return new FuzzyProposition(variable, LiteralToken.Negation, hedgeToken, entry);
     }

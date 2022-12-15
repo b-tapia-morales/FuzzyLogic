@@ -19,14 +19,16 @@ public interface ILinguisticBase
     /// </summary>
     /// <param name="variable">A linguistic variable</param>
     /// <returns>The linguistic base itself, reflecting the addition of a linguistic variable to it</returns>
-    ILinguisticBase AddLinguisticVariable(IVariable variable);
+    ILinguisticBase Add(IVariable variable);
+    
+    ILinguisticBase AddAll(params IVariable[] variables);
 
     /// <summary>
     ///     Adds all the linguistic variables in the collection provided as a parameter.
     /// </summary>
     /// <param name="variables">A collection of linguistic variables</param>
     /// <returns>The linguistic base itself, reflecting the addition of the linguistic variables to it</returns>
-    ILinguisticBase AddAllLinguisticVariables(ICollection<IVariable> variables);
+    ILinguisticBase AddAll(ICollection<IVariable> variables);
 
     /// <summary>
     ///     Determines whether the base contains a linguistic variable with the <see cref="IVariable.Name" /> provided as a
@@ -35,7 +37,7 @@ public interface ILinguisticBase
     /// <param name="name">The name of the linguistic variable</param>
     /// <returns>true if the base contains a linguistic variable with the given name; otherwise, false.</returns>
     /// <seealso cref="IVariable.Name" />
-    bool ContainsLinguisticVariable(string name);
+    bool Contains(string name);
 
     /// <summary>
     ///     Retrieves the linguistic variable with the <see cref="IVariable.Name" /> provided as a parameter.
@@ -43,7 +45,7 @@ public interface ILinguisticBase
     /// <param name="name">The name of the linguistic variable</param>
     /// <returns>The linguistic variable itself if the base contains linguistic variable with the given name; otherwise, null.</returns>
     /// <seealso cref="IVariable.Name" />
-    IVariable? RetrieveLinguisticVariable(string name);
+    IVariable? Retrieve(string name);
 
     /// <summary>
     ///     Determines whether the base contains a linguistic variable with the name provided as the first parameter;
@@ -86,7 +88,7 @@ public interface ILinguisticBase
     /// <seealso cref="LinguisticVariables" />
     /// <seealso cref="IVariable.LinguisticEntries" />
     IRealFunction? RetrieveLinguisticEntry(string variableName, string entryName) =>
-        RetrieveLinguisticVariable(variableName)?.RetrieveLinguisticEntry(entryName);
+        Retrieve(variableName)?.RetrieveLinguisticEntry(entryName);
 
     /// <summary>
     /// Creates a new instance of a <see cref="ILinguisticBase"/>.
