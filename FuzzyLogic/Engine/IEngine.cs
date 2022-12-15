@@ -13,4 +13,6 @@ public interface IEngine
     //IEnumerable<string> ApplicableFromAvailableFacts();
 
     static abstract IEngine Create(IKnowledgeBase @base, IWorkingMemory memory);
+
+    double? Defuzzify(string variableName);
 }
