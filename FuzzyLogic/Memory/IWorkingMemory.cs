@@ -1,5 +1,4 @@
-﻿using FuzzyLogic.Utils.Csv;
-using static FuzzyLogic.Memory.EntryResolutionMethod;
+﻿using static FuzzyLogic.Memory.EntryResolutionMethod;
 
 namespace FuzzyLogic.Memory;
 
