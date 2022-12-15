@@ -7,9 +7,11 @@ public interface IRuleBase
 {
     ICollection<IRule> ProductionRules { get; set; }
 
-    IRuleBase AddRule(IRule rule);
+    IRuleBase Add(IRule rule);
 
     IRuleBase AddAll(ICollection<IRule> rules);
+    
+    IRuleBase AddAll(params IRule[] rules);
 
     ICollection<IRule> FindApplicableRules(IDictionary<string, double> facts);
     
