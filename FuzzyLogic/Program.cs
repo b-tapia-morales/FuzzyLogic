@@ -1,14 +1,13 @@
 ﻿using FuzzyLogic.Engine;
-using FuzzyLogic.Knowledge;
+using FuzzyLogic.Function.Interface;
 using FuzzyLogic.Knowledge.Linguistic;
 using FuzzyLogic.Knowledge.Rule;
 using FuzzyLogic.Memory;
-using FuzzyLogic.Number;
 using FuzzyLogic.Proposition;
 using FuzzyLogic.Proposition.Enums;
 using FuzzyLogic.Rule;
+using FuzzyLogic.Tree;
 using FuzzyLogic.Variable;
-using MathNet.Numerics.Integration;
 
 var linguistics = LinguisticBase
     .Create()
@@ -23,6 +22,12 @@ var linguistics = LinguisticBase
             .Create("Power")
             .AddTriangularFunction("Low", 0, 25, 50)
             .AddTriangularFunction("High", 25, 50, 75)
+    ).AddLinguisticVariable(
+        LinguisticVariable
+            .Create("Temperature")
+            .AddTriangularFunction("Low", 0, 10, 15)
+            .AddTriangularFunction("Medium", 15, 20, 25)
+            .AddTriangularFunction("High", 20, 25, 35)
     );
 
 var rules = RuleBase
@@ -30,31 +35,21 @@ var rules = RuleBase
     .AddRule(
         FuzzyRule
             .Create()
-            .Or(FuzzyProposition.Is(linguistics, "Water", "Warm", HedgeToken.Very))
+            .If(FuzzyProposition.Is(linguistics, "Water", "Cold", HedgeToken.Very))
             .And(FuzzyProposition.Is(linguistics, "Power", "High"))
             .Then(FuzzyProposition.Is(linguistics, "Power", "Low"))
     ).AddRule(
         FuzzyRule
             .Create()
-            .If(FuzzyProposition.Is(linguistics, "Water", "Cold"))
+            .If(FuzzyProposition.Is(linguistics, "Water", "Warm"))
             .And(FuzzyProposition.Is(linguistics, "Power", "Low"))
-            .Then(FuzzyProposition.Is(linguistics, "Water", "Warm"))
-    );
-
-foreach (var rule in rules.ProductionRules)
-    Console.WriteLine(rule);
-
-var ruleCons = rules.FindRulesWithConclusion("Water");
-
-foreach (var rule in ruleCons)
-    Console.WriteLine(rule);
-
-var workingMemory = WorkingMemory.InitializeFromFile(Path.Combine(Environment.CurrentDirectory, @"Files\Facts.csv"));
-Console.WriteLine(workingMemory);
-
-var function = linguistics.RetrieveLinguisticEntry("Water", "Hot")!;
-var value = NewtonCotesTrapeziumRule.IntegrateAdaptive(function.LambdaCutFunction(0.5), 64, 116, 1e-10);
-Console.WriteLine(value);
+            .Then(FuzzyProposition.Is(linguistics, "Power", "Low"))
+    ).AddRule(
+        FuzzyRule
+            .Create()
+            .If(FuzzyProposition.Is(linguistics, "Temperature", "Low"))
+            .And(FuzzyProposition.Is(linguistics, "Water", "Cold"))
+            .Then(FuzzyProposition.Is(linguistics, "Power", "High")));
 
 var facts = new Dictionary<string, double>
 {
@@ -62,24 +57,29 @@ var facts = new Dictionary<string, double>
     ["Power"] = 30
 };
 
-var accessedRule = rules.ProductionRules.ElementAt(0);
-Console.WriteLine(accessedRule);
+var memory = WorkingMemory.Create(facts);
 
-var fuzzyNumbers = accessedRule.ApplyOperators(facts);
-foreach (var fuzzyNumber in fuzzyNumbers)
+var list = new List<IRealFunction>
 {
-    Console.WriteLine(fuzzyNumber);
+    linguistics.RetrieveLinguisticEntry("Water", "Cold")!,
+    linguistics.RetrieveLinguisticEntry("Water", "Warm")!,
+    linguistics.RetrieveLinguisticEntry("Water", "Hot")!,
+};
+
+foreach (var function in list)
+{
+    Console.WriteLine(function.IsOpenLeft());
+    Console.WriteLine(function.IsOpenRight());
+    Console.WriteLine(function.IsClosed());
+    Console.WriteLine(function.BoundaryInterval());
 }
 
-var finalNumber = accessedRule.EvaluatePremiseWeight(facts);
-Console.WriteLine(finalNumber ?? FuzzyNumber.MinValue());
+var set = InferenceEngine.CreateIntervalTable(list);
 
-var lambdaCut = accessedRule.ApplyImplication(facts);
-Console.WriteLine(lambdaCut == null ? 0 : NewtonCotesTrapeziumRule.IntegrateAdaptive(lambdaCut, 0, 40, 1e-10));
+foreach (var tuple in set) Console.WriteLine($"{tuple.Key} - {string.Join(", ", tuple.Value.Select(e => e.Name))}");
 
-var engine = InferenceEngine.Create(KnowledgeBase.Create(linguistics, rules), WorkingMemory.Create());
+var areas = InferenceEngine.CalculateArea(rules, memory, "Power");
+foreach (var area in areas) Console.WriteLine(area);
 
-foreach (var variable in engine.ApplicableFromAvailableFacts())
-{
-    Console.WriteLine(variable);
-}
+var rootNode = TreeNode.CreateDerivationTree("Power", rules.ProductionRules);
+Console.WriteLine(string.Join(Environment.NewLine, rootNode.Children.Select(e => e.VariableName)));
