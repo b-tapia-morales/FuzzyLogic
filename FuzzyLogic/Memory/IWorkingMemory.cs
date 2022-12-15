@@ -22,6 +22,8 @@ public interface IWorkingMemory
 
     static abstract IWorkingMemory Create(IDictionary<string, double> facts,
         EntryResolutionMethod method = Replace);
+    
+    static abstract IWorkingMemory Initialize(EntryResolutionMethod method = Replace);
 
     static abstract IWorkingMemory InitializeFromFile(string folderPath, EntryResolutionMethod method = Replace);
 

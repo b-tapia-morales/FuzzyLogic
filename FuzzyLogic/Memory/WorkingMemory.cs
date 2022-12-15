@@ -5,19 +5,13 @@ namespace FuzzyLogic.Memory;
 
 public class WorkingMemory : IWorkingMemory
 {
-    private const string CsvFileFolder = "Files";
-    private const string CsvFileName = "Facts.csv";
-
-    private static readonly string CsvFilePath =
-        Path.Combine(Directory.GetCurrentDirectory(), CsvFileFolder, CsvFileName);
-
-    private WorkingMemory(EntryResolutionMethod method = Replace)
+    protected WorkingMemory(EntryResolutionMethod method = Replace)
     {
         Facts = new Dictionary<string, double>();
         Method = method;
     }
 
-    private WorkingMemory(IDictionary<string, double> facts, EntryResolutionMethod method = Replace)
+    protected WorkingMemory(IDictionary<string, double> facts, EntryResolutionMethod method = Replace)
     {
         Facts = facts;
         Method = method;
@@ -31,6 +25,8 @@ public class WorkingMemory : IWorkingMemory
 
     public static IWorkingMemory Create(IDictionary<string, double> facts, EntryResolutionMethod method = Replace) =>
         new WorkingMemory(facts, method);
+
+    public static IWorkingMemory Initialize(EntryResolutionMethod method = Replace) => Create(method);
 
     public static IWorkingMemory InitializeFromFile(string folderPath, EntryResolutionMethod method = Replace) =>
         new WorkingMemory(
