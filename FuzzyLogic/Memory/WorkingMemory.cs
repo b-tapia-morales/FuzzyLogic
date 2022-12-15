@@ -11,22 +11,31 @@ public class WorkingMemory : IWorkingMemory
     private static readonly string CsvFilePath =
         Path.Combine(Directory.GetCurrentDirectory(), CsvFileFolder, CsvFileName);
 
-    public WorkingMemory(EntryResolutionMethod method = Preserve)
+    private WorkingMemory(EntryResolutionMethod method = Replace)
     {
         Facts = new Dictionary<string, double>();
         Method = method;
     }
 
-    public WorkingMemory(IDictionary<string, double> dictionary, EntryResolutionMethod method = Preserve)
+    private WorkingMemory(IDictionary<string, double> facts, EntryResolutionMethod method = Replace)
     {
-        Facts = dictionary;
+        Facts = facts;
         Method = method;
     }
 
     public IDictionary<string, double> Facts { get; }
     public EntryResolutionMethod Method { get; }
 
-    public static IWorkingMemory Create() => new WorkingMemory();
+    public static IWorkingMemory Create(EntryResolutionMethod method = Replace) =>
+        new WorkingMemory(method);
+
+    public static IWorkingMemory Create(IDictionary<string, double> facts, EntryResolutionMethod method = Replace) =>
+        new WorkingMemory(facts, method);
+
+    public static IWorkingMemory InitializeFromFile(string folderPath, EntryResolutionMethod method = Replace) =>
+        new WorkingMemory(
+            RowRetrieval.RetrieveRows<FactRow, FactMapping>(folderPath).ToDictionary(e => e.Key, e => e.Value),
+            method);
 
     public IWorkingMemory Clone() => (WorkingMemory) MemberwiseClone();
 
@@ -56,11 +65,4 @@ public class WorkingMemory : IWorkingMemory
     }
 
     public override string ToString() => string.Join(Environment.NewLine, Facts.Select(e => $"{e.Key} = {e.Value}"));
-
-    public static WorkingMemory InitializeFromFile(string folderPath, EntryResolutionMethod method = Preserve) =>
-        new(RowRetrieval.RetrieveRows<FactRow, FactMapping>(folderPath).ToDictionary(e => e.Key, e => e.Value),
-            method);
-
-    public static WorkingMemory InitializeFromFile(EntryResolutionMethod method = Preserve) =>
-        InitializeFromFile(CsvFilePath, method);
 }
