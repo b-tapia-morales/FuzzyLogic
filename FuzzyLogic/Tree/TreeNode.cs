@@ -46,13 +46,11 @@ public class TreeNode : ITreeNode<TreeNode>
         stack.Push(rootNode);
         while (stack.TryPop(out var node))
         {
+            Console.WriteLine(node.VariableName);
             circularDependencies.Add(node.VariableName);
             UpdateNode(ref node, node.VariableName, rules, circularDependencies);
-            foreach (var child in node.Children)
-            {
-                //Console.WriteLine(node.VariableName);
+            foreach (var child in node.Children) 
                 stack.Push(child);
-            }
         }
 
         return rootNode;
@@ -64,12 +62,19 @@ public class TreeNode : ITreeNode<TreeNode>
         var filteredRules = rules
             .Where(e => e.ConclusionContainsVariable(variableName))
             .ToList();
-        var dependencies = filteredRules
+        var antecedents = filteredRules
             .Select(e => e.Antecedent!.LinguisticVariable.Name)
             .Where(e => !circularDependencies.Contains(e))
-            .Distinct()
             .ToList();
-        var children = new List<ITreeNode<TreeNode>>(dependencies.Select(e => new TreeNode(e)));
+        var connectives = filteredRules
+            .SelectMany(e => e.Connectives)
+            .Select(e => e.LinguisticVariable.Name)
+            .Where(e => !circularDependencies.Contains(e))
+            .ToList();
+        var set = new HashSet<string>();
+        set.UnionWith(antecedents);
+        set.UnionWith(connectives);
+        var children = new List<ITreeNode<TreeNode>>(set.Select(e => new TreeNode(e)));
         node.AddRules(rules);
         node.AddChildren(children);
     }
