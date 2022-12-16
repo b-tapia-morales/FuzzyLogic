@@ -21,6 +21,6 @@ public class TriangularFunction : BaseTriangularFunction<double>, IRealFunction,
         var (x1, x2) = LambdaCutInterval(y);
         var a = Math.Abs(x1 - x2);
         var b = Math.Abs(A - C);
-        return 0.5 * Math.Sqrt(a * b) * y.Value;
+        return 0.5 * (a + b) * y.Value;
     }
 }
