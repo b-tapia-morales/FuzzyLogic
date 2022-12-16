@@ -8,6 +8,8 @@ namespace FuzzyLogic.Function.Base;
 public abstract class BaseTriangularFunction<T> : BaseMembershipFunction<T>, ITrapezoidalFunction<T>
     where T : unmanaged, INumber<T>, IConvertible
 {
+    private bool? _isSymmetric;
+
     protected BaseTriangularFunction(string name, T a, T b, T c) : base(name)
     {
         A = a;
@@ -15,9 +17,9 @@ public abstract class BaseTriangularFunction<T> : BaseMembershipFunction<T>, ITr
         C = c;
     }
 
-    protected virtual T A { get; }
-    protected virtual T B { get; }
-    protected virtual T C { get; }
+    protected T A { get; }
+    protected T B { get; }
+    protected T C { get; }
 
     public override bool IsOpenLeft() => false;
 
@@ -25,7 +27,7 @@ public abstract class BaseTriangularFunction<T> : BaseMembershipFunction<T>, ITr
 
     public override bool IsNormal() => true;
 
-    public override bool IsSymmetric() =>
+    public override bool IsSymmetric() => _isSymmetric ??=
         Math.Abs(
             MathUtils.Distance(A.ToDouble(null), B.ToDouble(null), 0, 1) -
             MathUtils.Distance(B.ToDouble(null), C.ToDouble(null), 1, 0)) < ITrapezoidalFunction<T>.DistanceTolerance;
