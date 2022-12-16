@@ -10,11 +10,7 @@ public class TriangularFunction : BaseTriangularFunction<double>, IRealFunction,
     {
     }
 
-    public double CalculateArea(double errorMargin = IClosedSurface.DefaultErrorMargin)
-    {
-        var s = (A + B + C) / 2;
-        return Math.Sqrt(s * (s - A) * (s - B) * (s - C));
-    }
+    public double CalculateArea(double errorMargin = IClosedSurface.DefaultErrorMargin) => 0.5 * Math.Abs(A - C);
 
     public double CalculateArea(FuzzyNumber y, double errorMargin = IClosedSurface.DefaultErrorMargin)
     {
