@@ -3,19 +3,17 @@ using FuzzyLogic.Function.Interface;
 
 namespace FuzzyLogic.Function.Real;
 
-public class RealCauchyFunction: BaseCauchyFunction<double>, IRealFunction
+public class SigmoidFunction : BaseSigmoidFunction<double>, IRealFunction
 {
-    public RealCauchyFunction(string name, double a, double b, double c) : base(name, a, b, c)
+    public SigmoidFunction(string name, double a, double c) : base(name, a, c)
     {
         A = a;
-        B = b;
         C = c;
     }
-    
-    protected override double A { get; }
-    protected override double B { get; }
-    protected override double C { get; }
 
+    protected override double A { get; }
+    protected override double C { get; }
+    
     public override double LowerBoundary() => double.NegativeInfinity;
 
     public override double UpperBoundary() => double.PositiveInfinity;

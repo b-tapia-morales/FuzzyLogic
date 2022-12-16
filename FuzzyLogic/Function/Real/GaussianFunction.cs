@@ -3,9 +3,9 @@ using FuzzyLogic.Function.Interface;
 
 namespace FuzzyLogic.Function.Real;
 
-public class RealGaussianFunction : BaseGaussianFunction<double>, IRealFunction
+public class GaussianFunction : BaseGaussianFunction<double>, IRealFunction
 {
-    public RealGaussianFunction(string name, double m, double o) : base(name, m, o)
+    public GaussianFunction(string name, double m, double o) : base(name, m, o)
     {
         M = m;
         O = o;

@@ -85,25 +85,25 @@ public class LinguisticVariable : IVariable
 
     private static IVariable AddTrapezoidFunction(IVariable variable, string name, double a, double b, double c,
         double d) =>
-        variable.AddFunction(name, new RealTrapezoidalFunction(name, a, b, c, d));
+        variable.AddFunction(name, new TrapezoidalFunction(name, a, b, c, d));
 
     private static IVariable AddLeftTrapezoidFunction(IVariable variable, string name, double a, double b) =>
-        variable.AddFunction(name, new RealLeftTrapezoidalFunction(name, a, b));
+        variable.AddFunction(name, new LeftTrapezoidalFunction(name, a, b));
 
     private static IVariable AddRightTrapezoidFunction(IVariable variable, string name, double a, double b) =>
-        variable.AddFunction(name, new RealLeftTrapezoidalFunction(name, a, b));
+        variable.AddFunction(name, new LeftTrapezoidalFunction(name, a, b));
 
     private static IVariable AddTriangularFunction(IVariable variable, string name, double a, double b, double c) =>
-        variable.AddFunction(name, new RealTriangularFunction(name, a, b, c));
+        variable.AddFunction(name, new TriangularFunction(name, a, b, c));
 
     private static IVariable AddGaussianFunction(IVariable variable, string name, double m, double o) =>
-        variable.AddFunction(name, new RealGaussianFunction(name, m, o));
+        variable.AddFunction(name, new GaussianFunction(name, m, o));
 
     private static IVariable AddCauchyFunction(IVariable variable, string name, double a, double b, double c) =>
-        variable.AddFunction(name, new RealCauchyFunction(name, a, b, c));
+        variable.AddFunction(name, new CauchyFunction(name, a, b, c));
 
     private static IVariable AddSigmoidFunction(IVariable variable, string name, double a, double c) =>
-        variable.AddFunction(name, new RealSigmoidFunction(name, a, c));
+        variable.AddFunction(name, new SigmoidFunction(name, a, c));
 
     private static IVariable AddFunction(IVariable variable, string name, IRealFunction function)
     {

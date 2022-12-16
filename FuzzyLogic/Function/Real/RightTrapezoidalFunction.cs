@@ -4,9 +4,9 @@ using FuzzyLogic.Number;
 
 namespace FuzzyLogic.Function.Real;
 
-public class RealRightTrapezoidalFunction : BaseLeftTrapezoidalFunction<double>, IRealFunction
+public class RightTrapezoidalFunction : BaseLeftTrapezoidalFunction<double>, IRealFunction
 {
-    public RealRightTrapezoidalFunction(string name, double a, double b) : base(name, a, b)
+    public RightTrapezoidalFunction(string name, double a, double b) : base(name, a, b)
     {
     }
 
