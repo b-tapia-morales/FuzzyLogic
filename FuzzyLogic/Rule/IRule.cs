@@ -235,6 +235,6 @@ public interface IRule
     FuzzyNumber? EvaluateConclusionWeight(IDictionary<string, double> facts);
 
     FuzzyNumber? EvaluateRuleWeight(IDictionary<string, double> facts);
-
-    double? CalculateArea(IDictionary<string, double> facts, double errorMargin = 1e-5);
+    
+    double? CalculateArea(IDictionary<string, double> facts, double errorMargin = IClosedSurface.DefaultErrorMargin);
 }

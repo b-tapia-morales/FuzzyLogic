@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using FuzzyLogic.Function.Interface;
 using FuzzyLogic.Number;
 using FuzzyLogic.Proposition;
 using FuzzyLogic.Proposition.Enums;
@@ -91,12 +92,15 @@ public class FuzzyRule : IRule
             EvaluateConclusionWeight(facts).GetValueOrDefault());
     }
 
-    public double? CalculateArea(IDictionary<string, double> facts, double errorMargin = 1e-5)
+    public double? CalculateArea(IDictionary<string, double> facts,
+        double errorMargin = IClosedSurface.DefaultErrorMargin)
     {
         if (!IsApplicable(facts)) return null;
-        var lambdaCutFunction = ApplyImplication(facts);
-        var (x0, x1) = Consequent!.Function.ClosedInterval();
-        return NewtonCotesTrapeziumRule.IntegrateAdaptive(lambdaCutFunction, x0, x1, errorMargin);
+        var function = Consequent!.Function;
+        if (function is not IClosedSurface) return null;
+        var surface = (IClosedSurface) Consequent!.Function;
+        var cutPoint = EvaluatePremiseWeight(facts).GetValueOrDefault();
+        return surface.CalculateArea(cutPoint, errorMargin);
     }
 
     public static IRule Create() => new FuzzyRule();
