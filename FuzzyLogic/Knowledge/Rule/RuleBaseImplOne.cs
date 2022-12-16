@@ -8,7 +8,7 @@ public class RuleBaseImplOne : RuleBase
 {
     public new static IRuleBase Initialize(ILinguisticBase linguisticBase)
     {
-        var r1 = FuzzyRule.Create()
+         var r1 = FuzzyRule.Create()
             .If(Is(linguisticBase, "Horario", "Madrugada"))
             .And(Is(linguisticBase, "Área", "Pequeña"))
             .Or(Is(linguisticBase, "Espesor", "Menor"))
