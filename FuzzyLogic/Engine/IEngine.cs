@@ -1,4 +1,5 @@
-﻿using FuzzyLogic.Knowledge;
+﻿using FuzzyLogic.Engine.Defuzzify;
+using FuzzyLogic.Knowledge;
 using FuzzyLogic.Memory;
 
 namespace FuzzyLogic.Engine;
@@ -12,7 +13,8 @@ public interface IEngine
 
     //IEnumerable<string> ApplicableFromAvailableFacts();
 
-    static abstract IEngine Create(IKnowledgeBase @base, IWorkingMemory memory);
+    static abstract IEngine Create(IKnowledgeBase knowledgeBase, IWorkingMemory workingMemory,
+        DefuzzificationMethod method = DefuzzificationMethod.MeanOfMaxima);
 
     double? Defuzzify(string variableName);
 }
