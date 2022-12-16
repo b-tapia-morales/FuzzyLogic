@@ -15,7 +15,7 @@ var knowledgeBase = KnowledgeBase.Create(linguisticBase, ruleBase);
 
 var inferenceEngine = InferenceEngine.Create(knowledgeBase, workingMemory);
 
-var rootNode = TreeNode.CreateDerivationTree("Densidad de corriente", ruleBase.ProductionRules, workingMemory.Facts);
+var rootNode = TreeNode.CreateDerivationTree("Densidad de Corriente", ruleBase.ProductionRules, workingMemory.Facts);
 Console.WriteLine(string.Join(Environment.NewLine, rootNode.Rules));
 Console.WriteLine();
 Console.WriteLine(string.Join(Environment.NewLine, rootNode.Children.Select(e => e.VariableName)));

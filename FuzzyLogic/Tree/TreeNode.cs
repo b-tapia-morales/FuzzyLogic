@@ -53,7 +53,10 @@ public class TreeNode : ITreeNode<TreeNode>
             circularDependencies.Add(node.VariableName);
             UpdateNode(ref node, node.VariableName, rules, facts, circularDependencies);
             foreach (var child in node.Children)
+            {
                 stack.Push(child);
+                Console.WriteLine(string.Join(Environment.NewLine,child.Rules));
+            }
         }
 
         return rootNode;
