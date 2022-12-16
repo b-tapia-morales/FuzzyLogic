@@ -6,10 +6,10 @@ public class WorkingMemoryImplOne : WorkingMemory
 {
     public new static IWorkingMemory Initialize(EntryResolutionMethod method = Replace)
     {
-        var workingMemory = Create();
-        workingMemory.AddFact("Horario", 12);
-        workingMemory.AddFact("Área", 150);
-        workingMemory.AddFact("Espesor", 0.2);
+        var workingMemory = Create(method);
+        workingMemory.AddFact("Horario", 7);
+        workingMemory.AddFact("Área", 8);
+        workingMemory.AddFact("Espesor", 0.06);
         return workingMemory;
     }
 }

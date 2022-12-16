@@ -11,22 +11,22 @@ public class RuleBaseImplOne : RuleBase
         var r1 = FuzzyRule.Create()
             .If(Is(linguisticBase, "Horario", "Madrugada"))
             .And(Is(linguisticBase, "Área", "Pequeña"))
-            .And(Is(linguisticBase, "Espesor", "Menor"))
+            .Or(Is(linguisticBase, "Espesor", "Menor"))
             .Then(Is(linguisticBase, "Tiempo de aplicación", "Corto"));
         var r2 = FuzzyRule.Create()
             .If(Is(linguisticBase, "Horario", "Madrugada"))
             .And(Is(linguisticBase, "Área", "Grande"))
-            .And(Is(linguisticBase, "Espesor", "Menor"))
+            .Or(Is(linguisticBase, "Espesor", "Menor"))
             .Then(Is(linguisticBase, "Tiempo de aplicación", "Moderado"));
         var r3 = FuzzyRule.Create()
             .If(Is(linguisticBase, "Horario", "Día"))
             .And(Is(linguisticBase, "Área", "Pequeña"))
-            .And(Is(linguisticBase, "Espesor", "Menor"))
+            .Or(Is(linguisticBase, "Espesor", "Menor"))
             .Then(Is(linguisticBase, "Tiempo de aplicación", "Muy Corto"));
         var r4 = FuzzyRule.Create()
             .If(Is(linguisticBase, "Horario", "Día"))
             .And(Is(linguisticBase, "Área", "Pequeña"))
-            .And(Is(linguisticBase, "Espesor", "Regular"))
+            .Or(Is(linguisticBase, "Espesor", "Regular"))
             .Then(Is(linguisticBase, "Tiempo de aplicación", "Muy Corto"));
         var r5 = FuzzyRule.Create()
             .If(Is(linguisticBase, "Horario", "Madrugada"))
