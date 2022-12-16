@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using FuzzyLogic.Number;
+using Xunit;
 using static FuzzyLogic.Number.FuzzyNumber;
 using static FuzzyLogic.Number.IFuzzyNumber<FuzzyLogic.Number.FuzzyNumber>;
 
@@ -11,10 +12,10 @@ public class FuzzyNumberTest
     [Fact]
     public void InstantiationThrowsExceptionOnValueOutOfRange()
     {
-        Assert.Throws<ArgumentException>(() => Of(double.MinValue));
-        Assert.Throws<ArgumentException>(() => Of(-0.0001));
-        Assert.Throws<ArgumentException>(() => Of(+1.0001));
-        Assert.Throws<ArgumentException>(() => Of(double.MaxValue));
+        Assert.Throws<ArgumentException>(() => FuzzyNumber.Of(double.MinValue));
+        Assert.Throws<ArgumentException>(() => FuzzyNumber.Of(-0.0001));
+        Assert.Throws<ArgumentException>(() => FuzzyNumber.Of(+1.0001));
+        Assert.Throws<ArgumentException>(() => FuzzyNumber.Of(double.MaxValue));
     }
 
     [Fact]
@@ -30,25 +31,25 @@ public class FuzzyNumberTest
     [MemberData(nameof(GenerateRandomPairs), parameters: 100)]
     public void MinMaxOperatorsAreEquivalent(double x, double y)
     {
-        Assert.Equal(Math.Min(x, y), Of(x) & Of(y), Tolerance);
-        Assert.Equal(Math.Max(x, y), Of(x) | Of(y), Tolerance);
+        Assert.Equal(Math.Min(x, y), FuzzyNumber.Of(x) & FuzzyNumber.Of(y), Tolerance);
+        Assert.Equal(Math.Max(x, y), FuzzyNumber.Of(x) | FuzzyNumber.Of(y), Tolerance);
     }
 
     [Fact]
     public void NegationOperatorYieldsExpectedValues()
     {
-        Assert.Equal(Of(0), !Of(1), Tolerance);
-        Assert.True(Of(0) == !Of(1));
-        Assert.Equal(Of(1), !Of(0), Tolerance);
-        Assert.True(Of(1) == !Of(0));
+        Assert.Equal(FuzzyNumber.Of(0), !FuzzyNumber.Of(1), Tolerance);
+        Assert.True(FuzzyNumber.Of(0) == !FuzzyNumber.Of(1));
+        Assert.Equal(FuzzyNumber.Of(1), !FuzzyNumber.Of(0), Tolerance);
+        Assert.True(FuzzyNumber.Of(1) == !FuzzyNumber.Of(0));
     }
 
     [Theory]
     [MemberData(nameof(GenerateRandomValues), parameters: 100)]
     public void NegationOperatorIsEquivalent(double x)
     {
-        Assert.Equal(1 - x, !Of(x), Tolerance);
-        Assert.True(Of(1 - x) == !Of(x));
+        Assert.Equal(1 - x, !FuzzyNumber.Of(x), Tolerance);
+        Assert.True(FuzzyNumber.Of(1 - x) == !FuzzyNumber.Of(x));
     }
 
     [Theory]
@@ -67,8 +68,8 @@ public class FuzzyNumberTest
     [MemberData(nameof(GenerateRandomValuesIncludingTolerance), parameters: 100)]
     public void ValuesYieldEqualityForDifferenceUnderTolerance(double first, double second)
     {
-        Assert.Equal(Of(first), Of(second), Tolerance);
-        Assert.True(Of(first) == Of(second));
+        Assert.Equal(FuzzyNumber.Of(first), FuzzyNumber.Of(second), Tolerance);
+        Assert.True(FuzzyNumber.Of(first) == FuzzyNumber.Of(second));
     }
     
     public static IEnumerable<object[]> GenerateRandomValues(int n)
