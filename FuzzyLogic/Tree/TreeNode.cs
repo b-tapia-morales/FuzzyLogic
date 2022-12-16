@@ -5,21 +5,24 @@ namespace FuzzyLogic.Tree;
 public class TreeNode : ITreeNode<TreeNode>
 {
     public string VariableName { get; }
+    public bool IsFact { get; set; }
     public ICollection<IRule> Rules { get; }
     public ICollection<ITreeNode<TreeNode>> Children { get; }
 
     public TreeNode(string variableName)
     {
         VariableName = variableName;
+        IsFact = false;
         Rules = new List<IRule>();
         Children = new List<ITreeNode<TreeNode>>();
     }
-
-    public TreeNode(string variableName, ICollection<IRule> rules, ICollection<ITreeNode<TreeNode>> children)
+    
+    public TreeNode(string variableName, bool isFact)
     {
         VariableName = variableName;
-        Rules = rules;
-        Children = children;
+        IsFact = isFact;
+        Rules = new List<IRule>();
+        Children = new List<ITreeNode<TreeNode>>();
     }
 
     public bool IsLeaf() => Children.Any();
@@ -38,7 +41,8 @@ public class TreeNode : ITreeNode<TreeNode>
             Children.Add(child);
     }
 
-    public static ITreeNode<TreeNode> CreateDerivationTree(string variableName, ICollection<IRule> rules)
+    public static ITreeNode<TreeNode> CreateDerivationTree(string variableName, ICollection<IRule> rules,
+        IDictionary<string, double> facts)
     {
         var circularDependencies = new HashSet<string>();
         var rootNode = new TreeNode(variableName);
@@ -46,10 +50,9 @@ public class TreeNode : ITreeNode<TreeNode>
         stack.Push(rootNode);
         while (stack.TryPop(out var node))
         {
-            Console.WriteLine(node.VariableName);
             circularDependencies.Add(node.VariableName);
-            UpdateNode(ref node, node.VariableName, rules, circularDependencies);
-            foreach (var child in node.Children) 
+            UpdateNode(ref node, node.VariableName, rules, facts, circularDependencies);
+            foreach (var child in node.Children)
                 stack.Push(child);
         }
 
@@ -57,8 +60,14 @@ public class TreeNode : ITreeNode<TreeNode>
     }
 
     private static void UpdateNode(ref ITreeNode<TreeNode> node, string variableName, ICollection<IRule> rules,
-        ISet<string> circularDependencies)
+        IDictionary<string, double> facts, ISet<string> circularDependencies)
     {
+        if (facts.ContainsKey(variableName))
+        {
+            node.IsFact = true;
+            return;
+        }
+        
         var filteredRules = rules
             .Where(e => e.ConclusionContainsVariable(variableName))
             .ToList();
@@ -74,8 +83,8 @@ public class TreeNode : ITreeNode<TreeNode>
         var set = new HashSet<string>();
         set.UnionWith(antecedents);
         set.UnionWith(connectives);
-        var children = new List<ITreeNode<TreeNode>>(set.Select(e => new TreeNode(e)));
-        node.AddRules(rules);
+        var children = new List<ITreeNode<TreeNode>>(set.Select(e => new TreeNode(e, false)));
+        node.AddRules(filteredRules);
         node.AddChildren(children);
     }
 }
