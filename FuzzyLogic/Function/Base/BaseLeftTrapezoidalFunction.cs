@@ -12,8 +12,8 @@ public abstract class BaseLeftTrapezoidalFunction<T> : BaseMembershipFunction<T>
         B = b;
     }
 
-    protected virtual T A { get; }
-    protected virtual T B { get; }
+    protected T A { get; }
+    protected T B { get; }
 
     public override bool IsOpenLeft() => true;
 

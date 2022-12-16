@@ -4,20 +4,20 @@ using FuzzyLogic.Number;
 
 namespace FuzzyLogic.Function.Real;
 
-public class TrapezoidalFunction : BaseTrapezoidalFunction<double>, IRealFunction
+public class TrapezoidalFunction : BaseTrapezoidalFunction<double>, IRealFunction, IClosedSurface
 {
     public TrapezoidalFunction(string name, double a, double b, double c, double d) : base(name, a, b, c, d)
     {
     }
 
-    double ITrigonometricalFunction.CalculateArea(double errorMargin)
+    public double CalculateArea(double errorMargin = IClosedSurface.DefaultErrorMargin)
     {
         var a = Math.Abs(B - C);
         var b = Math.Abs(A - D);
         return 0.5 * Math.Sqrt(a * b);
     }
 
-    double ITrigonometricalFunction.CalculateArea(FuzzyNumber y, double errorMargin)
+    public double CalculateArea(FuzzyNumber y, double errorMargin = IClosedSurface.DefaultErrorMargin)
     {
         var (x1, x2) = LambdaCutInterval(y);
         var a = Math.Abs(x1 - x2);

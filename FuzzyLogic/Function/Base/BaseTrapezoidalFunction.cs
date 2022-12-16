@@ -18,10 +18,10 @@ public abstract class BaseTrapezoidalFunction<T> : BaseMembershipFunction<T>, IT
         D = d;
     }
 
-    protected virtual T A { get; }
-    protected virtual T B { get; }
-    protected virtual T C { get; }
-    protected virtual T D { get; }
+    protected T A { get; }
+    protected T B { get; }
+    protected T C { get; }
+    protected T D { get; }
 
     public override bool IsOpenLeft() => false;
 

@@ -16,8 +16,8 @@ public abstract class BaseGaussianFunction<T> : BaseMembershipFunction<T>, IAsym
         O = o;
     }
 
-    protected virtual T M { get; }
-    protected virtual T O { get; }
+    protected T M { get; }
+    protected T O { get; }
 
     public override bool IsOpenLeft() => true;
 

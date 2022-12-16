@@ -1,5 +1,5 @@
 ﻿namespace FuzzyLogic.Function.Interface;
 
-public interface IRealFunction : ITrigonometricalFunction
+public interface IRealFunction : IMembershipFunction<double>
 {
 }
