@@ -8,17 +8,17 @@ public readonly record struct ProductNumber : IFuzzyNumber<ProductNumber>
     private static readonly ProductNumber Min = Of(0);
     private static readonly ProductNumber Max = Of(1);
 
-    private ProductNumber(double value) => Value = value;
+    private ProductNumber(double value)
+    {
+        if (Math.Abs(0 - value) < Tolerance) Value = 0;
+        if (Math.Abs(1 - value) < Tolerance) Value = 1;
+        RangeCheck(value);
+        Value = value;
+    }
 
     public double Value { get; }
 
-    public static ProductNumber Of(double value)
-    {
-        if (Math.Abs(0 - value) < Tolerance) return 0;
-        if (Math.Abs(1 - value) < Tolerance) return 1;
-        RangeCheck(value);
-        return value;
-    }
+    public static ProductNumber Of(double value) => new(value);
 
     public static bool TryCreate(double number, out ProductNumber fuzzyNumber)
     {
