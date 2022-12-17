@@ -31,13 +31,15 @@ public class LinguisticVariable : IVariable
 
     public static IVariable Create(string name)
     {
-        if (string.IsNullOrWhiteSpace(name)) throw new EmptyVariableException();
+        if (string.IsNullOrWhiteSpace(name))
+            throw new EmptyVariableException();
         return new LinguisticVariable(name);
     }
 
     public static IVariable Create(string name, double lowerBoundary, double upperBoundary)
     {
-        if (string.IsNullOrWhiteSpace(name)) throw new EmptyVariableException();
+        if (string.IsNullOrWhiteSpace(name))
+            throw new EmptyVariableException();
         return new LinguisticVariable(name, lowerBoundary, upperBoundary);
     }
 
@@ -71,14 +73,16 @@ public class LinguisticVariable : IVariable
 
     private static IVariable AddAll(IVariable variable, IDictionary<string, IRealFunction> linguisticEntries)
     {
-        if (linguisticEntries == null) throw new ArgumentNullException(nameof(linguisticEntries));
-        if (linguisticEntries.Keys.Any(string.IsNullOrWhiteSpace)) throw new EmptyEntryException();
-        if (linguisticEntries.Keys.Any(variable.ContainsLinguisticEntry)) throw new DuplicatedEntryException();
+        if (linguisticEntries == null)
+            throw new ArgumentNullException(nameof(linguisticEntries));
+        if (linguisticEntries.Keys.Any(string.IsNullOrWhiteSpace))
+            throw new EmptyEntryException();
+        var duplicatedEntry = linguisticEntries.Keys.FirstOrDefault(variable.ContainsLinguisticEntry);
+        if (duplicatedEntry != null)
+            throw new DuplicatedEntryException(variable.Name, duplicatedEntry);
 
         foreach (var entry in linguisticEntries)
-        {
             variable.LinguisticEntries.Add(entry.Key, entry.Value);
-        }
 
         return variable;
     }
@@ -115,8 +119,10 @@ public class LinguisticVariable : IVariable
 
     private static void CheckLinguisticEntry(IVariable variable, string name)
     {
-        if (string.IsNullOrWhiteSpace(name)) throw new EmptyEntryException();
-        if (variable.ContainsLinguisticEntry(name)) throw new DuplicatedEntryException(name);
+        if (string.IsNullOrWhiteSpace(name)) 
+            throw new EmptyEntryException();
+        if (variable.ContainsLinguisticEntry(name)) 
+            throw new DuplicatedEntryException(variable.Name, name);
     }
 
     public static void CheckRange(IVariable variable, IRealFunction function)
@@ -125,7 +131,7 @@ public class LinguisticVariable : IVariable
             ? asymptote.ApproximateBoundaryInterval()
             : function.BoundaryInterval();
         if (upper <= variable.LowerBoundary)
-            throw new WarningVariableException(variable.Name,
+            throw new VariableRangeException(variable.Name,
                 (variable.LowerBoundary, variable.UpperBoundary), function.Name, (lower, upper), function.GetType());
     }
 
