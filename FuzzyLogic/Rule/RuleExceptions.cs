@@ -4,57 +4,42 @@ namespace FuzzyLogic.Rule;
 
 public class MissingAntecedentException : Exception
 {
-    public override string Message =>
-        $@"The following rule creation policy has been violated:
-In order to append propositions with the connectives: {Connective.And}, {Connective.Or}, {Connective.Then}, there must already be a proposition with the {Connective.If} connective";
+    private const string Template =
+        "The following rule creation policy has been violated: In order to append propositions with the connectives: AND, OR, THEN, there must already be a proposition with the IF connective";
 
-    public MissingAntecedentException()
+    public MissingAntecedentException() : base(Template)
     {
     }
 
-    public MissingAntecedentException(string message) : base(message)
-    {
-    }
-
-    public MissingAntecedentException(string message, Exception inner) : base(message, inner)
+    public MissingAntecedentException(Exception inner) : base(Template, inner)
     {
     }
 }
 
 public class DuplicatedAntecedentException : Exception
 {
-    public override string Message =>
-        $@"The following rule creation policy has been violated:
-There can be one and only one proposition with the {Connective.If} connective.";
+    private const string Template =
+        $@"The following rule creation policy has been violated: There can be one and only one proposition with the IF connective.";
 
-    public DuplicatedAntecedentException()
+    public DuplicatedAntecedentException() : base(Template)
     {
     }
 
-    public DuplicatedAntecedentException(string message) : base(message)
-    {
-    }
-
-    public DuplicatedAntecedentException(string message, Exception inner) : base(message, inner)
+    public DuplicatedAntecedentException(Exception inner) : base(Template, inner)
     {
     }
 }
 
 public class FinalizedRuleException : Exception
 {
-    public override string Message =>
-        $@"The following rule creation policy has been violated:
-It is not possible to append more propositions after a proposition with the connective {Connective.Then} has been appended, meaning that the rule is finalized.";
+    private const string Template =
+        "The following rule creation policy has been violated: It is not possible to append more propositions after a proposition with the connective THEN has been appended, meaning that the rule is finalized.";
 
-    public FinalizedRuleException()
+    public FinalizedRuleException() : base(Template)
     {
     }
 
-    public FinalizedRuleException(string message) : base(message)
-    {
-    }
-
-    public FinalizedRuleException(string message, Exception inner) : base(message, inner)
+    public FinalizedRuleException(Exception inner) : base(Template, inner)
     {
     }
 }
