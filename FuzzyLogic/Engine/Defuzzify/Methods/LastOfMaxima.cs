@@ -6,9 +6,11 @@ public class LastOfMaxima : IDefuzzifier
 {
     public double? Defuzzify(ICollection<IRule> rules, IDictionary<string, double> facts)
     {
+        if (!rules.Any(e => e.IsApplicable(facts))) throw new InapplicableRulesException();
         var tuple = rules
             .Select(e => (Function: e.Consequent!.Function, Weight: e.EvaluatePremiseWeight(facts).GetValueOrDefault()))
             .MaxBy(e => e.Weight);
+        if (tuple.Weight == 0) throw new DefuzzifyException();
         var (function, weight) = tuple;
         return function.LambdaCutInterval(weight).X2;
     }
