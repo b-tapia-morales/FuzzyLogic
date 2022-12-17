@@ -35,10 +35,10 @@ public interface IClosedSurface
         return leftArea + rectangleArea + rightArea;
     }
 
-    static (double X1, double X2) CalculateCentroid(IRealFunction function, double errorMargin = DefaultErrorMargin) =>
+    static (double X, double Y) CalculateCentroid(IRealFunction function, double errorMargin = DefaultErrorMargin) =>
         (CentroidXCoordinate(function, errorMargin), CentroidYCoordinate(function, errorMargin));
 
-    static (double X1, double X2) CalculateCentroid(IRealFunction function, FuzzyNumber y,
+    static (double X, double Y) CalculateCentroid(IRealFunction function, FuzzyNumber y,
         double errorMargin = DefaultErrorMargin) =>
         (CentroidXCoordinate(function, y, errorMargin), CentroidYCoordinate(function, y, errorMargin));
 
