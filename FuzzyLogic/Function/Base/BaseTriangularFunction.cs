@@ -29,8 +29,8 @@ public abstract class BaseTriangularFunction<T> : BaseMembershipFunction<T>, ITr
 
     public override bool IsSymmetric() => _isSymmetric ??=
         Math.Abs(
-            CoordinateUtils.Distance((A.ToDouble(null), 0), (B.ToDouble(null), 1)) -
-            CoordinateUtils.Distance((B.ToDouble(null), 1), (C.ToDouble(null), 0))
+            TrigonometricUtils.Distance((A.ToDouble(null), 0), (B.ToDouble(null), 1)) -
+            TrigonometricUtils.Distance((B.ToDouble(null), 1), (C.ToDouble(null), 0))
         ) < ITrapezoidalFunction<T>.DistanceTolerance;
 
     public override Func<T, double> SimpleFunction() => x =>

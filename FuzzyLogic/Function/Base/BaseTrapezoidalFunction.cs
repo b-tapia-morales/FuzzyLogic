@@ -31,8 +31,8 @@ public abstract class BaseTrapezoidalFunction<T> : BaseMembershipFunction<T>, IT
 
     public override bool IsSymmetric() => _isSymmetric ??=
         Math.Abs(
-            CoordinateUtils.Distance((A.ToDouble(null), 0), (B.ToDouble(null), 1)) -
-            CoordinateUtils.Distance((C.ToDouble(null), 1), (D.ToDouble(null), 0))
+            TrigonometricUtils.Distance((A.ToDouble(null), 0), (B.ToDouble(null), 1)) -
+            TrigonometricUtils.Distance((C.ToDouble(null), 1), (D.ToDouble(null), 0))
         ) < ITrapezoidalFunction<T>.DistanceTolerance;
 
     public override T LowerBoundary() => A;
