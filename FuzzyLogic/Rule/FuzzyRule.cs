@@ -102,6 +102,17 @@ public class FuzzyRule : IRule
         return cutPoint == 0 ? null : surface.CalculateArea(cutPoint, errorMargin);
     }
 
+    public (double X, double Y)? CalculateCentroid(IDictionary<string, double> facts, 
+        double errorMargin = IClosedSurface.DefaultErrorMargin)
+    {
+        if (!IsApplicable(facts)) return null;
+        var function = Consequent!.Function;
+        if (function is not IClosedSurface) return null;
+        var surface = (IClosedSurface) Consequent!.Function;
+        var cutPoint = EvaluatePremiseWeight(facts).GetValueOrDefault();
+        return cutPoint == 0 ? null : surface.CalculateCentroid(cutPoint, errorMargin);
+    }
+
     public static IRule Create() => new FuzzyRule();
 
     private static IRule If(IRule rule, IProposition proposition)

@@ -235,6 +235,9 @@ public interface IRule
     FuzzyNumber? EvaluateConclusionWeight(IDictionary<string, double> facts);
 
     FuzzyNumber? EvaluateRuleWeight(IDictionary<string, double> facts);
-    
+
     double? CalculateArea(IDictionary<string, double> facts, double errorMargin = IClosedSurface.DefaultErrorMargin);
+
+    (double X, double Y)? CalculateCentroid(IDictionary<string, double> facts,
+        double errorMargin = IClosedSurface.DefaultErrorMargin);
 }
