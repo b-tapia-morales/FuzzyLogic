@@ -1,5 +1,4 @@
 ﻿using FuzzyLogic.Number;
-using FuzzyLogic.Utils;
 using MathNet.Numerics.Integration;
 
 namespace FuzzyLogic.Function.Interface;
@@ -37,25 +36,28 @@ public interface IClosedSurface
     }
 
     static (double X1, double X2) CalculateCentroid(IRealFunction function, double errorMargin = DefaultErrorMargin) =>
-        (CentroidXCoordinate(function, errorMargin), CentroidXCoordinate(function, errorMargin));
+        (CentroidXCoordinate(function, errorMargin), CentroidYCoordinate(function, errorMargin));
+
+    static (double X1, double X2) CalculateCentroid(IRealFunction function, FuzzyNumber y,
+        double errorMargin = DefaultErrorMargin) =>
+        (CentroidXCoordinate(function, y, errorMargin), CentroidYCoordinate(function, y, errorMargin));
 
     static double CentroidXCoordinate(IRealFunction function, double errorMargin = DefaultErrorMargin)
     {
         double Integral(double x) => x * function.SimpleFunction().Invoke(x);
         var (x1, x2) = function.ClosedInterval();
         var area = CalculateArea(function, errorMargin);
-        return (1 / (2.0 * area)) * Integrate(Integral, x1, x2, errorMargin);
+        return (1 / area) * Integrate(Integral, x1, x2, errorMargin);
     }
 
     static double CentroidXCoordinate(IRealFunction function, FuzzyNumber y, double errorMargin = DefaultErrorMargin)
     {
-        if (y == 0) throw new ArgumentException("Can't calculate the area of the zero-function");
+        if (y == 0) throw new ArgumentException("Can't calculate the centroid of the zero-function");
         if (y == 1) return CentroidXCoordinate(function, errorMargin);
-        var lambdaCutFunction = function.LambdaCutFunction(y);
-        double Integral(double x) => x * lambdaCutFunction.Invoke(x);
+        double Integral(double x) => x * function.LambdaCutFunction(y).Invoke(x);
         var (x1, x2) = function.LambdaCutInterval(y);
         var area = CalculateArea(function, errorMargin);
-        return (1 / (2.0 * area)) * Integrate(Integral, x1, x2, errorMargin);
+        return (1 / area) * Integrate(Integral, x1, x2, errorMargin);
     }
 
     static double CentroidYCoordinate(IRealFunction function, double errorMargin = DefaultErrorMargin)
@@ -68,8 +70,9 @@ public interface IClosedSurface
 
     static double CentroidYCoordinate(IRealFunction function, FuzzyNumber y, double errorMargin = DefaultErrorMargin)
     {
-        var lambdaCutFunction = function.LambdaCutFunction(y);
-        double Integral(double x) => lambdaCutFunction.Invoke(x) * lambdaCutFunction.Invoke(x);
+        if (y == 0) throw new ArgumentException("Can't calculate the centroid of the zero-function");
+        if (y == 1) return CentroidYCoordinate(function, errorMargin);
+        double Integral(double x) => function.LambdaCutFunction(y).Invoke(x) * function.LambdaCutFunction(y).Invoke(x);
         var (x1, x2) = function.ClosedInterval();
         var area = CalculateArea(function, errorMargin);
         return (1 / (2.0 * area)) * Integrate(Integral, x1, x2, errorMargin);
