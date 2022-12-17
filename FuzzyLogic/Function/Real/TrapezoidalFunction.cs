@@ -22,14 +22,14 @@ public class TrapezoidalFunction : BaseTrapezoidalFunction<double>, IRealFunctio
         return TrigonometricUtils.CalculateTrapezoidArea(A, x1, x2, D, y);
     }
 
-    public (double X0, double X1) CalculateCentroid(double errorMargin = IClosedSurface.DefaultErrorMargin)
+    public (double X, double Y) CalculateCentroid(double errorMargin = IClosedSurface.DefaultErrorMargin)
     {
         var a = Math.Abs(C - D);
         var b = Math.Abs(A - D);
         return ((1 / 2.0), (1 / 3.0) * (2 * a + b) / (a + b));
     }
 
-    public (double X0, double X1) CalculateCentroid(FuzzyNumber y,
+    public (double X, double Y) CalculateCentroid(FuzzyNumber y,
         double errorMargin = IClosedSurface.DefaultErrorMargin)
     {
         if (y == 0) throw new ArgumentException("Can't calculate the centroid of the zero-function");

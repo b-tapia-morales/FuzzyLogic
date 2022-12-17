@@ -11,7 +11,9 @@ public interface IClosedSurface
 
     double CalculateArea(FuzzyNumber y, double errorMargin = DefaultErrorMargin);
 
-    (double X0, double X1) CalculateCentroid(double errorMargin = DefaultErrorMargin);
+    (double X, double Y) CalculateCentroid(double errorMargin = DefaultErrorMargin);
+    
+    (double X, double Y) CalculateCentroid(FuzzyNumber y, double errorMargin = DefaultErrorMargin);
 
     static double Integrate(Func<double, double> function, double x0, double x1,
         double errorMargin = DefaultErrorMargin) =>

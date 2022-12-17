@@ -11,6 +11,6 @@ public class CentreOfArea : IDefuzzifier
             .Select(e => (Function: e.Consequent!.Function, Area: e.CalculateArea(facts).GetValueOrDefault()))
             .MaxBy(e => e.Area);
         var function = (IClosedSurface) tuple.Function;
-        return function.CalculateCentroid().X0;
+        return function.CalculateCentroid().X;
     }
 }

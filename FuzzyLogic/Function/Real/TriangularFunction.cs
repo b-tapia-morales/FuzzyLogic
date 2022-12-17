@@ -22,10 +22,10 @@ public class TriangularFunction : BaseTriangularFunction<double>, IRealFunction,
         return TrigonometricUtils.CalculateTrapezoidArea(A, x1, x2, C, y);
     }
 
-    public (double X0, double X1) CalculateCentroid(double errorMargin = IClosedSurface.DefaultErrorMargin) =>
+    public (double X, double Y) CalculateCentroid(double errorMargin = IClosedSurface.DefaultErrorMargin) =>
         ((A + B + C) / 3.0, 1 / 3.0);
 
-    public (double X0, double X1) CalculateCentroid(FuzzyNumber y,
+    public (double X, double Y) CalculateCentroid(FuzzyNumber y,
         double errorMargin = IClosedSurface.DefaultErrorMargin)
     {
         if (y == 0) throw new ArgumentException("Can't calculate the centroid of the zero-function");
