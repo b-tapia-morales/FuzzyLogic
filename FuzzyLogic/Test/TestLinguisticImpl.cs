@@ -7,121 +7,134 @@ public class TestLinguisticImpl : LinguisticBase
 {
     public new static ILinguisticBase Initialize()
     {
-        var retencion = LinguisticVariable
-            .Create("Retencion")
-            .AddTriangularFunction("Bajo", 0, 1, 2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Alto", 0, 1, 2);
+        var retención = LinguisticVariable
+            .Create("Ret")
+            .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
         var paseCorto = LinguisticVariable
-            .Create("Pase Corto")
-            .AddTriangularFunction("Bajo", 0, 1, 2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Alto", 0, 1, 2);
+            .Create("Pc")
+            .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
         var estirada = LinguisticVariable
-            .Create("Estirada")
-            .AddTriangularFunction("Bajo", 0, 1, 2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Alto", 0, 1, 2);
+            .Create("Est")
+            .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
         var fuerza = LinguisticVariable
-            .Create("fuerza")
-            .AddTriangularFunction("Bajo", 0, 1, 2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Alto", 0, 1, 2);
+            .Create("Fz")
+            .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
         var despeje = LinguisticVariable
-            .Create("Despeje")
-            .AddTriangularFunction("Bajo", 0, 1, 2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Alto", 0, 1, 2);
-        var reaccion = LinguisticVariable
-            .Create("Reaccion")
-            .AddTriangularFunction("Bajo", 0, 1, 2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Alto", 0, 1, 2);
+            .Create("Dpj")
+            .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
+        var reacción = LinguisticVariable
+            .Create("Rea")
+            .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
         var velocidadSprint = LinguisticVariable
-            .Create("Velocidad Sprint")
-            .AddTriangularFunction("Bajo", 0, 1, 2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Alto", 0, 1, 2);
+            .Create("Vlsp")
+            .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
         var salto = LinguisticVariable
-            .Create("Salto")
-            .AddTriangularFunction("Bajo", 0, 1, 2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Alto", 0, 1, 2);
+            .Create("Sal")
+            .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
         var regates = LinguisticVariable
-            .Create("Regates")
-            .AddTriangularFunction("Bajo", 0, 1, 2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Alto", 0, 1, 2);
+            .Create("Reg")
+            .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
         var entradaLimpia = LinguisticVariable
-            .Create("Entrada Limpia")
-            .AddTriangularFunction("Bajo", 0, 1, 2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Alto", 0, 1, 2);
-        var vision = LinguisticVariable
-            .Create("Vision")
-            .AddTriangularFunction("Bajo", 0, 1, 2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Alto", 0, 1, 2);
+            .Create("Elmp")
+            .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
+        var visión = LinguisticVariable
+            .Create("Vs")
+            .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
         var agresividad = LinguisticVariable
-            .Create("Agresividad")
-            .AddTriangularFunction("Bajo", 0, 1, 2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Alto", 0, 1, 2);
-        var controlBalon = LinguisticVariable
-            .Create("Control balon")
-            .AddTriangularFunction("Bajo", 0, 1, 2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Alto", 0, 1, 2);
-        var intercepcion = LinguisticVariable
-            .Create("Intercepcion")
-            .AddTriangularFunction("Bajo", 0, 1, 2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Alto", 0, 1, 2);
-        var fuerzaTiro = LinguisticVariable
-            .Create("Fuerza Tiro")
-            .AddTriangularFunction("Bajo", 0, 1, 2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Alto", 0, 1, 2);
+            .Create("Ag")
+            .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
+        var controlDelBalón = LinguisticVariable
+            .Create("Cb")
+            .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
+        var intercepción = LinguisticVariable
+            .Create("Int")
+            .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
+        var fuerzaDeTiro = LinguisticVariable
+            .Create("Ft")
+            .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
         var compostura = LinguisticVariable
-            .Create("Compostura")
-            .AddTriangularFunction("Bajo", 0, 1, 2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Alto", 0, 1, 2);
+            .Create("Cmp")
+            .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
         var boleas = LinguisticVariable
-            .Create("Boleas")
-            .AddTriangularFunction("Bajo", 0, 1, 2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Alto", 0, 1, 2);
-        var precisionTiroLibre = LinguisticVariable
-            .Create("Precision Tiro Libre")
-            .AddTriangularFunction("Bajo", 0, 1, 2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Alto", 0, 1, 2);
+            .Create("Bol")
+            .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
+        var precisiónTiroLibre = LinguisticVariable
+            .Create("Tl")
+            .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
         var marcaje = LinguisticVariable
-            .Create("Marcaje")
-            .AddTriangularFunction("Bajo", 0, 1, 2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Alto", 0, 1, 2);
+            .Create("Mcje")
+            .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
         var centro = LinguisticVariable
-            .Create("Centro")
-            .AddTriangularFunction("Bajo", 0, 1, 2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Alto", 0, 1, 2);
-        var rangoHabilidad = LinguisticVariable
-            .Create("Rango habilidad")
-            .AddTriangularFunction("Portero", 0, 1, 2)
-            .AddTriangularFunction("Defensa", 0, 1, 2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Delantero", 0, 1, 2);
-        var aceleracion = LinguisticVariable
-            .Create("Aceleracion")
-            .AddTriangularFunction("Bajo",0,1,2)
-            .AddTriangularFunction("Medio", 0, 1, 2)
-            .AddTriangularFunction("Alto", 0, 1, 2);
-        
+            .Create("Cnt")
+            .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
+        var aceleración = LinguisticVariable
+            .Create("Acel")
+            .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
+        var portero = LinguisticVariable
+            .Create("Port")
+            .AddTrapezoidFunction("Bajo", 0.0, 0.0, 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddTrapezoidFunction("Alto", 0.64, 0.68, 1, 1);
+        var defensa = LinguisticVariable
+            .Create("Def")
+            .AddTrapezoidFunction("Bajo", 0.0, 0.0, 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddTrapezoidFunction("Alto", 0.64, 0.68, 1, 1);
+        var mediocampista = LinguisticVariable
+            .Create("Med")
+            .AddTrapezoidFunction("Bajo", 0.0, 0.0, 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddTrapezoidFunction("Alto", 0.64, 0.68, 1, 1);
+        var delantero = LinguisticVariable
+            .Create("Del")
+            .AddTrapezoidFunction("Bajo", 0.0, 0.0, 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddTrapezoidFunction("Alto", 0.64, 0.68, 1, 1);
 
-        return Create().AddAll(retencion, paseCorto, estirada, fuerza, despeje, reaccion, velocidadSprint, salto,
-            regates, entradaLimpia, vision, agresividad, controlBalon, intercepcion, fuerzaTiro, compostura, boleas,
-            precisionTiroLibre,marcaje,centro,rangoHabilidad,aceleracion);
+        return Create().AddAll(retención, paseCorto, estirada, fuerza, despeje, reacción, velocidadSprint, salto,
+            regates, entradaLimpia, visión, agresividad, controlDelBalón, intercepción, fuerzaDeTiro, compostura,
+            boleas, precisiónTiroLibre, marcaje, centro, aceleración, portero, defensa, mediocampista, delantero);
     }
 }
