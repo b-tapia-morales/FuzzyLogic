@@ -6,7 +6,6 @@ using FuzzyLogic.Knowledge.Rule;
 using FuzzyLogic.Memory;
 using FuzzyLogic.Number;
 using MathNet.Numerics.Integration;
-using static FuzzyLogic.Engine.Defuzzify.DefuzzificationMethod;
 
 namespace FuzzyLogic.Engine;
 
