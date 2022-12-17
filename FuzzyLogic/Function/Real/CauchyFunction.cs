@@ -4,7 +4,7 @@ using FuzzyLogic.Number;
 
 namespace FuzzyLogic.Function.Real;
 
-public class CauchyFunction: BaseCauchyFunction<double>, IRealFunction, IClosedSurface
+public class CauchyFunction : BaseCauchyFunction<double>, IRealFunction, IClosedSurface
 {
     public CauchyFunction(string name, double a, double b, double c) : base(name, a, b, c)
     {
@@ -13,10 +13,17 @@ public class CauchyFunction: BaseCauchyFunction<double>, IRealFunction, IClosedS
     public override double LowerBoundary() => double.NegativeInfinity;
 
     public override double UpperBoundary() => double.PositiveInfinity;
-    
+
     public double CalculateArea(double errorMargin = IClosedSurface.DefaultErrorMargin) =>
         IClosedSurface.CalculateArea(this, errorMargin);
 
     public double CalculateArea(FuzzyNumber y, double errorMargin = IClosedSurface.DefaultErrorMargin) =>
         IClosedSurface.CalculateArea(this, y, errorMargin);
+
+    public (double X0, double X1) CalculateCentroid(double errorMargin = IClosedSurface.DefaultErrorMargin) =>
+        (C, IClosedSurface.CentroidYCoordinate(this));
+
+    public (double X0, double X1) CalculateCentroid(FuzzyNumber y,
+        double errorMargin = IClosedSurface.DefaultErrorMargin) =>
+        (C, IClosedSurface.CentroidYCoordinate(this, y, errorMargin));
 }

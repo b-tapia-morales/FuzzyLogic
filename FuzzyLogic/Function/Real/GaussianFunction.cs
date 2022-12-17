@@ -19,4 +19,11 @@ public class GaussianFunction : BaseGaussianFunction<double>, IRealFunction, ICl
 
     public double CalculateArea(FuzzyNumber y, double errorMargin = IClosedSurface.DefaultErrorMargin) =>
         IClosedSurface.CalculateArea(this, y, errorMargin);
+
+    public (double X0, double X1) CalculateCentroid(double errorMargin = IClosedSurface.DefaultErrorMargin) =>
+        (M, 0);
+
+    public (double X0, double X1) CalculateCentroid(FuzzyNumber y,
+        double errorMargin = IClosedSurface.DefaultErrorMargin) =>
+        (M, IClosedSurface.CentroidYCoordinate(this, y, errorMargin));
 }
