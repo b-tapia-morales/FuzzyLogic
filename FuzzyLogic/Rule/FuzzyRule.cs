@@ -3,7 +3,6 @@ using FuzzyLogic.Function.Interface;
 using FuzzyLogic.Number;
 using FuzzyLogic.Proposition;
 using FuzzyLogic.Proposition.Enums;
-using MathNet.Numerics.Integration;
 using static System.StringComparison;
 
 namespace FuzzyLogic.Rule;
@@ -100,7 +99,7 @@ public class FuzzyRule : IRule
         if (function is not IClosedSurface) return null;
         var surface = (IClosedSurface) Consequent!.Function;
         var cutPoint = EvaluatePremiseWeight(facts).GetValueOrDefault();
-        return surface.CalculateArea(cutPoint, errorMargin);
+        return cutPoint == 0 ? null : surface.CalculateArea(cutPoint, errorMargin);
     }
 
     public static IRule Create() => new FuzzyRule();
