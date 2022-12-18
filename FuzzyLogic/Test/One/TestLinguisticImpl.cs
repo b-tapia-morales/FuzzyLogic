@@ -132,9 +132,14 @@ public class TestLinguisticImpl : LinguisticBase
             .AddTrapezoidFunction("Bajo", 0.0, 0.0, 0.31, 0.35)
             .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
             .AddTrapezoidFunction("Alto", 0.64, 0.68, 1, 1);
-
+        var habilidad = LinguisticVariable
+            .Create("Hab")
+            .AddTrapezoidFunction("Bajo", 0.0, 0.0, 0.31, 0.35)
+            .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
+            .AddTrapezoidFunction("Alto", 0.64, 0.68, 1, 1);
         return Create().AddAll(retención, paseCorto, estirada, fuerza, despeje, reacción, velocidadSprint, salto,
             regates, entradaLimpia, visión, agresividad, controlDelBalón, intercepción, fuerzaDeTiro, compostura,
-            boleas, precisiónTiroLibre, marcaje, centro, aceleración, portero, defensa, mediocampista, delantero);
+            boleas, precisiónTiroLibre, marcaje, centro, aceleración, portero, defensa, mediocampista, delantero,
+            habilidad);
     }
 }
