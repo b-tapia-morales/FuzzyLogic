@@ -1,4 +1,5 @@
-﻿using FuzzyLogic.Rule;
+﻿using FuzzyLogic.Knowledge.Rule;
+using FuzzyLogic.Rule;
 
 namespace FuzzyLogic.Tree;
 
@@ -41,7 +42,7 @@ public class TreeNode : ITreeNode<TreeNode>
     }
 
     public static ITreeNode<TreeNode> CreateDerivationTree(string variableName, ICollection<IRule> rules,
-        IDictionary<string, double> facts)
+        IComparer<IRule> ruleComparer, IDictionary<string, double> facts)
     {
         var rootNode = new TreeNode(variableName);
         var stack = new Stack<ITreeNode<TreeNode>>();
@@ -50,7 +51,7 @@ public class TreeNode : ITreeNode<TreeNode>
         while (stack.TryPop(out var node))
         {
             //circularDependencies.Push(node.VariableName);
-            UpdateNode(node, node.VariableName, rules, facts, circularDependencies);
+            UpdateNode(node, node.VariableName, rules, ruleComparer, facts, circularDependencies);
             foreach (var child in node.Children)
                 stack.Push(child);
         }
@@ -71,13 +72,11 @@ public class TreeNode : ITreeNode<TreeNode>
     }
 
     private static void UpdateNode(ITreeNode<TreeNode> node, string variableName, ICollection<IRule> rules,
-        IDictionary<string, double> facts, Stack<string> circularDependencies)
+        IComparer<IRule> ruleComparer, IDictionary<string, double> facts, Stack<string> circularDependencies)
     {
         if (facts.ContainsKey(variableName))
             return;
-        var filteredRules = rules
-            .Where(e => e.ConclusionContainsVariable(variableName))
-            .ToList();
+        var filteredRules = RuleBase.FilterByResolutionMethod(variableName, rules, ruleComparer);
         if (!filteredRules.Any())
             return;
         var antecedents = filteredRules
