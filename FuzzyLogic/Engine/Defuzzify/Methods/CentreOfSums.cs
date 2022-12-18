@@ -11,7 +11,8 @@ public class CentreOfSums : IDefuzzifier
             .Select(e => (Area: e.CalculateArea(facts).GetValueOrDefault(),
                 Centroid: e.CalculateCentroid(facts).GetValueOrDefault().X))
             .ToList();
-        if (tuples.All(e => e.Area == 0)) throw new DefuzzifyException();
+        if (tuples.All(e => e.Area == 0))
+            return null;
         return tuples.Sum(e => e.Area * e.Centroid) / tuples.Sum(e => e.Area);
     }
 }

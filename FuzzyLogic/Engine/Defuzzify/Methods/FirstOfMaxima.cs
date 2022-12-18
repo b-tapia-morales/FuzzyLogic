@@ -10,7 +10,8 @@ public class FirstOfMaxima : IDefuzzifier
         var tuple = rules
             .Select(e => (Function: e.Consequent!.Function, Weight: e.EvaluatePremiseWeight(facts).GetValueOrDefault()))
             .MaxBy(e => e.Weight);
-        if (tuple.Weight == 0) throw new DefuzzifyException();
+        if (tuple.Weight == 0)
+            return null;
         var (function, weight) = tuple;
         return function.LambdaCutInterval(weight).X1;
     }

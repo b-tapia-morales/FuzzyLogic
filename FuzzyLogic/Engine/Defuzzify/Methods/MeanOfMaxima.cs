@@ -10,7 +10,8 @@ public class MeanOfMaxima : IDefuzzifier
         var tuple = rules
             .Select(e => (e.Consequent!.Function, Weight: e.EvaluatePremiseWeight(facts).GetValueOrDefault()))
             .MaxBy(e => e.Weight);
-        if (tuple.Weight == 0) throw new DefuzzifyException();
+        if (tuple.Weight == 0) 
+            return null;
         var (function, weight) = tuple;
         var (x1, x2) = function.LambdaCutInterval(weight);
         return (x1 + x2) / 2;

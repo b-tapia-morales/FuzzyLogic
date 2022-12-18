@@ -11,7 +11,8 @@ public class CentreOfArea : IDefuzzifier
             .Select(e => (Area: e.CalculateArea(facts).GetValueOrDefault(),
                 Centroid: e.CalculateCentroid(facts).GetValueOrDefault().X))
             .MaxBy(e => e.Area);
-        if (tuple.Area == 0) throw new DefuzzifyException();
+        if (tuple.Area == 0) 
+            return null;
         return tuple.Centroid;
     }
 }
