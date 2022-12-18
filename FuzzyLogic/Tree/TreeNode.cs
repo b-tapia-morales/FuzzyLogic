@@ -16,14 +16,6 @@ public class TreeNode : ITreeNode<TreeNode>
         Rules = new List<IRule>();
         Children = new List<ITreeNode<TreeNode>>();
     }
-    
-    public TreeNode(string variableName, bool isFact)
-    {
-        VariableName = variableName;
-        IsFact = isFact;
-        Rules = new List<IRule>();
-        Children = new List<ITreeNode<TreeNode>>();
-    }
 
     public bool IsLeaf() => Children.Any();
 
@@ -41,51 +33,68 @@ public class TreeNode : ITreeNode<TreeNode>
             Children.Add(child);
     }
 
+    public void Display()
+    {
+        Console.WriteLine(VariableName);
+        if (!IsFact)
+            Console.WriteLine(string.Join(Environment.NewLine, Rules));
+    }
+
     public static ITreeNode<TreeNode> CreateDerivationTree(string variableName, ICollection<IRule> rules,
         IDictionary<string, double> facts)
     {
-        var circularDependencies = new HashSet<string>();
         var rootNode = new TreeNode(variableName);
         var stack = new Stack<ITreeNode<TreeNode>>();
         stack.Push(rootNode);
+        var circularDependencies = new Stack<string>();
         while (stack.TryPop(out var node))
         {
-            circularDependencies.Add(node.VariableName);
+            //circularDependencies.Push(node.VariableName);
             UpdateNode(ref node, node.VariableName, rules, facts, circularDependencies);
             foreach (var child in node.Children)
-            {
                 stack.Push(child);
-            }
         }
 
         return rootNode;
     }
 
+    public static void DisplayDerivationTree(ITreeNode<TreeNode> rootNode)
+    {
+        var stack = new Stack<ITreeNode<TreeNode>>();
+        stack.Push(rootNode);
+        while (stack.TryPop(out var node))
+        {
+            node.Display();
+            foreach (var child in node.Children)
+                stack.Push(child);
+        }
+    }
+
     private static void UpdateNode(ref ITreeNode<TreeNode> node, string variableName, ICollection<IRule> rules,
-        IDictionary<string, double> facts, ISet<string> circularDependencies)
+        IDictionary<string, double> facts, Stack<string> circularDependencies)
     {
         if (facts.ContainsKey(variableName))
         {
             node.IsFact = true;
             return;
         }
-        
+
         var filteredRules = rules
             .Where(e => e.ConclusionContainsVariable(variableName))
             .ToList();
         var antecedents = filteredRules
             .Select(e => e.Antecedent!.LinguisticVariable.Name)
-            .Where(e => !circularDependencies.Contains(e))
+            //.Where(e => !circularDependencies.Contains(e))
             .ToList();
         var connectives = filteredRules
             .SelectMany(e => e.Connectives)
             .Select(e => e.LinguisticVariable.Name)
-            .Where(e => !circularDependencies.Contains(e))
+            //.Where(e => !circularDependencies.Contains(e))
             .ToList();
         var set = new HashSet<string>();
         set.UnionWith(antecedents);
         set.UnionWith(connectives);
-        var children = new List<ITreeNode<TreeNode>>(set.Select(e => new TreeNode(e, false)));
+        var children = new List<ITreeNode<TreeNode>>(set.Select(e => new TreeNode(e)));
         node.AddRules(filteredRules);
         node.AddChildren(children);
     }

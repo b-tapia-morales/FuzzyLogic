@@ -16,4 +16,6 @@ public interface ITreeNode<T> where T : class, ITreeNode<T>
     void AddChild(ITreeNode<T> child);
 
     void AddChildren(IEnumerable<ITreeNode<T>> children);
+
+    void Display();
 }
