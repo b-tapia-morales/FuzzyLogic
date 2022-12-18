@@ -1,6 +1,4 @@
-﻿using FuzzyLogic.Proposition.Enums;
-
-namespace FuzzyLogic.Rule;
+﻿namespace FuzzyLogic.Rule;
 
 public class MissingAntecedentException : Exception
 {

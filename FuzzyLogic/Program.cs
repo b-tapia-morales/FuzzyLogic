@@ -1,7 +1,5 @@
 ﻿using FuzzyLogic.Engine;
 using FuzzyLogic.Knowledge;
-using FuzzyLogic.Memory;
-using FuzzyLogic.Test;
 using FuzzyLogic.Test.One;
 using FuzzyLogic.Test.Two;
 using FuzzyLogic.Tree;
