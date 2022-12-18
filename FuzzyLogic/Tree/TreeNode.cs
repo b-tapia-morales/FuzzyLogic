@@ -45,6 +45,8 @@ public class TreeNode : ITreeNode<TreeNode>
 
     public void WriteTree() => WriteTree(this);
 
+    public void PrettyWriteTree() => PrettyWriteTree(this);
+
     public double? InferFact(IDictionary<string, double> facts, IDefuzzifier defuzzifier) =>
         InferFact(this, facts, defuzzifier);
 
@@ -77,6 +79,14 @@ public class TreeNode : ITreeNode<TreeNode>
             foreach (var child in node.Children)
                 stack.Push(child);
         }
+    }
+
+    private static void PrettyWriteTree(ITreeNode<TreeNode> node, string indent = "", bool last = true)
+    {
+        Console.WriteLine(indent + "+- " + node.VariableName);
+        indent += last ? "   " : "|  ";
+        for (var i = 0; i < node.Children.Count; i++)
+            PrettyWriteTree(node.Children.ElementAt(i), indent, i == node.Children.Count - 1);
     }
 
     private static double? InferFact(ITreeNode<TreeNode> rootNode, IDictionary<string, double> facts,

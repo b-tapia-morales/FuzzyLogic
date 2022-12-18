@@ -19,8 +19,13 @@ var inferenceEngine = InferenceEngine.Create(knowledgeBase, workingMemory, Centr
 
 var rootNode =
     TreeNode.CreateDerivationTree("Hab", ruleBase.ProductionRules, ruleBase.RuleComparer, workingMemory.Facts);
+rootNode.PrettyWriteTree();
+Console.WriteLine();
 rootNode.WriteTree();
+Console.WriteLine();
 var value = rootNode.InferFact(workingMemory.Facts, inferenceEngine.Defuzzifier);
-Console.WriteLine(value == null ? "NADA" : value.GetValueOrDefault().ToString(InvariantCulture));
+Console.WriteLine($"Has the fact been successfully inferred? {value?.ToString(InvariantCulture)}");
+Console.WriteLine();
+rootNode.PrettyWriteTree();
 Console.WriteLine();
 rootNode.WriteTree();

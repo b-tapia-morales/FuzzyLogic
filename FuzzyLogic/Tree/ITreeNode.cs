@@ -22,5 +22,7 @@ public interface ITreeNode<T> where T : class, ITreeNode<T>
 
     void WriteTree();
 
+    void PrettyWriteTree();
+
     double? InferFact(IDictionary<string, double> facts, IDefuzzifier defuzzifier);
 }
