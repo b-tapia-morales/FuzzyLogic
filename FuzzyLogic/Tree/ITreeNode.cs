@@ -5,7 +5,6 @@ namespace FuzzyLogic.Tree;
 public interface ITreeNode<T> where T : class, ITreeNode<T>
 {
     string VariableName { get; }
-    bool IsFact { get; set; }
     ICollection<IRule> Rules { get; }
     ICollection<ITreeNode<T>> Children { get; }
 
@@ -16,4 +15,6 @@ public interface ITreeNode<T> where T : class, ITreeNode<T>
     void AddChild(ITreeNode<T> child);
 
     void AddChildren(IEnumerable<ITreeNode<T>> children);
+
+    void Display();
 }

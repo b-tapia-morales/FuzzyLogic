@@ -1,23 +1,31 @@
 ﻿using FuzzyLogic.Knowledge.Linguistic;
 using FuzzyLogic.Rule;
 using static System.StringComparison;
+using static FuzzyLogic.Rule.ComparingMethod;
 
 namespace FuzzyLogic.Knowledge.Rule;
 
 public class RuleBase : IRuleBase
 {
-    protected RuleBase() => ProductionRules = new List<IRule>();
+    protected RuleBase(ComparingMethod method = Priority)
+    {
+        ProductionRules = new List<IRule>();
+        RuleComparer = RuleComparerFactory.CreateInstance(method);
+    }
 
     public ICollection<IRule> ProductionRules { get; set; }
+    public IComparer<IRule> RuleComparer { get; }
 
-    public static IRuleBase Create() => new RuleBase();
+    public static IRuleBase Create(ComparingMethod comparingMethod = Priority) =>
+        new RuleBase(comparingMethod);
 
-    public static IRuleBase Initialize(ILinguisticBase linguisticBase) => Create();
+    public static IRuleBase Initialize(ILinguisticBase linguisticBase, ComparingMethod comparingMethod = Priority) =>
+        Create(comparingMethod);
 
     public IRuleBase Add(IRule rule) => Add(this, rule);
 
     public IRuleBase AddAll(ICollection<IRule> rules) => AddAll(this, rules);
-    
+
     public IRuleBase AddAll(params IRule[] rules) => AddAll(this, rules);
 
     public ICollection<IRule> FindApplicableRules(IDictionary<string, double> facts) =>
@@ -29,7 +37,8 @@ public class RuleBase : IRuleBase
     public ICollection<IRule> FindRulesWithConclusion(string variableName) =>
         ProductionRules.Where(e => e.ConclusionContainsVariable(variableName)).ToList();
 
-    public IRuleBase FilterDuplicatedConclusions(string variableName) => FilterConclusions(this, variableName);
+    public ICollection<IRule> FilterByResolutionMethod(string variableName) =>
+        FilterByResolutionMethod(variableName, ProductionRules, RuleComparer);
 
     private static IRuleBase Add(IRuleBase ruleBase, IRule rule)
     {
@@ -49,12 +58,18 @@ public class RuleBase : IRuleBase
         return ruleBase;
     }
 
-    private static IRuleBase FilterConclusions(IRuleBase ruleBase, string name)
+    public static ICollection<IRule> FilterByResolutionMethod(string variableName, IEnumerable<IRule> rules,
+        IComparer<IRule> ruleComparer)
     {
-        ruleBase.ProductionRules = ruleBase.ProductionRules
-            .Where(e => e.Consequent != null &&
-                        string.Equals(e.Consequent.LinguisticVariable.Name, name, InvariantCultureIgnoreCase))
+        return rules
+            .Where(e => string.Equals(e.Consequent!.LinguisticVariable.Name, variableName, InvariantCultureIgnoreCase))
+            .GroupBy(e => e.Consequent!.Function.Name)
+            .Select(e => new
+            {
+                FunctionName = e.Key,
+                Rule = e.MaxBy(g => g, ruleComparer)!
+            })
+            .Select(e => e.Rule)
             .ToList();
-        return ruleBase;
     }
 }

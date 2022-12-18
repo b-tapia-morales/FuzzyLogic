@@ -2,7 +2,8 @@
 
 public class InapplicableRulesException : Exception
 {
-    private const string Template = "There are no rules that are applicable from the facts provided as parameters";
+    private const string Template =
+        "There must be at least one rule that is applicable from the facts provided as parameters";
 
     public InapplicableRulesException() : base(Template)
     {
@@ -13,16 +14,15 @@ public class InapplicableRulesException : Exception
     }
 }
 
-public class DefuzzifyException : Exception
+public class MismatchedConsequentException : Exception
 {
-    private const string Template =
-        "Attempt to defuzzify was unsuccessful because the premise weight of all rules is 0";
+    private const string Template = "The rules' consequents must all be equal";
 
-    public DefuzzifyException() : base(Template)
+    public MismatchedConsequentException() : base(Template)
     {
     }
 
-    public DefuzzifyException(Exception inner) : base(Template, inner)
+    public MismatchedConsequentException(Exception inner) : base(Template, inner)
     {
     }
 }
