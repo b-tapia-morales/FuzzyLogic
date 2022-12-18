@@ -20,7 +20,7 @@ public interface IRuleBase
 
     ICollection<IRule> FindRulesWithConclusion(string variableName);
 
-    IRuleBase FilterDuplicatedConclusions(string variableName);
+    ICollection<IRule> FilterByResolutionMethod(string variableName);
 
     static abstract IRuleBase Create();
 

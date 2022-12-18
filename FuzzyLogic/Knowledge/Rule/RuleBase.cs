@@ -35,7 +35,8 @@ public class RuleBase : IRuleBase
     public ICollection<IRule> FindRulesWithConclusion(string variableName) =>
         ProductionRules.Where(e => e.ConclusionContainsVariable(variableName)).ToList();
 
-    public IRuleBase FilterDuplicatedConclusions(string variableName) => FilterConclusions(this, variableName);
+    public ICollection<IRule> FilterByResolutionMethod(string variableName) =>
+        FilterByResolutionMethod(variableName, ProductionRules, RuleComparer);
 
     private static IRuleBase Add(IRuleBase ruleBase, IRule rule)
     {
@@ -55,12 +56,18 @@ public class RuleBase : IRuleBase
         return ruleBase;
     }
 
-    private static IRuleBase FilterConclusions(IRuleBase ruleBase, string name)
+    public static ICollection<IRule> FilterByResolutionMethod(string variableName, IEnumerable<IRule> rules,
+        IComparer<IRule> ruleComparer)
     {
-        ruleBase.ProductionRules = ruleBase.ProductionRules
-            .Where(e => e.Consequent != null &&
-                        string.Equals(e.Consequent.LinguisticVariable.Name, name, InvariantCultureIgnoreCase))
+        return rules
+            .Where(e => string.Equals(e.Consequent!.LinguisticVariable.Name, variableName, InvariantCultureIgnoreCase))
+            .GroupBy(e => e.Consequent!.Function.Name)
+            .Select(e => new
+            {
+                FunctionName = e.Key,
+                Rule = e.MaxBy(g => g, ruleComparer)!
+            })
+            .Select(e => e.Rule)
             .ToList();
-        return ruleBase;
     }
 }
