@@ -1,14 +1,20 @@
 ﻿using FuzzyLogic.Knowledge.Linguistic;
 using FuzzyLogic.Rule;
 using static System.StringComparison;
+using static FuzzyLogic.Rule.ComparingMethod;
 
 namespace FuzzyLogic.Knowledge.Rule;
 
 public class RuleBase : IRuleBase
 {
-    protected RuleBase() => ProductionRules = new List<IRule>();
+    protected RuleBase(ComparingMethod method = Priority)
+    {
+        ProductionRules = new List<IRule>();
+        RuleComparer = RuleComparerFactory.CreateInstance(method);
+    }
 
     public ICollection<IRule> ProductionRules { get; set; }
+    public IComparer<IRule> RuleComparer { get; set; }
 
     public static IRuleBase Create() => new RuleBase();
 
@@ -17,7 +23,7 @@ public class RuleBase : IRuleBase
     public IRuleBase Add(IRule rule) => Add(this, rule);
 
     public IRuleBase AddAll(ICollection<IRule> rules) => AddAll(this, rules);
-    
+
     public IRuleBase AddAll(params IRule[] rules) => AddAll(this, rules);
 
     public ICollection<IRule> FindApplicableRules(IDictionary<string, double> facts) =>

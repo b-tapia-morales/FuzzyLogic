@@ -6,6 +6,7 @@ namespace FuzzyLogic.Knowledge.Rule;
 public interface IRuleBase
 {
     ICollection<IRule> ProductionRules { get; set; }
+    IComparer<IRule> RuleComparer { get; set; }
 
     IRuleBase Add(IRule rule);
 
