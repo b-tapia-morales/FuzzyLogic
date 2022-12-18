@@ -19,7 +19,7 @@ public class FuzzyRule : IRule
     public RulePriority Priority { get; set; }
 
     public override string ToString() =>
-        $"{Antecedent} {string.Join(' ', Connectives)} {Consequent}";
+        $"{Antecedent} {(Connectives.Any() ? $"{string.Join(' ', Connectives)} " : string.Empty)}{Consequent}";
 
     public IRule If(IProposition proposition) => If(this, proposition);
 

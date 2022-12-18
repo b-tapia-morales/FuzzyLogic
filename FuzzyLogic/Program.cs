@@ -4,13 +4,14 @@ using FuzzyLogic.Test.One;
 using FuzzyLogic.Tree;
 using static System.Globalization.CultureInfo;
 using static FuzzyLogic.Engine.Defuzzify.DefuzzificationMethod;
+using static FuzzyLogic.Memory.EntryResolutionMethod;
 using static FuzzyLogic.Rule.ComparingMethod;
 
 var linguisticBase = TestLinguisticImpl.Initialize();
 
 var ruleBase = TestRuleImpl.Initialize(linguisticBase, ShortestPremise);
 
-var workingMemory = TestWorkingMemoryImpl.Initialize();
+var workingMemory = TestWorkingMemoryImpl.Initialize(Replace);
 
 var knowledgeBase = KnowledgeBase.Create(linguisticBase, ruleBase);
 
@@ -18,6 +19,13 @@ var inferenceEngine = InferenceEngine.Create(knowledgeBase, workingMemory, Centr
 
 var rootNode =
     TreeNode.CreateDerivationTree("Hab", ruleBase.ProductionRules, ruleBase.RuleComparer, workingMemory.Facts);
-TreeNode.DisplayDerivationTree(rootNode);
-var value = TreeNode.DeriveFacts(rootNode, workingMemory.Facts, inferenceEngine.Defuzzifier);
-Console.WriteLine(value == null ? "NADA" : value.GetValueOrDefault().ToString(InvariantCulture));
+rootNode.PrettyWriteTree();
+Console.WriteLine();
+rootNode.WriteTree();
+Console.WriteLine();
+var value = rootNode.InferFact(workingMemory.Facts, inferenceEngine.Defuzzifier);
+Console.WriteLine($"Has the fact been successfully inferred? {value?.ToString(InvariantCulture)}");
+Console.WriteLine();
+rootNode.PrettyWriteTree();
+Console.WriteLine();
+rootNode.WriteTree();
