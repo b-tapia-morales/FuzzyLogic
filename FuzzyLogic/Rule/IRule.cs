@@ -52,6 +52,7 @@ public interface IRule
     public ICollection<IProposition> Connectives { get; }
     public IProposition? Consequent { get; set; }
     public bool IsFinalized { get; set; }
+    public RulePriority Priority { get; set; }
 
     /// <summary>
     ///     Appends a <see cref="IProposition">Proposition</see> with the <see cref="Proposition.Enums.Connective.If" />
