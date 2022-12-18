@@ -10,7 +10,7 @@
 ///         which the aforementioned operators are applied.
 ///     </para>
 /// </summary>
-public interface IFuzzyNumber<T> where T : IFuzzyNumber<T>
+public interface IFuzzyNumber<T> where T : IFuzzyNumber<T>, IComparable<T>
 {
     /// <summary>
     ///     <para>

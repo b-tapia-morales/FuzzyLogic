@@ -3,7 +3,7 @@ using static FuzzyLogic.Number.IFuzzyNumber<FuzzyLogic.Number.FuzzyNumber>;
 
 namespace FuzzyLogic.Number;
 
-public readonly record struct FuzzyNumber : IFuzzyNumber<FuzzyNumber>
+public readonly record struct FuzzyNumber : IFuzzyNumber<FuzzyNumber>, IComparable<FuzzyNumber>
 {
     private static readonly FuzzyNumber Min = Of(0);
     private static readonly FuzzyNumber Max = Of(1);
@@ -61,6 +61,8 @@ public readonly record struct FuzzyNumber : IFuzzyNumber<FuzzyNumber>
     /// <param name="x">The <see cref="double" /> value.</param>
     /// <returns>The <see cref="FuzzyNumber" /> value.</returns>
     public static implicit operator double(FuzzyNumber x) => x.Value;
+
+    public int CompareTo(FuzzyNumber other) => Value.CompareTo(other.Value);
 
     /// <inheritdoc />
     public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);

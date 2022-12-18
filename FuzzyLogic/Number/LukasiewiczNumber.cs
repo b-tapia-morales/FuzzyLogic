@@ -3,7 +3,7 @@ using static FuzzyLogic.Number.IFuzzyNumber<FuzzyLogic.Number.LukasiewiczNumber>
 
 namespace FuzzyLogic.Number;
 
-public readonly record struct LukasiewiczNumber : IFuzzyNumber<LukasiewiczNumber>
+public readonly record struct LukasiewiczNumber : IFuzzyNumber<LukasiewiczNumber>, IComparable<LukasiewiczNumber>
 {
     private static readonly LukasiewiczNumber Min = Of(0);
     private static readonly LukasiewiczNumber Max = Of(1);
@@ -63,6 +63,8 @@ public readonly record struct LukasiewiczNumber : IFuzzyNumber<LukasiewiczNumber
     /// <param name="x">The <see cref="double" /> value.</param>
     /// <returns>The <see cref="LukasiewiczNumber" /> value.</returns>
     public static implicit operator double(LukasiewiczNumber x) => x.Value;
+    
+    public int CompareTo(LukasiewiczNumber other) => Value.CompareTo(other.Value);
 
     /// <inheritdoc />
     public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);
