@@ -9,6 +9,7 @@ public interface IEngine
 {
     IKnowledgeBase KnowledgeBase { get; set; }
     IWorkingMemory WorkingMemory { get; set; }
+    IDefuzzifier Defuzzifier { get; set; }
 
     static abstract IEngine Create(IKnowledgeBase knowledgeBase, IWorkingMemory workingMemory,
         DefuzzificationMethod method = MeanOfMaxima);

@@ -78,15 +78,13 @@ public class TestRuleImpl : RuleBase
             .Then(Is(linguisticBase, "Med", "Medio"));
         var r11 = FuzzyRule.Create()
             .If(Is(linguisticBase, "Def", "Bajo"))
-            .Or(Is(linguisticBase, "Med", "Bajo"))
             .Then(Is(linguisticBase, "Hab", "Bajo"));
         var r12 = FuzzyRule.Create()
             .If(Is(linguisticBase, "Def", "Medio"))
-            .Or(Is(linguisticBase, "Med", "Medio"))
             .Then(Is(linguisticBase, "Hab", "Medio"));
         var r13 = FuzzyRule.Create()
             .If(Is(linguisticBase, "Def", "Alto"))
-            .Or(Is(linguisticBase, "Med", "Alto"))
+            .And(Is(linguisticBase, "Med", "Alto"))
             .Then(Is(linguisticBase, "Hab", "Alto"));
         return Create(method).AddAll(r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13);
     }

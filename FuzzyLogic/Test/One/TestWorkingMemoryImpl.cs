@@ -1,4 +1,5 @@
 ﻿using FuzzyLogic.Memory;
+using static FuzzyLogic.Memory.EntryResolutionMethod;
 
 namespace FuzzyLogic.Test.One;
 
@@ -6,20 +7,21 @@ public class TestWorkingMemoryImpl: WorkingMemory
 {
     private static readonly Random Random = new(Environment.TickCount);
     
-    public new static IWorkingMemory Initialize()
+    public new static IWorkingMemory Initialize(EntryResolutionMethod method = Preserve)
     {
         var workingMemory = Create();
-        workingMemory.AddFact("Ret", Random.NextDouble());
-        workingMemory.AddFact("Reg", Random.NextDouble());
-        workingMemory.AddFact("Cnt", Random.NextDouble());
-        workingMemory.AddFact("Dpj", Random.NextDouble());
-        workingMemory.AddFact("Pc", Random.NextDouble());
-        workingMemory.AddFact("Fz", Random.NextDouble());
-        workingMemory.AddFact("Rea", Random.NextDouble());
-        workingMemory.AddFact("Vlsp", Random.NextDouble());
-        workingMemory.AddFact("Elmp", Random.NextDouble());
-        workingMemory.AddFact("Vs", Random.NextDouble());
-        workingMemory.AddFact("Ag", Random.NextDouble());
+        workingMemory.AddFact("Ret", 0.65);
+        workingMemory.AddFact("Reg", 0.34);
+        workingMemory.AddFact("Cnt", 0.34);
+        workingMemory.AddFact("Dpj", 0.65);
+        workingMemory.AddFact("Pc", 0.34);
+        workingMemory.AddFact("Fz", 0.34);
+        workingMemory.AddFact("Rea", 0.65);
+        workingMemory.AddFact("Vlsp", 0.34);
+        workingMemory.AddFact("Elmp", 0.65);
+        workingMemory.AddFact("Vs", 0.34);
+        workingMemory.AddFact("Ag", 0.65);
+        workingMemory.AddFact("Sal", 0.34);
         return workingMemory;
     }
 }
