@@ -5,19 +5,17 @@ namespace FuzzyLogic.Tree;
 public class TreeNode : ITreeNode<TreeNode>
 {
     public string VariableName { get; }
-    public bool IsFact { get; set; }
     public ICollection<IRule> Rules { get; }
     public ICollection<ITreeNode<TreeNode>> Children { get; }
 
     public TreeNode(string variableName)
     {
         VariableName = variableName;
-        IsFact = false;
         Rules = new List<IRule>();
         Children = new List<ITreeNode<TreeNode>>();
     }
 
-    public bool IsLeaf() => Children.Any();
+    public bool IsLeaf() => !Children.Any();
 
     public void AddRules(IEnumerable<IRule> rules)
     {
@@ -35,9 +33,10 @@ public class TreeNode : ITreeNode<TreeNode>
 
     public void Display()
     {
-        Console.Write(IsFact ? "Leaf node: " : "Parent node: ");
+        var isFact = IsLeaf();
+        Console.Write(isFact ? "Leaf node: " : "Parent node: ");
         Console.WriteLine(VariableName);
-        if (!IsFact)
+        if (!isFact)
             Console.WriteLine(string.Join(Environment.NewLine, Rules));
     }
 
@@ -74,14 +73,13 @@ public class TreeNode : ITreeNode<TreeNode>
     private static void UpdateNode(ITreeNode<TreeNode> node, string variableName, ICollection<IRule> rules,
         IDictionary<string, double> facts, Stack<string> circularDependencies)
     {
+        if (facts.ContainsKey(variableName))
+            return;
         var filteredRules = rules
             .Where(e => e.ConclusionContainsVariable(variableName))
             .ToList();
         if (!filteredRules.Any())
-        {
-            node.IsFact = true;
             return;
-        }
         var antecedents = filteredRules
             .Select(e => e.Antecedent!.LinguisticVariable.Name)
             //.Where(e => !circularDependencies.Contains(e))
