@@ -7,16 +7,16 @@ public interface ITreeNode<T> where T : class, ITreeNode<T>
 {
     string VariableName { get; }
     ICollection<IRule> Rules { get; }
-    ICollection<ITreeNode<TreeNode>> Children { get; }
+    ICollection<T> Children { get; }
     bool IsProven { get; set; }
 
     bool IsLeaf();
 
     void AddRules(IEnumerable<IRule> rules);
 
-    void AddChild(ITreeNode<T> child);
+    void AddChild(T child);
 
-    void AddChildren(IEnumerable<ITreeNode<T>> children);
+    void AddChildren(IEnumerable<T> children);
 
     void WriteNode();
 

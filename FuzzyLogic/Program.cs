@@ -22,3 +22,5 @@ var rootNode =
 rootNode.WriteTree();
 var value = rootNode.InferFact(workingMemory.Facts, inferenceEngine.Defuzzifier);
 Console.WriteLine(value == null ? "NADA" : value.GetValueOrDefault().ToString(InvariantCulture));
+Console.WriteLine();
+rootNode.WriteTree();

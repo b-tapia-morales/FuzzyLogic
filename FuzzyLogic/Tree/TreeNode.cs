@@ -8,14 +8,14 @@ public class TreeNode : ITreeNode<TreeNode>
 {
     public string VariableName { get; }
     public ICollection<IRule> Rules { get; }
-    public ICollection<ITreeNode<TreeNode>> Children { get; }
+    public ICollection<TreeNode> Children { get; }
     public bool IsProven { get; set; }
 
     public TreeNode(string variableName)
     {
         VariableName = variableName;
         Rules = new List<IRule>();
-        Children = new List<ITreeNode<TreeNode>>();
+        Children = new List<TreeNode>();
         IsProven = false;
     }
 
@@ -27,9 +27,9 @@ public class TreeNode : ITreeNode<TreeNode>
             Rules.Add(rule);
     }
 
-    public void AddChild(ITreeNode<TreeNode> child) => Children.Add(child);
+    public void AddChild(TreeNode child) => Children.Add(child);
 
-    public void AddChildren(IEnumerable<ITreeNode<TreeNode>> children)
+    public void AddChildren(IEnumerable<TreeNode> children)
     {
         foreach (var child in children)
             Children.Add(child);
@@ -37,11 +37,10 @@ public class TreeNode : ITreeNode<TreeNode>
 
     public void WriteNode()
     {
-        var isFact = IsLeaf();
-        Console.Write(isFact ? "Leaf node: " : "Parent node: ");
-        Console.WriteLine(VariableName);
-        if (!isFact)
-            Console.WriteLine(string.Join(Environment.NewLine, Rules));
+        Console.WriteLine($"Linguistic variable name: {VariableName}");
+        if (!IsLeaf())
+            Console.WriteLine($"Associated rules:{Environment.NewLine}{string.Join(Environment.NewLine, Rules)}");
+        Console.WriteLine($"Is it proven? {IsProven}");
     }
 
     public void WriteTree() => WriteTree(this);
@@ -79,7 +78,7 @@ public class TreeNode : ITreeNode<TreeNode>
                 stack.Push(child);
         }
     }
-    
+
     private static double? InferFact(ITreeNode<TreeNode> rootNode, IDictionary<string, double> facts,
         IDefuzzifier defuzzifier)
     {
@@ -130,7 +129,7 @@ public class TreeNode : ITreeNode<TreeNode>
         var set = new HashSet<string>();
         set.UnionWith(antecedents);
         set.UnionWith(connectives);
-        var children = new List<ITreeNode<TreeNode>>(set.Select(e => new TreeNode(e)));
+        var children = new List<TreeNode>(set.Select(e => new TreeNode(e)));
         node.AddRules(filteredRules);
         node.AddChildren(children);
     }
