@@ -1,17 +1,22 @@
 ﻿using System.Collections.Immutable;
+using FuzzyLogic.Function.Interface;
 using FuzzyLogic.Number;
 using FuzzyLogic.Proposition;
 using FuzzyLogic.Proposition.Enums;
 using static System.StringComparison;
+using static FuzzyLogic.Rule.RulePriority;
 
 namespace FuzzyLogic.Rule;
 
 public class FuzzyRule : IRule
 {
+    private FuzzyRule(RulePriority priority = Normal) => Priority = priority;
+
     public IProposition? Antecedent { get; set; }
     public ICollection<IProposition> Connectives { get; } = new List<IProposition>();
     public IProposition? Consequent { get; set; }
     public bool IsFinalized { get; set; } = false;
+    public RulePriority Priority { get; set; }
 
     public override string ToString() =>
         $"{Antecedent} {string.Join(' ', Connectives)} {Consequent}";
@@ -90,7 +95,29 @@ public class FuzzyRule : IRule
             EvaluateConclusionWeight(facts).GetValueOrDefault());
     }
 
-    public static IRule Create() => new FuzzyRule();
+    public double? CalculateArea(IDictionary<string, double> facts,
+        double errorMargin = IClosedSurface.DefaultErrorMargin)
+    {
+        if (!IsApplicable(facts)) return null;
+        var function = Consequent!.Function;
+        if (function is not IClosedSurface) return null;
+        var surface = (IClosedSurface) Consequent!.Function;
+        var cutPoint = EvaluatePremiseWeight(facts).GetValueOrDefault();
+        return cutPoint == 0 ? null : surface.CalculateArea(cutPoint, errorMargin);
+    }
+
+    public (double X, double Y)? CalculateCentroid(IDictionary<string, double> facts,
+        double errorMargin = IClosedSurface.DefaultErrorMargin)
+    {
+        if (!IsApplicable(facts)) return null;
+        var function = Consequent!.Function;
+        if (function is not IClosedSurface) return null;
+        var surface = (IClosedSurface) Consequent!.Function;
+        var cutPoint = EvaluatePremiseWeight(facts).GetValueOrDefault();
+        return cutPoint == 0 ? null : surface.CalculateCentroid(cutPoint, errorMargin);
+    }
+
+    public static IRule Create(RulePriority priority = Normal) => new FuzzyRule(priority);
 
     private static IRule If(IRule rule, IProposition proposition)
     {

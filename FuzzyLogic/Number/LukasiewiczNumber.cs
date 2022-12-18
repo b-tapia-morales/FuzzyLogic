@@ -3,22 +3,22 @@ using static FuzzyLogic.Number.IFuzzyNumber<FuzzyLogic.Number.LukasiewiczNumber>
 
 namespace FuzzyLogic.Number;
 
-public readonly record struct LukasiewiczNumber : IFuzzyNumber<LukasiewiczNumber>
+public readonly record struct LukasiewiczNumber : IFuzzyNumber<LukasiewiczNumber>, IComparable<LukasiewiczNumber>
 {
     private static readonly LukasiewiczNumber Min = Of(0);
     private static readonly LukasiewiczNumber Max = Of(1);
 
-    private LukasiewiczNumber(double value) => Value = value;
+    private LukasiewiczNumber(double value)
+    {
+        if (Math.Abs(0 - value) < Tolerance) Value = 0;
+        if (Math.Abs(1 - value) < Tolerance) Value = 1;
+        RangeCheck(value);
+        Value = value;
+    }
 
     public double Value { get; }
 
-    public static LukasiewiczNumber Of(double value)
-    {
-        if (Math.Abs(0 - value) < Tolerance) return 0;
-        if (Math.Abs(1 - value) < Tolerance) return 1;
-        RangeCheck(value);
-        return value;
-    }
+    public static LukasiewiczNumber Of(double value) => new(value);
 
     public static bool TryCreate(double number, out LukasiewiczNumber fuzzyNumber)
     {
@@ -63,6 +63,8 @@ public readonly record struct LukasiewiczNumber : IFuzzyNumber<LukasiewiczNumber
     /// <param name="x">The <see cref="double" /> value.</param>
     /// <returns>The <see cref="LukasiewiczNumber" /> value.</returns>
     public static implicit operator double(LukasiewiczNumber x) => x.Value;
+    
+    public int CompareTo(LukasiewiczNumber other) => Value.CompareTo(other.Value);
 
     /// <inheritdoc />
     public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);

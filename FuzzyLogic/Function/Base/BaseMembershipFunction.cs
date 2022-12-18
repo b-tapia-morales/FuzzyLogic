@@ -20,7 +20,7 @@ public abstract class BaseMembershipFunction<T> : IMembershipFunction<T> where T
     public abstract bool IsSymmetric();
 
     public abstract bool IsNormal();
-    
+
     public abstract T LowerBoundary();
 
     public abstract T UpperBoundary();

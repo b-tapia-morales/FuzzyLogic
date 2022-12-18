@@ -13,27 +13,29 @@ namespace FuzzyLogic.Function.Interface;
 /// in <see cref="IMembershipFunction{T}"/>.</typeparam>
 public interface ITrapezoidalFunction<T> : IMembershipFunction<T> where T : unmanaged, INumber<T>, IConvertible
 {
+    const double DistanceTolerance = 1e-2;
+
     /// <summary>
     /// Returns the minimum and maximum for <i>x</i> values that belong to the core of the Membership Function
     /// (that is, the region of the universe that is characterized by full membership: μ(X) = 1) as an interval,
-    /// represented as a <see cref="System.ValueTuple"/>.
+    /// represented as a <see cref="ValueTuple"/>.
     /// </summary>
-    /// <returns>The interval, represented as a <see cref="System.ValueTuple"/>.</returns>
+    /// <returns>The interval, represented as a <see cref="ValueTuple"/>.</returns>
     (T? X0, T? X1) CoreInterval();
 
     /// <summary>
     /// Returns the minimum and maximum for <i>x</i> values that belong to left side of the support of the Membership
     /// Function (that is, the region of the universe to the left of the core that is characterized by nonzero
-    /// membership: 0 &lt; μ(X) &lt; 1) as an interval, represented as a <see cref="System.ValueTuple"/>.
+    /// membership: 0 &lt; μ(X) &lt; 1) as an interval, represented as a <see cref="ValueTuple"/>.
     /// </summary>
-    /// <returns>The interval, represented as a <see cref="System.ValueTuple"/>.</returns>
-    (T? X0, T? X1) LeftSupportInterval();
+    /// <returns>The interval, represented as a <see cref="ValueTuple"/>.</returns>
+    (T? X0, T? X1) LeftSupportInterval() => (LowerBoundary(), CoreInterval().X0);
 
     /// <summary>
     /// Returns the minimum and maximum for <i>x</i> values that belong to right side of the support of the Membership
     /// Function (that is, the region of the universe to the left of the core that is characterized by nonzero
-    /// membership: 0 &lt; μ(X) &lt; 1) as an interval, represented as a <see cref="System.ValueTuple"/>.
+    /// membership: 0 &lt; μ(X) &lt; 1) as an interval, represented as a <see cref="ValueTuple"/>.
     /// </summary>
-    /// <returns>The interval, represented as a <see cref="System.ValueTuple"/>.</returns>
-    (T? X0, T? X1) RightSupportInterval();
+    /// <returns>The interval, represented as a <see cref="ValueTuple"/>.</returns>
+    (T? X0, T? X1) RightSupportInterval() => (CoreInterval().X1, UpperBoundary());
 }

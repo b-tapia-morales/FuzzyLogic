@@ -52,6 +52,7 @@ public interface IRule
     public ICollection<IProposition> Connectives { get; }
     public IProposition? Consequent { get; set; }
     public bool IsFinalized { get; set; }
+    public RulePriority Priority { get; set; }
 
     /// <summary>
     ///     Appends a <see cref="IProposition">Proposition</see> with the <see cref="Proposition.Enums.Connective.If" />
@@ -137,13 +138,13 @@ public interface IRule
     /// <param name="facts">A <see cref="IDictionary{TKey,TValue}">Dictionary</see> of facts</param>
     /// <returns>true if the rule is applicable; otherwise, null</returns>
     bool IsApplicable(IDictionary<string, double> facts);
-    
+
     bool PremiseContainsVariable(string variableName);
 
     bool ConclusionContainsVariable(string variableName);
 
     int PremiseLength();
-    
+
     /// <summary>
     ///     <para>
     ///         Applies all the unary operators to each proposition in the premise part of the rule. A unary operator
@@ -235,4 +236,9 @@ public interface IRule
     FuzzyNumber? EvaluateConclusionWeight(IDictionary<string, double> facts);
 
     FuzzyNumber? EvaluateRuleWeight(IDictionary<string, double> facts);
+
+    double? CalculateArea(IDictionary<string, double> facts, double errorMargin = IClosedSurface.DefaultErrorMargin);
+
+    (double X, double Y)? CalculateCentroid(IDictionary<string, double> facts,
+        double errorMargin = IClosedSurface.DefaultErrorMargin);
 }

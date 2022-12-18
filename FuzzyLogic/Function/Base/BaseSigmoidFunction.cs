@@ -16,8 +16,8 @@ public abstract class BaseSigmoidFunction<T> : BaseMembershipFunction<T>, IAsymp
         C = c;
     }
 
-    protected virtual T A { get; }
-    protected virtual T C { get; }
+    protected T A { get; }
+    protected T C { get; }
 
     public T ApproximateLowerBoundary() =>
         _minCrispValue ??= (T) Convert.ChangeType(LambdaCut(IAsymptoteFunction<T>.MinLambdaCut), typeof(T));
@@ -25,9 +25,9 @@ public abstract class BaseSigmoidFunction<T> : BaseMembershipFunction<T>, IAsymp
     public T ApproximateUpperBoundary() =>
         _maxCrispValue ??= (T) Convert.ChangeType(LambdaCut(IAsymptoteFunction<T>.MaxLambdaCut), typeof(T));
 
-    public override bool IsOpenLeft() => true;
+    public override bool IsOpenLeft() => A.ToDouble(null) < 0;
 
-    public override bool IsOpenRight() => true;
+    public override bool IsOpenRight() => A.ToDouble(null) > 0;
 
     public override bool IsSymmetric() => false;
 

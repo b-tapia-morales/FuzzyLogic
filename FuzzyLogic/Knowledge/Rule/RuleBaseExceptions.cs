@@ -2,18 +2,14 @@
 
 public class InvalidRuleException : Exception
 {
-    public override string Message =>
+    private const string Template =
         "An attempt has been made to add an invalid rule (it has no Antecedent, or Consequent, or neither) to the rule base.";
 
-    public InvalidRuleException()
+    public InvalidRuleException() : base(Template)
     {
     }
 
-    public InvalidRuleException(string message) : base(message)
-    {
-    }
-
-    public InvalidRuleException(string message, Exception inner) : base(message, inner)
+    public InvalidRuleException(Exception inner) : base(Template, inner)
     {
     }
 }

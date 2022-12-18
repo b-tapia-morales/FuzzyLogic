@@ -2,9 +2,8 @@
 
 public enum DefuzzificationMethod
 {
-    Height,
     FirstOfMaxima,
-    LeastOfMaxima,
+    LastOfMaxima,
     MeanOfMaxima,
     CentreOfGravity,
     CentreOfSums,
