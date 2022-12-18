@@ -35,7 +35,7 @@ public class TreeNode : ITreeNode<TreeNode>
             Children.Add(child);
     }
 
-    public void Display()
+    public void WriteNode()
     {
         var isFact = IsLeaf();
         Console.Write(isFact ? "Leaf node: " : "Parent node: ");
@@ -43,6 +43,11 @@ public class TreeNode : ITreeNode<TreeNode>
         if (!isFact)
             Console.WriteLine(string.Join(Environment.NewLine, Rules));
     }
+
+    public void WriteTree() => WriteTree(this);
+
+    public double? InferFact(IDictionary<string, double> facts, IDefuzzifier defuzzifier) =>
+        InferFact(this, facts, defuzzifier);
 
     public static ITreeNode<TreeNode> CreateDerivationTree(string variableName, ICollection<IRule> rules,
         IComparer<IRule> ruleComparer, IDictionary<string, double> facts)
@@ -63,19 +68,22 @@ public class TreeNode : ITreeNode<TreeNode>
         return rootNode;
     }
 
-    public static double? DeriveFacts(ITreeNode<TreeNode> rootNode, IDictionary<string, double> facts,
+    private static void WriteTree(ITreeNode<TreeNode> rootNode)
+    {
+        var stack = new Stack<ITreeNode<TreeNode>>();
+        stack.Push(rootNode);
+        while (stack.TryPop(out var node))
+        {
+            node.WriteNode();
+            foreach (var child in node.Children)
+                stack.Push(child);
+        }
+    }
+    
+    private static double? InferFact(ITreeNode<TreeNode> rootNode, IDictionary<string, double> facts,
         IDefuzzifier defuzzifier)
     {
-        var queue = new Queue<ITreeNode<TreeNode>>();
-        queue.Enqueue(rootNode);
-        var stack = new Stack<ITreeNode<TreeNode>>();
-        while (queue.TryDequeue(out var node))
-        {
-            stack.Push(node);
-            foreach (var child in node.Children)
-                queue.Enqueue(child);
-        }
-
+        var stack = TraverseReverseLevelOrder(rootNode);
         while (stack.TryPop(out var node))
         {
             if (node.IsLeaf())
@@ -91,24 +99,15 @@ public class TreeNode : ITreeNode<TreeNode>
                 continue;
             }
 
-            var value = defuzzifier.Defuzzify(applicableRules, facts).GetValueOrDefault();
-            facts.TryAdd(node.VariableName, value);
+            var crispValue = defuzzifier.Defuzzify(applicableRules, facts);
+            if (crispValue != null)
+                facts.TryAdd(node.VariableName, crispValue.Value);
             node.IsProven = true;
         }
 
-        return facts.TryGetValue(rootNode.VariableName, out var expected) ? expected : null;
-    }
-
-    public static void DisplayDerivationTree(ITreeNode<TreeNode> rootNode)
-    {
-        var stack = new Stack<ITreeNode<TreeNode>>();
-        stack.Push(rootNode);
-        while (stack.TryPop(out var node))
-        {
-            node.Display();
-            foreach (var child in node.Children)
-                stack.Push(child);
-        }
+        if (facts.TryGetValue(rootNode.VariableName, out var fact))
+            rootNode.IsProven = true;
+        return fact;
     }
 
     private static void UpdateNode(ITreeNode<TreeNode> node, string variableName, ICollection<IRule> rules,
@@ -134,5 +133,20 @@ public class TreeNode : ITreeNode<TreeNode>
         var children = new List<ITreeNode<TreeNode>>(set.Select(e => new TreeNode(e)));
         node.AddRules(filteredRules);
         node.AddChildren(children);
+    }
+
+    private static Stack<ITreeNode<TreeNode>> TraverseReverseLevelOrder(ITreeNode<TreeNode> rootNode)
+    {
+        var queue = new Queue<ITreeNode<TreeNode>>();
+        queue.Enqueue(rootNode);
+        var stack = new Stack<ITreeNode<TreeNode>>();
+        while (queue.TryDequeue(out var node))
+        {
+            stack.Push(node);
+            foreach (var child in node.Children)
+                queue.Enqueue(child);
+        }
+
+        return stack;
     }
 }
