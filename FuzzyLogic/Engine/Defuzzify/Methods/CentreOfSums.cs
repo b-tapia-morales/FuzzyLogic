@@ -1,4 +1,5 @@
 ﻿using FuzzyLogic.Rule;
+using static FuzzyLogic.Engine.Defuzzify.IDefuzzifier;
 
 namespace FuzzyLogic.Engine.Defuzzify.Methods;
 
@@ -6,7 +7,7 @@ public class CentreOfSums : IDefuzzifier
 {
     public double? Defuzzify(ICollection<IRule> rules, IDictionary<string, double> facts)
     {
-        if (!rules.Any(e => e.IsApplicable(facts))) throw new InapplicableRulesException();
+        RulesCheck(rules, facts);
         var tuples = rules
             .Select(e => (Area: e.CalculateArea(facts).GetValueOrDefault(),
                 Centroid: e.CalculateCentroid(facts).GetValueOrDefault().X))

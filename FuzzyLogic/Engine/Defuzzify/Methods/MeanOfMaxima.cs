@@ -1,4 +1,5 @@
 ﻿using FuzzyLogic.Rule;
+using static FuzzyLogic.Engine.Defuzzify.IDefuzzifier;
 
 namespace FuzzyLogic.Engine.Defuzzify.Methods;
 
@@ -6,7 +7,7 @@ public class MeanOfMaxima : IDefuzzifier
 {
     public double? Defuzzify(ICollection<IRule> rules, IDictionary<string, double> facts)
     {
-        if (!rules.Any(e => e.IsApplicable(facts))) throw new InapplicableRulesException();
+        RulesCheck(rules, facts);
         var tuple = rules
             .Select(e => (e.Consequent!.Function, Weight: e.EvaluatePremiseWeight(facts).GetValueOrDefault()))
             .MaxBy(e => e.Weight);
