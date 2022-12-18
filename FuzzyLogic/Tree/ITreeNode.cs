@@ -7,6 +7,7 @@ public interface ITreeNode<T> where T : class, ITreeNode<T>
     string VariableName { get; }
     ICollection<IRule> Rules { get; }
     ICollection<ITreeNode<T>> Children { get; }
+    bool IsProven { get; set; }
 
     bool IsLeaf();
 

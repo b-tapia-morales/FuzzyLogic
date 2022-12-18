@@ -2,6 +2,7 @@
 using FuzzyLogic.Knowledge;
 using FuzzyLogic.Test.One;
 using FuzzyLogic.Tree;
+using static System.Globalization.CultureInfo;
 using static FuzzyLogic.Engine.Defuzzify.DefuzzificationMethod;
 using static FuzzyLogic.Rule.ComparingMethod;
 
@@ -18,3 +19,5 @@ var inferenceEngine = InferenceEngine.Create(knowledgeBase, workingMemory, First
 var rootNode =
     TreeNode.CreateDerivationTree("Hab", ruleBase.ProductionRules, ruleBase.RuleComparer, workingMemory.Facts);
 TreeNode.DisplayDerivationTree(rootNode);
+var value = TreeNode.DeriveFacts(rootNode, workingMemory.Facts, inferenceEngine.Defuzzifier);
+Console.WriteLine(value == null ? "NADA" : value.GetValueOrDefault().ToString(InvariantCulture));
