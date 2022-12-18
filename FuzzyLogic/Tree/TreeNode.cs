@@ -55,7 +55,6 @@ public class TreeNode : ITreeNode<TreeNode>
             foreach (var child in node.Children)
             {
                 stack.Push(child);
-                Console.WriteLine(string.Join(Environment.NewLine,child.Rules));
             }
         }
 

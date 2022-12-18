@@ -26,12 +26,16 @@ public class InferenceEngine : IEngine
         Defuzzifier = DefuzzifierFactory.CreateInstance(method);
     }
 
-    public static IEngine Create(IKnowledgeBase knowledgeBase, IWorkingMemory memory,
+    public static IEngine Create(IKnowledgeBase knowledgeBase, IWorkingMemory workingMemory,
         DefuzzificationMethod method = DefuzzificationMethod.MeanOfMaxima) =>
-        new InferenceEngine(knowledgeBase, memory, method);
+        new InferenceEngine(knowledgeBase, workingMemory, method);
 
     public double? Defuzzify(string variableName) =>
-        WorkingMemory.Facts.TryGetValue(variableName, out var value) ? value : null;
+        WorkingMemory.Facts.TryGetValue(variableName, out var value)
+            ? value
+            : Defuzzifier.Defuzzify(
+                KnowledgeBase.RuleBase.ProductionRules.Where(e => string.Equals(e.Consequent!.LinguisticVariable.Name,
+                    variableName, StringComparison.InvariantCultureIgnoreCase)).ToList(), WorkingMemory.Facts);
 
     public static ICollection<(IRealFunction Function, FuzzyNumber CutPoint)> EvaluateAntecedentWeight(
         IRuleBase ruleBase, IWorkingMemory memory, string variableName) =>
