@@ -35,6 +35,7 @@ public class TreeNode : ITreeNode<TreeNode>
 
     public void Display()
     {
+        Console.Write(IsFact ? "Leaf node: " : "Parent node: ");
         Console.WriteLine(VariableName);
         if (!IsFact)
             Console.WriteLine(string.Join(Environment.NewLine, Rules));
@@ -50,7 +51,7 @@ public class TreeNode : ITreeNode<TreeNode>
         while (stack.TryPop(out var node))
         {
             //circularDependencies.Push(node.VariableName);
-            UpdateNode(ref node, node.VariableName, rules, facts, circularDependencies);
+            UpdateNode(node, node.VariableName, rules, facts, circularDependencies);
             foreach (var child in node.Children)
                 stack.Push(child);
         }
@@ -70,18 +71,17 @@ public class TreeNode : ITreeNode<TreeNode>
         }
     }
 
-    private static void UpdateNode(ref ITreeNode<TreeNode> node, string variableName, ICollection<IRule> rules,
+    private static void UpdateNode(ITreeNode<TreeNode> node, string variableName, ICollection<IRule> rules,
         IDictionary<string, double> facts, Stack<string> circularDependencies)
     {
-        if (facts.ContainsKey(variableName))
+        var filteredRules = rules
+            .Where(e => e.ConclusionContainsVariable(variableName))
+            .ToList();
+        if (!filteredRules.Any())
         {
             node.IsFact = true;
             return;
         }
-
-        var filteredRules = rules
-            .Where(e => e.ConclusionContainsVariable(variableName))
-            .ToList();
         var antecedents = filteredRules
             .Select(e => e.Antecedent!.LinguisticVariable.Name)
             //.Where(e => !circularDependencies.Contains(e))
