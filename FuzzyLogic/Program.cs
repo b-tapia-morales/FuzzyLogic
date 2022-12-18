@@ -1,21 +1,22 @@
 ﻿using FuzzyLogic.Engine;
 using FuzzyLogic.Knowledge;
-using FuzzyLogic.Knowledge.Linguistic;
-using FuzzyLogic.Knowledge.Rule;
 using FuzzyLogic.Memory;
+using FuzzyLogic.Test;
+using FuzzyLogic.Test.One;
+using FuzzyLogic.Test.Two;
 using FuzzyLogic.Tree;
 
-var linguisticBase = LinguisticBaseImplOne.Initialize();
+var linguisticBase = TestLinguisticImpl.Initialize();
 
-var ruleBase = RuleBaseImplOne.Initialize(linguisticBase);
+var ruleBase = TestRuleImpl.Initialize(linguisticBase);
 
-var workingMemory = WorkingMemoryImplOne.Initialize();
+var workingMemory = WorkingMemoryImpl2.Initialize();
 
 var knowledgeBase = KnowledgeBase.Create(linguisticBase, ruleBase);
 
 var inferenceEngine = InferenceEngine.Create(knowledgeBase, workingMemory);
 
-var rootNode = TreeNode.CreateDerivationTree("Densidad de Corriente", ruleBase.ProductionRules, workingMemory.Facts);
+var rootNode = TreeNode.CreateDerivationTree("Def", ruleBase.ProductionRules, workingMemory.Facts);
 Console.WriteLine(string.Join(Environment.NewLine, rootNode.Rules));
 Console.WriteLine();
 Console.WriteLine(string.Join(Environment.NewLine, rootNode.Children.Select(e => e.VariableName)));

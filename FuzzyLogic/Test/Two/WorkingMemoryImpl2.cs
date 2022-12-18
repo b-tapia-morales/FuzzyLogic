@@ -1,8 +1,9 @@
-﻿using static FuzzyLogic.Memory.EntryResolutionMethod;
+﻿using FuzzyLogic.Memory;
+using static FuzzyLogic.Memory.EntryResolutionMethod;
 
-namespace FuzzyLogic.Memory;
+namespace FuzzyLogic.Test.Two;
 
-public class WorkingMemoryImplOne : WorkingMemory
+public class WorkingMemoryImpl2 : WorkingMemory
 {
     public new static IWorkingMemory Initialize(EntryResolutionMethod method = Replace)
     {

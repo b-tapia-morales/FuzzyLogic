@@ -1,10 +1,11 @@
 ﻿using FuzzyLogic.Knowledge.Linguistic;
+using FuzzyLogic.Knowledge.Rule;
 using FuzzyLogic.Rule;
 using static FuzzyLogic.Proposition.FuzzyProposition;
 
-namespace FuzzyLogic.Knowledge.Rule;
+namespace FuzzyLogic.Test.Two;
 
-public class RuleBaseImplOne : RuleBase
+public class RuleBaseImpl2 : RuleBase
 {
     public new static IRuleBase Initialize(ILinguisticBase linguisticBase)
     {

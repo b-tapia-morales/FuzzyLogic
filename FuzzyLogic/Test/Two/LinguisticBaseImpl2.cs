@@ -1,8 +1,9 @@
-﻿using FuzzyLogic.Variable;
+﻿using FuzzyLogic.Knowledge.Linguistic;
+using FuzzyLogic.Variable;
 
-namespace FuzzyLogic.Knowledge.Linguistic;
+namespace FuzzyLogic.Test.Two;
 
-public class LinguisticBaseImplOne : LinguisticBase
+public class LinguisticBaseImpl2 : LinguisticBase
 {
     public new static ILinguisticBase Initialize()
     {

@@ -1,7 +1,7 @@
 ﻿using FuzzyLogic.Knowledge.Linguistic;
 using FuzzyLogic.Variable;
 
-namespace FuzzyLogic.Test;
+namespace FuzzyLogic.Test.One;
 
 public class TestLinguisticImpl : LinguisticBase
 {
@@ -113,7 +113,7 @@ public class TestLinguisticImpl : LinguisticBase
             .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
             .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
         var portero = LinguisticVariable
-            .Create("Port")
+            .Create("Por")
             .AddTrapezoidFunction("Bajo", 0.0, 0.0, 0.31, 0.35)
             .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
             .AddTrapezoidFunction("Alto", 0.64, 0.68, 1, 1);
