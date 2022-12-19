@@ -1,7 +1,6 @@
 ﻿using FuzzyLogic.Engine;
 using FuzzyLogic.Knowledge;
 using FuzzyLogic.Test.One;
-using FuzzyLogic.Tree;
 using static System.Globalization.CultureInfo;
 using static FuzzyLogic.Engine.Defuzzify.DefuzzificationMethod;
 using static FuzzyLogic.Memory.EntryResolutionMethod;
@@ -17,15 +16,6 @@ var knowledgeBase = KnowledgeBase.Create(linguisticBase, ruleBase);
 
 var inferenceEngine = InferenceEngine.Create(knowledgeBase, workingMemory, CentreOfArea);
 
-var rootNode =
-    TreeNode.CreateDerivationTree("Hab", ruleBase.ProductionRules, ruleBase.RuleComparer, workingMemory.Facts);
-rootNode.PrettyWriteTree();
+var value = inferenceEngine.Defuzzify("Hab");
 Console.WriteLine();
-rootNode.WriteTree();
-Console.WriteLine();
-var value = rootNode.InferFact(workingMemory.Facts, inferenceEngine.Defuzzifier);
 Console.WriteLine($"Has the fact been successfully inferred? {value?.ToString(InvariantCulture)}");
-Console.WriteLine();
-rootNode.PrettyWriteTree();
-Console.WriteLine();
-rootNode.WriteTree();

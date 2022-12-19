@@ -14,5 +14,5 @@ public interface IEngine
     static abstract IEngine Create(IKnowledgeBase knowledgeBase, IWorkingMemory workingMemory,
         DefuzzificationMethod method = MeanOfMaxima);
 
-    double? Defuzzify(string variableName);
+    double? Defuzzify(string variableName, bool provideExplanation = true);
 }
