@@ -28,6 +28,29 @@ TODO
 
 ## Usage
 
+### Linguistic Variables
+
+A Linguistic Variable is a variable whose values are expressed in natural language, and it can be declared as follows:
+
+```csharp
+var water = LinguisticVariable.Create(“Water”)
+    .AddTrapezoidalFunction(“Cold”, 0, 0, 20, 40)
+    .AddTriangularFunction(“Warm”, 30, 50, 70)
+    .AddTrapezoidalFunction(“Hot”, 50, 80, 100, 100)
+```
+
+The first line declares the linguistic variable with the name "Water", and the two following lines declare the set of
+linguistic terms that belong to it.
+These terms must be unique in name, and they are intrinsically associated with membership functions (in this case,
+triangular and trapezoidal ones).
+
+The provided numerical values as parameters have a certain meaning depending on the shape that the Membership Function
+describes.
+For example, in the case of the triangular function, the values 30, 50, and 70 describe the coordinates of the
+triangle: (0, 30), (50, 1), (70, 0).
+The middle value is always situated at height 1 because all Membership Functions
+are normal, that is, there's at least one *x* value such that μ(*x*) = 1.
+
 ### Working Memory
 
 A Working Memory represents all the knowledge about the domain as facts, whether they are provided by the user or
@@ -76,7 +99,7 @@ let's declare the following class:
 public class WorkingMemoryImpl : WorkingMemory
 ```
 
-Now, we must hide the base method by redeclaring the base method and preload all data inside it.
+Now, we must hide the base method by re-declaring the base method and preload all data inside it.
 
 ```csharp
 public new static IWorkingMemory Initialize()
