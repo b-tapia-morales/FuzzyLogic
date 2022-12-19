@@ -16,11 +16,11 @@ public class RuleBase : IRuleBase
     public ICollection<IRule> ProductionRules { get; set; }
     public IComparer<IRule> RuleComparer { get; }
 
-    public static IRuleBase Create(ComparingMethod comparingMethod = Priority) =>
-        new RuleBase(comparingMethod);
+    public static IRuleBase Create(ComparingMethod method = Priority) =>
+        new RuleBase(method);
 
-    public static IRuleBase Initialize(ILinguisticBase linguisticBase, ComparingMethod comparingMethod = Priority) =>
-        Create(comparingMethod);
+    public static IRuleBase Initialize(ILinguisticBase linguisticBase, ComparingMethod method = Priority) =>
+        Create(method);
 
     public IRuleBase Add(IRule rule) => Add(this, rule);
 

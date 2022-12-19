@@ -9,10 +9,10 @@ public interface IRuleBase
     ICollection<IRule> ProductionRules { get; }
     IComparer<IRule> RuleComparer { get; }
 
-    static abstract IRuleBase Create(ComparingMethod comparingMethod = Priority);
+    static abstract IRuleBase Create(ComparingMethod method = Priority);
 
     static abstract IRuleBase Initialize(ILinguisticBase linguisticBase,
-        ComparingMethod comparingMethod = Priority);
+        ComparingMethod method = Priority);
 
     IRuleBase Add(IRule rule);
 

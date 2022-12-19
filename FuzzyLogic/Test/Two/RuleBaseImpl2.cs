@@ -2,12 +2,13 @@
 using FuzzyLogic.Knowledge.Rule;
 using FuzzyLogic.Rule;
 using static FuzzyLogic.Proposition.FuzzyProposition;
+using static FuzzyLogic.Rule.ComparingMethod;
 
 namespace FuzzyLogic.Test.Two;
 
 public class RuleBaseImpl2 : RuleBase
 {
-    public new static IRuleBase Initialize(ILinguisticBase linguisticBase)
+    public new static IRuleBase Initialize(ILinguisticBase linguisticBase, ComparingMethod method = Priority)
     {
          var r1 = FuzzyRule.Create()
             .If(Is(linguisticBase, "Horario", "Madrugada"))
@@ -49,6 +50,6 @@ public class RuleBaseImpl2 : RuleBase
             .And(Is(linguisticBase, "Área", "Pequeña"))
             .And(Is(linguisticBase, "Espesor", "Regular"))
             .Then(Is(linguisticBase, "Densidad de Corriente", "Mínima"));
-        return Create().AddAll(r1, r2, r3, r4, r5, r6, r7, r8);
+        return Create(method).AddAll(r1, r2, r3, r4, r5, r6, r7, r8);
     }
 }

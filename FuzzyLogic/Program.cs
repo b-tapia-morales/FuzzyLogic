@@ -3,19 +3,18 @@ using FuzzyLogic.Knowledge;
 using FuzzyLogic.Test.One;
 using static System.Globalization.CultureInfo;
 using static FuzzyLogic.Engine.Defuzzify.DefuzzificationMethod;
-using static FuzzyLogic.Memory.EntryResolutionMethod;
-using static FuzzyLogic.Rule.ComparingMethod;
 
 var linguisticBase = TestLinguisticImpl.Initialize();
 
-var ruleBase = TestRuleImpl.Initialize(linguisticBase, ShortestPremise);
+var ruleBase = TestRuleImpl.Initialize(linguisticBase);
 
-var workingMemory = TestWorkingMemoryImpl.Initialize(Replace);
+var workingMemory = TestWorkingMemoryImpl.Initialize();
 
 var knowledgeBase = KnowledgeBase.Create(linguisticBase, ruleBase);
 
-var inferenceEngine = InferenceEngine.Create(knowledgeBase, workingMemory, CentreOfArea);
+var inferenceEngine = InferenceEngine.Create(knowledgeBase, workingMemory, MeanOfMaxima);
 
 var value = inferenceEngine.Defuzzify("Hab");
 Console.WriteLine();
-Console.WriteLine($"Has the fact been successfully inferred? {value?.ToString(InvariantCulture)}");
+Console.WriteLine("Has the fact been successfully inferred?");
+Console.WriteLine($"{(value == null ? "NO" : value.Value.ToString(InvariantCulture))}");
