@@ -3,15 +3,15 @@ using static FuzzyLogic.Engine.Defuzzify.IDefuzzifier;
 
 namespace FuzzyLogic.Engine.Defuzzify.Methods;
 
-public class CentreOfArea : IDefuzzifier
+public class CenterOfSums : IDefuzzifier
 {
     public double? Defuzzify(ICollection<IRule> rules, IDictionary<string, double> facts)
     {
         RulesCheck(rules, facts);
-        var tuple = rules
+        var tuples = rules
             .Select(e => (Area: e.CalculateArea(facts).GetValueOrDefault(),
                 Centroid: e.CalculateCentroid(facts).GetValueOrDefault().X))
-            .MaxBy(e => e.Area);
-        return tuple.Area == 0 ? null : tuple.Centroid;
+            .ToList();
+        return tuples.All(e => e.Area == 0) ? null : tuples.Sum(e => e.Area * e.Centroid) / tuples.Sum(e => e.Area);
     }
 }

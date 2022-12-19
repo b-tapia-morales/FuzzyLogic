@@ -9,7 +9,7 @@ public class LastOfMaxima : IDefuzzifier
     {
         RulesCheck(rules, facts);
         var tuple = rules
-            .Select(e => (Function: e.Consequent!.Function, Weight: e.EvaluatePremiseWeight(facts).GetValueOrDefault()))
+            .Select(e => (e.Consequent!.Function, Weight: e.EvaluatePremiseWeight(facts).GetValueOrDefault()))
             .MaxBy(e => e.Weight);
         if (tuple.Weight == 0)
             return null;
