@@ -47,9 +47,8 @@ public static class DefuzzifierFactory
         DefuzzificationMethod.FirstOfMaxima => new FirstOfMaxima(),
         DefuzzificationMethod.LastOfMaxima => new LastOfMaxima(),
         DefuzzificationMethod.MeanOfMaxima => new MeanOfMaxima(),
-        DefuzzificationMethod.CentreOfGravity => new CentreOfGravity(),
-        DefuzzificationMethod.CentreOfSums => new CentreOfSums(),
-        DefuzzificationMethod.CentreOfArea => new CentreOfArea(),
+        DefuzzificationMethod.CenterOfGravity => new CenterOfGravity(),
+        DefuzzificationMethod.CenterOfSums => new CenterOfSums(),
         _ => throw new ArgumentOutOfRangeException(nameof(method), method, null)
     };
 }
