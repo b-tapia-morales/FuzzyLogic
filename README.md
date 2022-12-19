@@ -74,17 +74,61 @@ keyword), which is the following:
 
 ```csharp
 public new static ILinguisticBase Initialize()
-    {
-        var water = LinguisticVariable.Create(“Water”)
-            .AddTrapezoidalFunction(“Cold”, 0, 0, 20, 40)
-            .AddTriangularFunction(“Warm”, 30, 50, 70)
-            .AddTrapezoidalFunction(“Hot”, 50, 80, 100, 100)
-        return Create().AddAll(water);
-    }
+{
+    var water = LinguisticVariable.Create(“Water”)
+        .AddTrapezoidalFunction(“Cold”, 0, 0, 20, 40)
+        .AddTriangularFunction(“Warm”, 30, 50, 70)
+        .AddTrapezoidalFunction(“Hot”, 50, 80, 100, 100)
+    return Create().AddAll(water);
+ }
 ```
 
 This method will now instantiate and preload all linguistic variables belonging to the Linguistic Base inside the method
 above.
+
+### Rule Creation
+
+A fuzzy rule is created from fuzzy propositions and logical connectors. The following is an example:
+
+```csharp
+FuzzyRule
+    .Create(RulePriotity.High)
+    .If(FuzzyProposition.Is(linguisticBase, “Water”, “Hot”))
+    .Or(FuzzyProposition.IsNot(linguisticBase, “Water”, “Warm”))
+    .Then(FuzzyProposition.Is(linguisticBase, “Power”, “High”));
+```
+
+The `If`, `Or`, `Then` method names reference the logical connectors that are currently supported by the library.
+Not shown in the example above, but also currently supported, is the `And` method.
+All these methods take an instance of a `FuzzyProposition` as an argument.
+
+A `FuzzyProposition` can be created by providing an instance of a `LinguisticBase`, the `LinguisticVariable` that is
+contained in the linguistic base, and the linguistic term, which is associated by an implicit semantic rule to the
+linguistic variable.
+The `Is`, `IsNot` method names reference the literals in propositional logic, in which a proposition can be either an
+affirmation or a negation.
+
+For example, at line 4, the fuzzy proposition can be read in natural language as follows:
+
+```Water IS NOT Warm```
+
+The entire rule can be read in natural language as follows:
+
+```IF Water IS Hot OR Water IS NOT Warm THEN Power IS High```
+
+Both the fuzzy propositions and the fuzzy rules will be shown exactly as above by calling the `ToString()` method on
+them.
+
+The `Create()` method creates an instance of a `FuzzyRule`, and it can be given an enumeration member of the type
+`RulePriority`, which is an `enum`.
+There are three possible enumeration members:
+
+- Low.
+- Normal.
+- High.
+
+This defines a strategy for resolving conflicts between rules, since it may be the case that two rules with the same
+consequent can be applicable from the given facts.
 
 ### Working Memory
 
@@ -94,12 +138,22 @@ inferred by the system.
 A Working Memory can be instantiated as follows:
 
 ```csharp
-var workingMemory = WorkingMemory.Create()
+static abstract IWorkingMemory Create(EntryResolutionMethod method = Replace)
 ```
 
 This will create an instance of a Working Memory with no given facts. All facts are stored in
 a `IDictionary<string, double>` collection, and they are uniquely identifiable by their name. There cannot be two
 facts with the same name.
+
+`EntryResolutionMethod` is an `enum` that represents the resolution method for new entries whose keys collide with
+previous entries' keys in the working memory, because, as it was previously established, there cannot be two facts with
+the same name.
+There are two possible enumeration members:
+
+- Preserve: Indicates that the previous entries will be preserved.
+- Replace: Indicates that the new entries will replace the previous ones.
+
+if none is specified, the default enumeration member is `Replace`.
 
 If the user desires to preload a Working Memory with data, two methods can be used:
 
@@ -108,7 +162,7 @@ If the user desires to preload a Working Memory with data, two methods can be us
 The following method loads all data via a CSV file:
 
 ```csharp
-var workingMemory = WorkingMemory.InitializeFromFile(folderPath);
+public static IWorkingMemory InitializeFromFile(string folderPath, EntryResolutionMethod method = Replace)
 ```
 
 `folderPath` is a `string` indicating the route of the file. A file preloaded with data would look as follows:
@@ -124,7 +178,7 @@ var workingMemory = WorkingMemory.InitializeFromFile(folderPath);
 The following method is marked as meant to be hidden by an implementing class:
 
 ```csharp
-static abstract IWorkingMemory Initialize();
+static abstract IWorkingMemory Initialize(EntryResolutionMethod method = Replace)
 ```
 
 A class can be declared that inherits from `WorkingMemory` by initializing all data at instantiation.
@@ -137,7 +191,7 @@ public class WorkingMemoryImpl : WorkingMemory
 Now, we must hide the base method by re-declaring the base method and preload all data inside it.
 
 ```csharp
-public new static IWorkingMemory Initialize()
+public new static IWorkingMemory Initialize(EntryResolutionMethod method = Replace)
 {
         var workingMemory = Create();
         workingMemory.AddFact("Age", 18);
