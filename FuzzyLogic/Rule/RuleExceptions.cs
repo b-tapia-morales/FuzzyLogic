@@ -17,7 +17,7 @@ public class MissingAntecedentException : Exception
 public class DuplicatedAntecedentException : Exception
 {
     private const string Template =
-        $@"The following rule creation policy has been violated: There can be one and only one proposition with the IF connective.";
+        @"The following rule creation policy has been violated: There can be one and only one proposition with the IF connective.";
 
     public DuplicatedAntecedentException() : base(Template)
     {
