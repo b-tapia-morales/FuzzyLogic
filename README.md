@@ -33,10 +33,10 @@ TODO
 A Linguistic Variable is a variable whose values are expressed in natural language, and it can be declared as follows:
 
 ```csharp
-var water = LinguisticVariable.Create(“Water”)
-    .AddTrapezoidalFunction(“Cold”, 0, 0, 20, 40)
-    .AddTriangularFunction(“Warm”, 30, 50, 70)
-    .AddTrapezoidalFunction(“Hot”, 50, 80, 100, 100)
+var water = LinguisticVariable.Create("Water")
+    .AddTrapezoidalFunction("Cold", 0, 0, 20, 40)
+    .AddTriangularFunction("Warm", 30, 50, 70)
+    .AddTrapezoidalFunction("Hot", 50, 80, 100, 100)
 ```
 
 The first line declares the linguistic variable with the name "Water", and the two following lines declare the set of
@@ -75,10 +75,10 @@ keyword), which is the following:
 ```csharp
 public new static ILinguisticBase Initialize()
 {
-    var water = LinguisticVariable.Create(“Water”)
-        .AddTrapezoidalFunction(“Cold”, 0, 0, 20, 40)
-        .AddTriangularFunction(“Warm”, 30, 50, 70)
-        .AddTrapezoidalFunction(“Hot”, 50, 80, 100, 100)
+    var water = LinguisticVariable.Create("Water")
+        .AddTrapezoidalFunction("Cold", 0, 0, 20, 40)
+        .AddTriangularFunction("Warm", 30, 50, 70)
+        .AddTrapezoidalFunction("Hot", 50, 80, 100, 100)
     return Create().AddAll(water);
  }
 ```
@@ -93,9 +93,9 @@ A fuzzy rule is created from fuzzy propositions and logical connectors. The foll
 ```csharp
 FuzzyRule
     .Create(RulePriotity.High)
-    .If(FuzzyProposition.Is(linguisticBase, “Water”, “Hot”))
-    .Or(FuzzyProposition.IsNot(linguisticBase, “Water”, “Warm”))
-    .Then(FuzzyProposition.Is(linguisticBase, “Power”, “High”));
+    .If(FuzzyProposition.Is(linguisticBase, "Water", "Hot"))
+    .Or(FuzzyProposition.IsNot(linguisticBase, "Water", "Warm"))
+    .Then(FuzzyProposition.Is(linguisticBase, "Power", "High"));
 ```
 
 The `If`, `Or`, `Then` method names reference the logical connectors that are currently supported by the library.
