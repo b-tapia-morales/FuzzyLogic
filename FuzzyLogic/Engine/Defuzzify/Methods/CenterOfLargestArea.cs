@@ -3,7 +3,7 @@ using static FuzzyLogic.Engine.Defuzzify.IDefuzzifier;
 
 namespace FuzzyLogic.Engine.Defuzzify.Methods;
 
-public class CenterOfGravity : IDefuzzifier
+public class CenterOfLargestArea : IDefuzzifier
 {
     public double? Defuzzify(ICollection<IRule> rules, IDictionary<string, double> facts)
     {
