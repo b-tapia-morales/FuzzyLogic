@@ -56,7 +56,7 @@ one *x* value such that μ(*x*) = 1.
 A Linguistic Base can be instantiated as follows:
 
 ```csharp
-var linguisticBase = LinguisticBase.Create()
+public static ILinguisticBase Create()
 ```
 
 This will create an instance of a Linguistic Base with no linguistic variables.
@@ -93,8 +93,8 @@ A fuzzy rule is created from fuzzy propositions and logical connectors. The foll
 ```csharp
 FuzzyRule
     .Create(RulePriotity.High)
-    .If(FuzzyProposition.Is(linguisticBase, "Water", "Hot"))
-    .Or(FuzzyProposition.IsNot(linguisticBase, "Water", "Warm"))
+    .If(FuzzyProposition.Is(linguisticBase, "Water", "Cold"))
+    .Or(FuzzyProposition.IsNot(linguisticBase, "Water", "Hot"))
     .Then(FuzzyProposition.Is(linguisticBase, "Power", "High"));
 ```
 
@@ -110,11 +110,11 @@ affirmation or a negation.
 
 For example, at line 4, the fuzzy proposition can be read in natural language as follows:
 
-```Water IS NOT Warm```
+```Water IS NOT Hot```
 
 The entire rule can be read in natural language as follows:
 
-```IF Water IS Hot OR Water IS NOT Warm THEN Power IS High```
+```IF Water IS Cold OR Water IS NOT Hot THEN Power IS High```
 
 Both the fuzzy propositions and the fuzzy rules will be shown exactly as above by calling the `ToString()` method on
 them.
@@ -123,12 +123,55 @@ The `Create()` method creates an instance of a `FuzzyRule`, and it can be given 
 `RulePriority`, which is an `enum`.
 There are three possible enumeration members:
 
-- Low.
-- Normal.
-- High.
+- **Low**.
+- **Normal**.
+- **High**.
 
 This defines a strategy for resolving conflicts between rules, since it may be the case that two rules with the same
 consequent can be applicable from the given facts.
+Providing this `enum` value is optional, and it will default to `Normal` if omitted.
+
+### Rule Base
+
+A Rule Base can be instantiated as follows:
+
+```csharp
+public static IRuleBase Create(ComparingMethod method = Priority)
+```
+
+`ComparingMethod` is an `enum` that represents the resolution method for conflicts between rules, since it may be the
+case that two rules with the same consequent are stored in the rule base.
+
+There are three possible enumeration members:
+
+- **Priority**: Indicates that the rule with the highest priority will prevail.
+- **LargestPremise**: Indicates that the rule with the greatest number of connectives in the premise will prevail.
+- **ShortestPremise**: Indicates that the rule with the lowest number of connectives in the premise will prevail.
+
+This will create an instance of a Working Memory with no rules.
+
+This class declares a method that is meant to be hidden by an implementing class (using the `new` keyword), which is the
+following:
+
+```csharp
+public static IRuleBase Initialize(ILinguisticBase linguisticBase, ComparingMethod method = Priority)
+```
+
+Now, we must hide the base method by re-declaring the base method and preload all data inside it.
+
+```csharp
+public new static IRuleBase Initialize(ILinguisticBase linguisticBase, ComparingMethod method = Priority)
+{
+    var r1 = FuzzyRule.Create(RulePriotity.High)
+        .If(FuzzyProposition.Is(linguisticBase, "Water", "Cold"))
+        .Or(FuzzyProposition.IsNot(linguisticBase, "Water", "Hot"))
+        .Then(FuzzyProposition.Is(linguisticBase, "Power", "High"));
+    var r2 = FuzzyRule.Create(RulePriority.Normal)
+        .If(FuzzyProposition.Is(linguisticBase, "Water", "Hot"))
+        .Then(FuzzyProposition.Is(linguisticBase, "Power", "Low"));
+    return Create(method).AddAll(r1, r2);
+ }
+```
 
 ### Working Memory
 
@@ -138,7 +181,7 @@ inferred by the system.
 A Working Memory can be instantiated as follows:
 
 ```csharp
-static abstract IWorkingMemory Create(EntryResolutionMethod method = Replace)
+public static IWorkingMemory Create(EntryResolutionMethod method = Replace)
 ```
 
 This will create an instance of a Working Memory with no given facts. All facts are stored in
@@ -150,8 +193,8 @@ previous entries' keys in the working memory, because, as it was previously esta
 the same name.
 There are two possible enumeration members:
 
-- Preserve: Indicates that the previous entries will be preserved.
-- Replace: Indicates that the new entries will replace the previous ones.
+- **Preserve**: Indicates that the previous entries will be preserved.
+- **Replace**: Indicates that the new entries will replace the previous ones.
 
 if none is specified, the default enumeration member is `Replace`.
 
@@ -193,10 +236,10 @@ Now, we must hide the base method by re-declaring the base method and preload al
 ```csharp
 public new static IWorkingMemory Initialize(EntryResolutionMethod method = Replace)
 {
-        var workingMemory = Create();
-        workingMemory.AddFact("Age", 18);
-        workingMemory.AddFact("Height", 175);
-        workingMemory.AddFact("Weight", 70);
-        return workingMemory;
+    var workingMemory = Create();
+    workingMemory.AddFact("Age", 18);
+    workingMemory.AddFact("Height", 175);
+    workingMemory.AddFact("Weight", 70);
+    return workingMemory;
 }
 ```
