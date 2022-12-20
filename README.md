@@ -170,7 +170,16 @@ public new static IRuleBase Initialize(ILinguisticBase linguisticBase, Comparing
         .If(FuzzyProposition.Is(linguisticBase, "Water", "Hot"))
         .Then(FuzzyProposition.Is(linguisticBase, "Power", "Low"));
     return Create(method).AddAll(r1, r2);
- }
+}
+```
+
+### Knowledge Base
+
+The Knowledge Base is simply an aggregation of both a Linguistic Base and a Rule Base.
+The preferred method of creating an instance of a Knowledge Base is as follows:
+
+```csharp
+public static IKnowledgeBase Create(ILinguisticBase linguisticBase, IRuleBase ruleBase)
 ```
 
 ### Working Memory
@@ -243,3 +252,31 @@ public new static IWorkingMemory Initialize(EntryResolutionMethod method = Repla
     return workingMemory;
 }
 ```
+
+### Inference Engine
+
+The Inference Engine is the core component of the library.
+Conceptually, an Inference Engine defines control strategies or search techniques, which search through the knowledge
+base to arrive at decisions.
+The method of inference applied is **Backward-Chaining**, which a goal-driven process which starts with a list of
+goals (or a hypothesis) and works backwards from the consequent to the antecedent to see if any data support any of
+these consequents.
+It follows the process described below:
+
+```
+while (no untried hypothesis) and (unresolved)
+    for each hypothesis
+        for each rule with hypothesis as consequent
+            try to support rule’s conditions from known facts or via recursion (trying all possible bindings)
+            if all supported then assert consequent
+```
+
+The result of this process is a Derivation Tree, which is an N-ary tree which has an *n* number of child nodes, which
+represent the sub-goals that are necessary to prove a given goal.
+The leaf nodes represent the facts, while the internal nodes represent a collection of rules.
+Note that the rules in this collection must have the same consequent.
+
+Backward Chaining is performed by using Depth-First Search, and it generates a Derivation Tree as a result.
+The Proof Search is performed by using a Reverse Level Order Traversal over the Derivation Tree.
+For more information on the implementation details, see the class [ITreeNode<T>](FuzzyLogic/Tree/ITreeNode.cs) and the
+methods: `CreateDerivationTree` and `InferFact`.
