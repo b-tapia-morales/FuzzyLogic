@@ -148,7 +148,7 @@ There are three possible enumeration members:
 - **LargestPremise**: Indicates that the rule with the greatest number of connectives in the premise will prevail.
 - **ShortestPremise**: Indicates that the rule with the lowest number of connectives in the premise will prevail.
 
-This will create an instance of a Working Memory with no rules.
+This will create an instance of a Rule Base with no rules.
 
 This class declares a method that is meant to be hidden by an implementing class (using the `new` keyword), which is the
 following:
@@ -280,3 +280,43 @@ Backward Chaining is performed by using Depth-First Search, and it generates a D
 The Proof Search is performed by using a Reverse Level Order Traversal over the Derivation Tree.
 For more information on the implementation details, see the class [ITreeNode<T>](FuzzyLogic/Tree/ITreeNode.cs) and the
 methods: `CreateDerivationTree` and `InferFact`.
+
+#### Instantiation process
+
+At its core, the Inference Engine is simply an aggregation of both a Knowledge Base and a Working Memory.
+The preferred method of creating an instance of a Knowledge Base is as follows:
+
+```csharp
+public static IEngine Create(IKnowledgeBase knowledgeBase, IWorkingMemory workingMemory, DefuzzificationMethod method = MeanOfMaxima)
+```
+
+`DefuzzificationMethod` is an `enum` that represents the defuzzification method for aggregating the collection of rules
+with the same consequent, and defuzzifying them into a crisp value.
+
+There are five possible enumeration members:
+
+- **FirstOfMaxima**, **LastOfMaxima**, **MeanOfMaxima**:
+  See [here](https://codecrucks.com/maxima-methods-for-defuzzification-fom-lom-and-mom/) for technical details.
+- **CenterOfSums**: See [here](https://codecrucks.com/center-of-sums-cos-method-for-defuzzification/) for technical
+  details.
+- **CenterOfLargestArea**: See [here](https://codecrucks.com/center-of-largest-area-method-for-defuzzification/) for
+  technical details.
+
+if none is specified, the default enumeration member is `MeanOfMaxima`.
+
+Finally, the method for inferring new facts is as follows:
+
+```csharp
+public double? Defuzzify(string variableName, bool provideExplanation = true)
+```
+
+This will return a non-null value which represents the defuzzified, crisp number associated to the variable name
+represented as a `string`, if such variable is currently present in the Working Memory as a fact, or if it was
+successfully inferred as a fact resulting from the inference process.
+The method provides an explanation facility by default, which shows in the console the resulting Derivation Tree from
+the Backward Chaining, and the Proof Search from the Reverse Level Order Traversal of such Tree.
+
+## Test run
+
+The library provides an example by default, found in [this](FuzzyLogic/Test/One) directory.
+This rule base was extracted from [the following paper](http://www.progmat.uaem.mx:8080/Vol11num2/vol11num2art8.pdf).
