@@ -1,7 +1,6 @@
 ﻿using FuzzyLogic.Engine;
 using FuzzyLogic.Knowledge;
 using FuzzyLogic.Test.One;
-using FuzzyLogic.Test.Two;
 using static System.Globalization.CultureInfo;
 using static FuzzyLogic.Engine.Defuzzify.DefuzzificationMethod;
 

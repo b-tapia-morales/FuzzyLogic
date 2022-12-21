@@ -1,7 +1,6 @@
 ﻿using FuzzyLogic.Knowledge.Linguistic;
 using FuzzyLogic.Knowledge.Rule;
 using FuzzyLogic.Rule;
-using static FuzzyLogic.Proposition.FuzzyProposition;
 using static FuzzyLogic.Rule.ComparingMethod;
 
 namespace FuzzyLogic.Test.Two;

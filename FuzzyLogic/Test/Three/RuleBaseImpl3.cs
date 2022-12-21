@@ -1,7 +1,6 @@
 ﻿using FuzzyLogic.Knowledge.Linguistic;
 using FuzzyLogic.Knowledge.Rule;
 using FuzzyLogic.Rule;
-using static FuzzyLogic.Proposition.FuzzyProposition;
 using static FuzzyLogic.Rule.ComparingMethod;
 
 namespace FuzzyLogic.Test.Three;
@@ -46,6 +45,6 @@ public class RuleBaseImpl3 : RuleBase
             .And(@base.Is("Peso", "Poco"))
             .Then(@base.Is("Tiempo", "Corto"));
 
-        return Create(method).AddAll(r1, r2, r3, r4, r5, r6, r7);
+        return Create(method).AddAll(r1, r2, r3, r4, r5, r6, r7, r8);
     }
 }
