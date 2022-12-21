@@ -1,4 +1,5 @@
 ﻿using FuzzyLogic.Function.Interface;
+using FuzzyLogic.Proposition;
 using FuzzyLogic.Variable;
 
 namespace FuzzyLogic.Knowledge.Linguistic;
@@ -20,7 +21,7 @@ public interface ILinguisticBase
     /// <param name="variable">A linguistic variable</param>
     /// <returns>The linguistic base itself, reflecting the addition of a linguistic variable to it</returns>
     ILinguisticBase Add(IVariable variable);
-    
+
     ILinguisticBase AddAll(params IVariable[] variables);
 
     /// <summary>
@@ -89,6 +90,10 @@ public interface ILinguisticBase
     /// <seealso cref="IVariable.LinguisticEntries" />
     IRealFunction? RetrieveLinguisticEntry(string variableName, string entryName) =>
         Retrieve(variableName)?.RetrieveLinguisticEntry(entryName);
+
+    IProposition Is(string variableName, string entryName);
+
+    IProposition IsNot(string variableName, string entryName);
 
     /// <summary>
     /// Creates a new instance of a <see cref="ILinguisticBase"/>.

@@ -8,19 +8,19 @@ namespace FuzzyLogic.Test.Four;
 
 public class RuleBaseImpl4 : RuleBase
 {
-    public new static IRuleBase Initialize(ILinguisticBase linguisticBase, ComparingMethod method = Priority)
+    public new static IRuleBase Initialize(ILinguisticBase @base, ComparingMethod method = Priority)
     {
         var r1 = FuzzyRule.Create()
-            .If(Is(linguisticBase, "service", "poor"))
-            .Or(Is(linguisticBase, "food", "rancid"))
-            .Then(Is(linguisticBase, "tip", "cheap"));
+            .If(@base.Is("service", "poor"))
+            .Or(@base.Is("food", "rancid"))
+            .Then(@base.Is("tip", "cheap"));
         var r2 = FuzzyRule.Create()
-            .If(Is(linguisticBase, "service", "good"))
-            .Then(Is(linguisticBase, "tip", "average"));
+            .If(@base.Is("service", "good"))
+            .Then(@base.Is("tip", "average"));
         var r3 = FuzzyRule.Create()
-            .If(Is(linguisticBase, "service", "excellent"))
-            .Or(Is(linguisticBase, "food", "delicious"))
-            .Then(Is(linguisticBase, "tip", "generous"));
+            .If(@base.Is("service", "excellent"))
+            .Or(@base.Is("food", "delicious"))
+            .Then(@base.Is("tip", "generous"));
         return Create(method).AddAll(r1, r2, r3);
     }
 }
