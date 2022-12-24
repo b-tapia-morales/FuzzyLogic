@@ -21,9 +21,9 @@ public abstract class BaseMembershipFunction<T> : IMembershipFunction<T> where T
 
     public abstract bool IsNormal();
 
-    public abstract T LowerBoundary();
+    public abstract T LeftSupportEndpoint();
 
-    public abstract T UpperBoundary();
+    public abstract T RightSupportEndpoint();
 
     public abstract Func<T, double> SimpleFunction();
 

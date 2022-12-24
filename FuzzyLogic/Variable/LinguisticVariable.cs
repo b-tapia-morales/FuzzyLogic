@@ -129,7 +129,7 @@ public class LinguisticVariable : IVariable
     {
         var (lower, upper) = function is IAsymptoteFunction<double> asymptote
             ? asymptote.ApproximateBoundaryInterval()
-            : function.BoundaryInterval();
+            : function.SupportInterval();
         if (upper <= variable.LowerBoundary)
             throw new VariableRangeException(variable.Name,
                 (variable.LowerBoundary, variable.UpperBoundary), function.Name, (lower, upper), function.GetType());

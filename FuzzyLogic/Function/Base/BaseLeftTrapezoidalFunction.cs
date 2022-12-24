@@ -30,5 +30,5 @@ public abstract class BaseLeftTrapezoidalFunction<T> : BaseMembershipFunction<T>
         return 0.0;
     };
 
-    public (T? X0, T? X1) CoreInterval() => (LowerBoundary(), UpperBoundary());
+    public (T? X0, T? X1) CoreInterval() => (LeftSupportEndpoint(), RightSupportEndpoint());
 }

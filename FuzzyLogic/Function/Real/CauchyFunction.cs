@@ -10,9 +10,9 @@ public class CauchyFunction : BaseCauchyFunction<double>, IRealFunction, IClosed
     {
     }
 
-    public override double LowerBoundary() => double.NegativeInfinity;
+    public override double LeftSupportEndpoint() => double.NegativeInfinity;
 
-    public override double UpperBoundary() => double.PositiveInfinity;
+    public override double RightSupportEndpoint() => double.PositiveInfinity;
 
     public double CalculateArea(double errorMargin = IClosedSurface.DefaultErrorMargin) =>
         IClosedSurface.CalculateArea(this, errorMargin);

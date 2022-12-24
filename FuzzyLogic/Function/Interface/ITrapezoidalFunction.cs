@@ -29,7 +29,7 @@ public interface ITrapezoidalFunction<T> : IMembershipFunction<T> where T : unma
     /// membership: 0 &lt; μ(X) &lt; 1) as an interval, represented as a <see cref="ValueTuple"/>.
     /// </summary>
     /// <returns>The interval, represented as a <see cref="ValueTuple"/>.</returns>
-    (T? X0, T? X1) LeftSupportInterval() => (LowerBoundary(), CoreInterval().X0);
+    (T? X0, T? X1) LeftSupportInterval() => (LeftSupportEndpoint(), CoreInterval().X0);
 
     /// <summary>
     /// Returns the minimum and maximum for <i>x</i> values that belong to right side of the support of the Membership
@@ -37,5 +37,5 @@ public interface ITrapezoidalFunction<T> : IMembershipFunction<T> where T : unma
     /// membership: 0 &lt; μ(X) &lt; 1) as an interval, represented as a <see cref="ValueTuple"/>.
     /// </summary>
     /// <returns>The interval, represented as a <see cref="ValueTuple"/>.</returns>
-    (T? X0, T? X1) RightSupportInterval() => (CoreInterval().X1, UpperBoundary());
+    (T? X0, T? X1) RightSupportInterval() => (CoreInterval().X1, RightSupportEndpoint());
 }

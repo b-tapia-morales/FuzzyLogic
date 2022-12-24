@@ -9,7 +9,7 @@ public class SigmoidFunction : BaseSigmoidFunction<double>, IRealFunction
     {
     }
 
-    public override double LowerBoundary() => double.NegativeInfinity;
+    public override double LeftSupportEndpoint() => double.NegativeInfinity;
 
-    public override double UpperBoundary() => double.PositiveInfinity;
+    public override double RightSupportEndpoint() => double.PositiveInfinity;
 }

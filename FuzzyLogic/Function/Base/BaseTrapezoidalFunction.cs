@@ -35,9 +35,9 @@ public abstract class BaseTrapezoidalFunction<T> : BaseMembershipFunction<T>, IT
             TrigonometricUtils.Distance((C.ToDouble(null), 1), (D.ToDouble(null), 0))
         ) < ITrapezoidalFunction<T>.DistanceTolerance;
 
-    public override T LowerBoundary() => A;
+    public override T LeftSupportEndpoint() => A;
 
-    public override T UpperBoundary() => D;
+    public override T RightSupportEndpoint() => D;
 
     public (T? X0, T? X1) CoreInterval() => (B, C);
 

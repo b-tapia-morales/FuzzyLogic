@@ -41,9 +41,9 @@ public abstract class BaseTriangularFunction<T> : BaseMembershipFunction<T>, ITr
         return 0.0;
     };
 
-    public override T LowerBoundary() => A;
+    public override T LeftSupportEndpoint() => A;
 
-    public override T UpperBoundary() => C;
+    public override T RightSupportEndpoint() => C;
 
     public virtual (T? X0, T? X1) CoreInterval() => (A, C);
 

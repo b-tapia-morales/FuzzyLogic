@@ -10,9 +10,9 @@ public class LeftTrapezoidalFunction : BaseLeftTrapezoidalFunction<double>, IRea
     {
     }
 
-    public override double LowerBoundary() => double.NegativeInfinity;
+    public override double LeftSupportEndpoint() => double.NegativeInfinity;
 
-    public override double UpperBoundary() => B;
+    public override double RightSupportEndpoint() => B;
 
     public override (double X1, double X2) LambdaCutInterval(FuzzyNumber y) => throw new NotImplementedException();
 }
