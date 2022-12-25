@@ -56,14 +56,15 @@ public class TreeNode : ITreeNode<TreeNode>
         var rootNode = new TreeNode(variableName);
         var stack = new Stack<ITreeNode<TreeNode>>();
         stack.Push(rootNode);
-        var circularDependencies = new Stack<string>();
+        var circularDependencies = new LinkedList<string>();
         while (stack.TryPop(out var node))
         {
-            circularDependencies.TryPop(out _);
+            if (circularDependencies.Any()) 
+                circularDependencies.RemoveFirst();
             UpdateNode(node, node.VariableName, rules, ruleComparer, facts, circularDependencies);
             foreach (var child in node.Children)
                 stack.Push(child);
-            circularDependencies.Push(node.VariableName);
+            circularDependencies.AddFirst(node.VariableName);
         }
 
         return rootNode;
@@ -120,7 +121,7 @@ public class TreeNode : ITreeNode<TreeNode>
     }
 
     private static void UpdateNode(ITreeNode<TreeNode> node, string variableName, ICollection<IRule> rules,
-        IComparer<IRule> ruleComparer, IDictionary<string, double> facts, Stack<string> circularDependencies)
+        IComparer<IRule> ruleComparer, IDictionary<string, double> facts, ICollection<string> circularDependencies)
     {
         if (facts.ContainsKey(variableName))
             return;
@@ -129,12 +130,12 @@ public class TreeNode : ITreeNode<TreeNode>
             return;
         var antecedents = filteredRules
             .Select(e => e.Antecedent!.LinguisticVariable.Name)
-            //.Where(e => !circularDependencies.Contains(e))
+            .Where(e => !circularDependencies.Contains(e))
             .ToList();
         var connectives = filteredRules
             .SelectMany(e => e.Connectives)
             .Select(e => e.LinguisticVariable.Name)
-            //.Where(e => !circularDependencies.Contains(e))
+            .Where(e => !circularDependencies.Contains(e))
             .ToList();
         var set = new HashSet<string>();
         set.UnionWith(antecedents);
