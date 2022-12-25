@@ -12,14 +12,14 @@ public class TriangularFunction : BaseTriangularFunction<double>, IRealFunction,
     }
 
     public double CalculateArea(double errorMargin = IClosedSurface.DefaultErrorMargin) =>
-        TrigonometricUtils.CalculateTriangleArea(Math.Abs(A - C), 1);
+        TrigonometricUtils.TriangleArea(Math.Abs(A - C), 1);
 
     public double CalculateArea(FuzzyNumber y, double errorMargin = IClosedSurface.DefaultErrorMargin)
     {
         if (y == 0) throw new ArgumentException("Can't calculate the area of the zero-function");
         if (y == 1) return CalculateArea(errorMargin);
         var (x1, x2) = LambdaCutInterval(y);
-        return TrigonometricUtils.CalculateTrapezoidArea(Math.Abs(x1 - x2), Math.Abs(A - C), y.Value);
+        return TrigonometricUtils.TrapezoidArea(Math.Abs(x1 - x2), Math.Abs(A - C), y.Value);
     }
 
     public (double X, double Y) CalculateCentroid(double errorMargin = IClosedSurface.DefaultErrorMargin) =>

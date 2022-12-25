@@ -12,14 +12,14 @@ public class TrapezoidalFunction : BaseTrapezoidalFunction<double>, IRealFunctio
     }
 
     public double CalculateArea(double errorMargin = IClosedSurface.DefaultErrorMargin) =>
-        TrigonometricUtils.CalculateTrapezoidArea(Math.Abs(B - C), Math.Abs(A - D), 1);
+        TrigonometricUtils.TrapezoidArea(Math.Abs(B - C), Math.Abs(A - D), 1);
 
     public double CalculateArea(FuzzyNumber y, double errorMargin = IClosedSurface.DefaultErrorMargin)
     {
         if (y == 0) throw new ArgumentException("Can't calculate the area of the zero-function");
         if (y == 1) return CalculateArea(errorMargin);
         var (x1, x2) = LambdaCutInterval(y);
-        return TrigonometricUtils.CalculateTrapezoidArea(Math.Abs(x1 - x2), Math.Abs(A - D), y.Value);
+        return TrigonometricUtils.TrapezoidArea(Math.Abs(x1 - x2), Math.Abs(A - D), y.Value);
     }
 
     public (double X, double Y) CalculateCentroid(double errorMargin = IClosedSurface.DefaultErrorMargin)
