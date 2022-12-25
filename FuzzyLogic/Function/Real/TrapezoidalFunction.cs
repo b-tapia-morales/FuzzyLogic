@@ -7,12 +7,17 @@ namespace FuzzyLogic.Function.Real;
 
 public class TrapezoidalFunction : BaseTrapezoidalFunction<double>, IRealFunction, IClosedSurface
 {
+    public TrapezoidalFunction(string name, double a, double b, double c, double d, double h) :
+        base(name, a, b, c, d, h)
+    {
+    }
+
     public TrapezoidalFunction(string name, double a, double b, double c, double d) : base(name, a, b, c, d)
     {
     }
 
     public double CalculateArea(double errorMargin = IClosedSurface.DefaultErrorMargin) =>
-        TrigonometricUtils.TrapezoidArea(Math.Abs(B - C), Math.Abs(A - D), 1);
+        TrigonometricUtils.TrapezoidArea(Math.Abs(B - C), Math.Abs(A - D), H);
 
     public double CalculateArea(FuzzyNumber y, double errorMargin = IClosedSurface.DefaultErrorMargin)
     {

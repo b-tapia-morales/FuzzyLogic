@@ -7,12 +7,16 @@ namespace FuzzyLogic.Function.Real;
 
 public class TriangularFunction : BaseTriangularFunction<double>, IRealFunction, IClosedSurface
 {
+    public TriangularFunction(string name, double a, double b, double c, double h) : base(name, a, b, c, h)
+    {
+    }
+
     public TriangularFunction(string name, double a, double b, double c) : base(name, a, b, c)
     {
     }
 
     public double CalculateArea(double errorMargin = IClosedSurface.DefaultErrorMargin) =>
-        TrigonometricUtils.TriangleArea(Math.Abs(A - C), 1);
+        TrigonometricUtils.TriangleArea(Math.Abs(A - C), H);
 
     public double CalculateArea(FuzzyNumber y, double errorMargin = IClosedSurface.DefaultErrorMargin)
     {

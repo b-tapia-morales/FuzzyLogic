@@ -6,6 +6,10 @@ namespace FuzzyLogic.Function.Real;
 
 public class RightTrapezoidalFunction : BaseLeftTrapezoidalFunction<double>, IRealFunction
 {
+    public RightTrapezoidalFunction(string name, double a, double b, double h) : base(name, a, b, h)
+    {
+    }
+    
     public RightTrapezoidalFunction(string name, double a, double b) : base(name, a, b)
     {
     }

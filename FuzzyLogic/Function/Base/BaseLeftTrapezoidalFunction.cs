@@ -6,28 +6,36 @@ namespace FuzzyLogic.Function.Base;
 public abstract class BaseLeftTrapezoidalFunction<T> : BaseMembershipFunction<T>, ITrapezoidalFunction<T>
     where T : unmanaged, INumber<T>, IConvertible
 {
-    protected BaseLeftTrapezoidalFunction(string name, T a, T b) : base(name)
+    protected BaseLeftTrapezoidalFunction(string name, T a, T b, T h) : base(name)
     {
         A = a;
         B = b;
+        H = h;
+    }
+
+    protected BaseLeftTrapezoidalFunction(string name, T a, T b) : this(name, a, b, T.One)
+    {
     }
 
     protected T A { get; }
     protected T B { get; }
+    protected T H { get; }
 
     public override bool IsOpenLeft() => true;
 
     public override bool IsOpenRight() => false;
 
-    public override bool IsNormal() => true;
+    public override bool IsNormal() => H == T.One;
 
     public override bool IsSymmetric() => false;
 
     public override Func<T, double> SimpleFunction() => x =>
     {
-        if (x > A && x < B) return (B.ToDouble(null) - x.ToDouble(null)) / (B.ToDouble(null) - A.ToDouble(null));
-        if (x <= A) return 1.0;
-        return 0.0;
+        if (x > A && x < B)
+            return H.ToDouble(null) * ((B.ToDouble(null) - x.ToDouble(null)) / (B.ToDouble(null) - A.ToDouble(null)));
+        if (x <= A)
+            return H.ToDouble(null);
+        return 0;
     };
 
     public (T? X0, T? X1) CoreInterval() => (LeftSupportEndpoint(), RightSupportEndpoint());

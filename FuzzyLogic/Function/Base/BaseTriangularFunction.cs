@@ -10,35 +10,44 @@ public abstract class BaseTriangularFunction<T> : BaseMembershipFunction<T>, ITr
 {
     private bool? _isSymmetric;
 
-    protected BaseTriangularFunction(string name, T a, T b, T c) : base(name)
+    protected BaseTriangularFunction(string name, T a, T b, T c, T h) : base(name)
     {
         A = a;
         B = b;
         C = c;
+        H = h;
+    }
+
+    protected BaseTriangularFunction(string name, T a, T b, T c) : this(name, a, b, c, T.One)
+    {
     }
 
     protected T A { get; }
     protected T B { get; }
     protected T C { get; }
+    protected T H { get; }
 
     public override bool IsOpenLeft() => false;
 
     public override bool IsOpenRight() => false;
 
-    public override bool IsNormal() => true;
+    public override bool IsNormal() => H == T.One;
 
     public override bool IsSymmetric() => _isSymmetric ??=
         Math.Abs(
-            TrigonometricUtils.Distance((A.ToDouble(null), 0), (B.ToDouble(null), 1)) -
-            TrigonometricUtils.Distance((B.ToDouble(null), 1), (C.ToDouble(null), 0))
+            TrigonometricUtils.Distance((A.ToDouble(null), 0), (B.ToDouble(null), H.ToDouble(null))) -
+            TrigonometricUtils.Distance((B.ToDouble(null), H.ToDouble(null)), (C.ToDouble(null), 0))
         ) < ITrapezoidalFunction<T>.DistanceTolerance;
 
     public override Func<T, double> SimpleFunction() => x =>
     {
-        if (x > A && x < B) return (x.ToDouble(null) - A.ToDouble(null)) / (B.ToDouble(null) - A.ToDouble(null));
-        if (x == B) return 1.0;
-        if (x > B && x < C) return (C.ToDouble(null) - x.ToDouble(null)) / (C.ToDouble(null) - B.ToDouble(null));
-        return 0.0;
+        if (x > A && x < B)
+            return H.ToDouble(null) * ((x.ToDouble(null) - A.ToDouble(null)) / (B.ToDouble(null) - A.ToDouble(null)));
+        if (x == B)
+            return H.ToDouble(null);
+        if (x > B && x < C)
+            return H.ToDouble(null) * ((C.ToDouble(null) - x.ToDouble(null)) / (C.ToDouble(null) - B.ToDouble(null)));
+        return 0;
     };
 
     public override T LeftSupportEndpoint() => A;
