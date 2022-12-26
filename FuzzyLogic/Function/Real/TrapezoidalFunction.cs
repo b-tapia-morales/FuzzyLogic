@@ -5,7 +5,7 @@ using FuzzyLogic.Utils;
 
 namespace FuzzyLogic.Function.Real;
 
-public class TrapezoidalFunction : BaseTrapezoidalFunction<double>, IRealFunction, IClosedSurface
+public class TrapezoidalFunction : BaseTrapezoidalFunction<double>, IRealFunction, IClosedShape
 {
     public TrapezoidalFunction(string name, double a, double b, double c, double d, double h) :
         base(name, a, b, c, d, h)
@@ -16,10 +16,10 @@ public class TrapezoidalFunction : BaseTrapezoidalFunction<double>, IRealFunctio
     {
     }
 
-    public double CalculateArea(double errorMargin = IClosedSurface.DefaultErrorMargin) =>
+    public double CalculateArea(double errorMargin = IClosedShape.DefaultErrorMargin) =>
         TrigonometricUtils.TrapezoidArea(Math.Abs(B - C), Math.Abs(A - D), H);
 
-    public double CalculateArea(FuzzyNumber y, double errorMargin = IClosedSurface.DefaultErrorMargin)
+    public double CalculateArea(FuzzyNumber y, double errorMargin = IClosedShape.DefaultErrorMargin)
     {
         if (y == 0) throw new ArgumentException("Can't calculate the area of the zero-function");
         if (y == 1) return CalculateArea(errorMargin);
@@ -27,7 +27,7 @@ public class TrapezoidalFunction : BaseTrapezoidalFunction<double>, IRealFunctio
         return TrigonometricUtils.TrapezoidArea(Math.Abs(x1 - x2), Math.Abs(A - D), y.Value);
     }
 
-    public (double X, double Y) CalculateCentroid(double errorMargin = IClosedSurface.DefaultErrorMargin)
+    public (double X, double Y) CalculateCentroid(double errorMargin = IClosedShape.DefaultErrorMargin)
     {
         var a = Math.Abs(C - D);
         var b = Math.Abs(A - D);
@@ -35,7 +35,7 @@ public class TrapezoidalFunction : BaseTrapezoidalFunction<double>, IRealFunctio
     }
 
     public (double X, double Y) CalculateCentroid(FuzzyNumber y,
-        double errorMargin = IClosedSurface.DefaultErrorMargin)
+        double errorMargin = IClosedShape.DefaultErrorMargin)
     {
         if (y == 0) throw new ArgumentException("Can't calculate the centroid of the zero-function");
         if (y == 1) return CalculateCentroid(errorMargin);

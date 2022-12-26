@@ -5,7 +5,7 @@ using FuzzyLogic.Utils;
 
 namespace FuzzyLogic.Function.Real;
 
-public class TriangularFunction : BaseTriangularFunction<double>, IRealFunction, IClosedSurface
+public class TriangularFunction : BaseTriangularFunction<double>, IRealFunction, IClosedShape
 {
     public TriangularFunction(string name, double a, double b, double c, double h) : base(name, a, b, c, h)
     {
@@ -15,10 +15,10 @@ public class TriangularFunction : BaseTriangularFunction<double>, IRealFunction,
     {
     }
 
-    public double CalculateArea(double errorMargin = IClosedSurface.DefaultErrorMargin) =>
+    public double CalculateArea(double errorMargin = IClosedShape.DefaultErrorMargin) =>
         TrigonometricUtils.TriangleArea(Math.Abs(A - C), H);
 
-    public double CalculateArea(FuzzyNumber y, double errorMargin = IClosedSurface.DefaultErrorMargin)
+    public double CalculateArea(FuzzyNumber y, double errorMargin = IClosedShape.DefaultErrorMargin)
     {
         if (y == 0) throw new ArgumentException("Can't calculate the area of the zero-function");
         if (y == 1) return CalculateArea(errorMargin);
@@ -26,11 +26,11 @@ public class TriangularFunction : BaseTriangularFunction<double>, IRealFunction,
         return TrigonometricUtils.TrapezoidArea(Math.Abs(x1 - x2), Math.Abs(A - C), y.Value);
     }
 
-    public (double X, double Y) CalculateCentroid(double errorMargin = IClosedSurface.DefaultErrorMargin) =>
+    public (double X, double Y) CalculateCentroid(double errorMargin = IClosedShape.DefaultErrorMargin) =>
         ((A + B + C) / 3.0, 1 / 3.0);
 
     public (double X, double Y) CalculateCentroid(FuzzyNumber y,
-        double errorMargin = IClosedSurface.DefaultErrorMargin)
+        double errorMargin = IClosedShape.DefaultErrorMargin)
     {
         if (y == 0) throw new ArgumentException("Can't calculate the centroid of the zero-function");
         if (y == 1) return CalculateCentroid(errorMargin);

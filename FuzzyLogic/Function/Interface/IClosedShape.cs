@@ -3,7 +3,7 @@ using MathNet.Numerics.Integration;
 
 namespace FuzzyLogic.Function.Interface;
 
-public interface IClosedSurface
+public interface IClosedShape
 {
     const double DefaultErrorMargin = 1e-5;
 
