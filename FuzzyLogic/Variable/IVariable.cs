@@ -23,25 +23,25 @@ public interface IVariable
 {
     public double LowerBoundary { get; }
     public double UpperBoundary { get; }
-    public bool HasClosedInterval { get; }
+    public bool IsClosed { get; }
     public string Name { get; }
     public IDictionary<string, IRealFunction> LinguisticEntries { get; }
 
     IVariable AddAll(IDictionary<string, IRealFunction> linguisticEntries);
 
-    IVariable AddTrapezoidFunction(string name, double a, double b, double c, double d);
+    IVariable AddTrapezoidFunction(string name, double a, double b, double c, double d, double h = 1);
 
-    IVariable AddLeftTrapezoidFunction(string name, double a, double b);
-    
-    IVariable AddRightTrapezoidFunction(string name, double a, double b);
+    IVariable AddLeftTrapezoidFunction(string name, double a, double b, double h = 1);
 
-    IVariable AddTriangularFunction(string name, double a, double b, double c);
+    IVariable AddRightTrapezoidFunction(string name, double a, double b, double h = 1);
 
-    IVariable AddGaussianFunction(string name, double m, double o);
+    IVariable AddTriangularFunction(string name, double a, double b, double c, double h = 1);
 
-    IVariable AddCauchyFunction(string name, double a, double b, double c);
+    IVariable AddGaussianFunction(string name, double m, double o, double h = 1);
 
-    IVariable AddSigmoidFunction(string name, double a, double c);
+    IVariable AddCauchyFunction(string name, double a, double b, double c, double h = 1);
+
+    IVariable AddSigmoidFunction(string name, double a, double c, double h = 1);
 
     IVariable AddFunction(string name, IRealFunction function);
 

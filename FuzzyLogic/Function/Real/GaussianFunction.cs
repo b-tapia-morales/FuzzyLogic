@@ -6,6 +6,10 @@ namespace FuzzyLogic.Function.Real;
 
 public class GaussianFunction : BaseGaussianFunction<double>, IRealFunction, IClosedShape
 {
+    public GaussianFunction(string name, double m, double o, double h) : base(name, m, o, h)
+    {
+    }
+    
     public GaussianFunction(string name, double m, double o) : base(name, m, o)
     {
     }

@@ -31,8 +31,6 @@ public abstract class BaseTriangularFunction<T> : BaseMembershipFunction<T>, ITr
 
     public override bool IsOpenRight() => false;
 
-    public override bool IsNormal() => H == T.One;
-
     public override bool IsSymmetric() => _isSymmetric ??=
         Math.Abs(
             TrigonometricUtils.Distance((A.ToDouble(null), 0), (B.ToDouble(null), H.ToDouble(null))) -

@@ -6,6 +6,10 @@ namespace FuzzyLogic.Function.Real;
 
 public class CauchyFunction : BaseCauchyFunction<double>, IRealFunction, IClosedShape
 {
+    public CauchyFunction(string name, double a, double b, double c, double h) : base(name, a, b, c, h)
+    {
+    }
+
     public CauchyFunction(string name, double a, double b, double c) : base(name, a, b, c)
     {
     }

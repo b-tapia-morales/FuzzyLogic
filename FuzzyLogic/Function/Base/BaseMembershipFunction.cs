@@ -7,6 +7,7 @@ namespace FuzzyLogic.Function.Base;
 public abstract class BaseMembershipFunction<T> : IMembershipFunction<T> where T : unmanaged, INumber<T>, IConvertible
 {
     public string Name { get; }
+    public T H { get; protected init; }
 
     protected BaseMembershipFunction(string name)
     {
@@ -18,8 +19,6 @@ public abstract class BaseMembershipFunction<T> : IMembershipFunction<T> where T
     public abstract bool IsOpenRight();
 
     public abstract bool IsSymmetric();
-
-    public abstract bool IsNormal();
 
     public abstract T LeftSupportEndpoint();
 

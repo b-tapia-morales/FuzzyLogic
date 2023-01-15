@@ -7,26 +7,23 @@ public class LinguisticVariable : IVariable
 {
     public double LowerBoundary { get; }
     public double UpperBoundary { get; }
-    public bool HasClosedInterval { get; }
+    public bool IsClosed { get; }
     public string Name { get; }
-    public IDictionary<string, IRealFunction> LinguisticEntries { get; }
 
-    private LinguisticVariable(string name)
-    {
-        LowerBoundary = double.MinValue;
-        UpperBoundary = double.MaxValue;
-        HasClosedInterval = false;
-        Name = name;
-        LinguisticEntries = new Dictionary<string, IRealFunction>(StringComparer.InvariantCultureIgnoreCase);
-    }
+    public IDictionary<string, IRealFunction> LinguisticEntries { get; } =
+        new Dictionary<string, IRealFunction>(StringComparer.InvariantCultureIgnoreCase);
 
     private LinguisticVariable(string name, double lowerBoundary, double upperBoundary)
     {
-        LowerBoundary = lowerBoundary;
-        UpperBoundary = upperBoundary;
-        HasClosedInterval = true;
         Name = name;
-        LinguisticEntries = new Dictionary<string, IRealFunction>(StringComparer.InvariantCultureIgnoreCase);
+        LowerBoundary = double.IsNegativeInfinity(lowerBoundary) ? double.MinValue : lowerBoundary;
+        UpperBoundary = double.IsPositiveInfinity(upperBoundary) ? double.MinValue : upperBoundary;
+        IsClosed = lowerBoundary > double.MinValue && upperBoundary < double.MaxValue;
+    }
+
+    // ReSharper disable once IntroduceOptionalParameters.Local
+    private LinguisticVariable(string name) : this(name, double.MinValue, double.MaxValue)
+    {
     }
 
     public static IVariable Create(string name)
@@ -45,24 +42,26 @@ public class LinguisticVariable : IVariable
 
     public IVariable AddAll(IDictionary<string, IRealFunction> linguisticEntries) => AddAll(this, linguisticEntries);
 
-    public IVariable AddTrapezoidFunction(string name, double a, double b, double c, double d) =>
-        AddTrapezoidFunction(this, name, a, b, c, d);
+    public IVariable AddTrapezoidFunction(string name, double a, double b, double c, double d, double h = 1) =>
+        AddTrapezoidFunction(this, name, a, b, c, d, h);
 
-    public IVariable AddLeftTrapezoidFunction(string name, double a, double b) =>
-        AddLeftTrapezoidFunction(this, name, a, b);
+    public IVariable AddLeftTrapezoidFunction(string name, double a, double b, double h = 1) =>
+        AddLeftTrapezoidFunction(this, name, a, b, h);
 
-    public IVariable AddRightTrapezoidFunction(string name, double a, double b) =>
-        AddRightTrapezoidFunction(this, name, a, b);
+    public IVariable AddRightTrapezoidFunction(string name, double a, double b, double h = 1) =>
+        AddRightTrapezoidFunction(this, name, a, b, h);
 
-    public IVariable AddTriangularFunction(string name, double a, double b, double c) =>
-        AddTriangularFunction(this, name, a, b, c);
+    public IVariable AddTriangularFunction(string name, double a, double b, double c, double h = 1) =>
+        AddTriangularFunction(this, name, a, b, c, h);
 
-    public IVariable AddGaussianFunction(string name, double m, double o) => AddGaussianFunction(this, name, m, o);
+    public IVariable AddGaussianFunction(string name, double m, double o, double h = 1) =>
+        AddGaussianFunction(this, name, m, o, h);
 
-    public IVariable AddCauchyFunction(string name, double a, double b, double c) =>
-        AddCauchyFunction(this, name, a, b, c);
+    public IVariable AddCauchyFunction(string name, double a, double b, double c, double h = 1) =>
+        AddCauchyFunction(this, name, a, b, c, h);
 
-    public IVariable AddSigmoidFunction(string name, double a, double c) => AddSigmoidFunction(this, name, a, c);
+    public IVariable AddSigmoidFunction(string name, double a, double c, double h = 1) =>
+        AddSigmoidFunction(this, name, a, c, h);
 
     public IVariable AddFunction(string name, IRealFunction function) => AddFunction(this, name, function);
 
@@ -88,26 +87,30 @@ public class LinguisticVariable : IVariable
     }
 
     private static IVariable AddTrapezoidFunction(IVariable variable, string name, double a, double b, double c,
-        double d) =>
-        variable.AddFunction(name, new TrapezoidalFunction(name, a, b, c, d));
+        double d, double h = 1) =>
+        variable.AddFunction(name, new TrapezoidalFunction(name, a, b, c, d, h));
 
-    private static IVariable AddLeftTrapezoidFunction(IVariable variable, string name, double a, double b) =>
-        variable.AddFunction(name, new LeftTrapezoidalFunction(name, a, b));
+    private static IVariable
+        AddLeftTrapezoidFunction(IVariable variable, string name, double a, double b, double h = 1) =>
+        variable.AddFunction(name, new LeftTrapezoidalFunction(name, a, b, h));
 
-    private static IVariable AddRightTrapezoidFunction(IVariable variable, string name, double a, double b) =>
-        variable.AddFunction(name, new LeftTrapezoidalFunction(name, a, b));
+    private static IVariable AddRightTrapezoidFunction(IVariable variable, string name, double a, double b,
+        double h = 1) =>
+        variable.AddFunction(name, new LeftTrapezoidalFunction(name, a, b, h));
 
-    private static IVariable AddTriangularFunction(IVariable variable, string name, double a, double b, double c) =>
-        variable.AddFunction(name, new TriangularFunction(name, a, b, c));
+    private static IVariable AddTriangularFunction(IVariable variable, string name, double a, double b, double c,
+        double h = 1) =>
+        variable.AddFunction(name, new TriangularFunction(name, a, b, c, h));
 
-    private static IVariable AddGaussianFunction(IVariable variable, string name, double m, double o) =>
-        variable.AddFunction(name, new GaussianFunction(name, m, o));
+    private static IVariable AddGaussianFunction(IVariable variable, string name, double m, double o, double h = 1) =>
+        variable.AddFunction(name, new GaussianFunction(name, m, o, h));
 
-    private static IVariable AddCauchyFunction(IVariable variable, string name, double a, double b, double c) =>
-        variable.AddFunction(name, new CauchyFunction(name, a, b, c));
+    private static IVariable AddCauchyFunction(IVariable variable, string name, double a, double b, double c,
+        double h = 1) =>
+        variable.AddFunction(name, new CauchyFunction(name, a, b, c, h));
 
-    private static IVariable AddSigmoidFunction(IVariable variable, string name, double a, double c) =>
-        variable.AddFunction(name, new SigmoidFunction(name, a, c));
+    private static IVariable AddSigmoidFunction(IVariable variable, string name, double a, double c, double h = 1) =>
+        variable.AddFunction(name, new SigmoidFunction(name, a, c, h));
 
     private static IVariable AddFunction(IVariable variable, string name, IRealFunction function)
     {
@@ -119,9 +122,9 @@ public class LinguisticVariable : IVariable
 
     private static void CheckLinguisticEntry(IVariable variable, string name)
     {
-        if (string.IsNullOrWhiteSpace(name)) 
+        if (string.IsNullOrWhiteSpace(name))
             throw new EmptyEntryException();
-        if (variable.ContainsLinguisticEntry(name)) 
+        if (variable.ContainsLinguisticEntry(name))
             throw new DuplicatedEntryException(variable.Name, name);
     }
 

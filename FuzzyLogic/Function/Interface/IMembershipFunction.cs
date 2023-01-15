@@ -25,6 +25,8 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     ///     The name of the function.
     /// </summary>
     string Name { get; }
+    
+    T H { get; }
 
     /// <summary>
     ///     Determines whether the function is Open Left. A function is said to be open left if the membership degree for
@@ -60,7 +62,7 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     ///     there's at least one <i>x</i> value such that its membership degree equals to one.
     /// </summary>
     /// <returns>true if the function is Normal; otherwise, false</returns>
-    bool IsNormal();
+    bool IsNormal() => H == T.One;
 
     /// <summary>
     ///     <para>

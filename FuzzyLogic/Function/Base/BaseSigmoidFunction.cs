@@ -10,10 +10,15 @@ public abstract class BaseSigmoidFunction<T> : BaseMembershipFunction<T>, IAsymp
     private T? _minCrispValue;
     private T? _maxCrispValue;
 
-    protected BaseSigmoidFunction(string name, T a, T c) : base(name)
+    protected BaseSigmoidFunction(string name, T a, T c, T h) : base(name)
     {
         A = a;
         C = c;
+        H = h;
+    }
+
+    protected BaseSigmoidFunction(string name, T a, T c) : this(name, a, c, T.One)
+    {
     }
 
     protected T A { get; }
@@ -31,7 +36,7 @@ public abstract class BaseSigmoidFunction<T> : BaseMembershipFunction<T>, IAsymp
 
     public override bool IsSymmetric() => false;
 
-    public override bool IsNormal() => false;
+    bool IMembershipFunction<T>.IsNormal() => false;
 
     public override Func<T, double> SimpleFunction() =>
         x => 1.0 / (1.0 + Math.Exp(-A.ToDouble(null) * (x.ToDouble(null) - C.ToDouble(null))));

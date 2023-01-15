@@ -10,10 +10,15 @@ public abstract class BaseGaussianFunction<T> : BaseMembershipFunction<T>, IAsym
     private T? _minCrispValue;
     private T? _maxCrispValue;
 
-    protected BaseGaussianFunction(string name, T m, T o) : base(name)
+    protected BaseGaussianFunction(string name, T m, T o, T h) : base(name)
     {
         M = m;
         O = o;
+        H = h;
+    }
+
+    protected BaseGaussianFunction(string name, T m, T o) : this(name, m, o, T.One)
+    {
     }
 
     protected T M { get; }
@@ -24,8 +29,6 @@ public abstract class BaseGaussianFunction<T> : BaseMembershipFunction<T>, IAsym
     public override bool IsOpenRight() => true;
 
     public override bool IsSymmetric() => true;
-
-    public override bool IsNormal() => true;
 
     public override Func<T, double> SimpleFunction() =>
         x => Math.Exp(-0.5 * Math.Pow((x.ToDouble(null) - M.ToDouble(null)) / O.ToDouble(null), 2));

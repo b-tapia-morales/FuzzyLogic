@@ -9,7 +9,7 @@ public class RightTrapezoidalFunction : BaseLeftTrapezoidalFunction<double>, IRe
     public RightTrapezoidalFunction(string name, double a, double b, double h) : base(name, a, b, h)
     {
     }
-    
+
     public RightTrapezoidalFunction(string name, double a, double b) : base(name, a, b)
     {
     }

@@ -25,8 +25,6 @@ public abstract class BaseRightTrapezoidalFunction<T> : BaseMembershipFunction<T
 
     public override bool IsOpenRight() => false;
 
-    public override bool IsNormal() => H == T.One;
-
     public override bool IsSymmetric() => false;
 
     public override Func<T, double> SimpleFunction() => x =>

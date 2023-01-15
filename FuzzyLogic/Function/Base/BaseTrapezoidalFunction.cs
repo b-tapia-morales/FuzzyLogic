@@ -27,13 +27,10 @@ public abstract class BaseTrapezoidalFunction<T> : BaseMembershipFunction<T>, IT
     protected T B { get; }
     protected T C { get; }
     protected T D { get; }
-    protected T H { get; }
 
     public override bool IsOpenLeft() => false;
 
     public override bool IsOpenRight() => false;
-
-    public override bool IsNormal() => H == T.One;
 
     public override bool IsSymmetric() => _isSymmetric ??=
         Math.Abs(

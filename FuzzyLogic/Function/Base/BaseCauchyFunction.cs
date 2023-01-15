@@ -10,11 +10,16 @@ public abstract class BaseCauchyFunction<T> : BaseMembershipFunction<T>, IAsympt
     private T? _minCrispValue;
     private T? _maxCrispValue;
 
-    protected BaseCauchyFunction(string name, T a, T b, T c) : base(name)
+    protected BaseCauchyFunction(string name, T a, T b, T c, T h) : base(name)
     {
         A = a;
         B = b;
         C = c;
+        H = h;
+    }
+
+    protected BaseCauchyFunction(string name, T a, T b, T c) : this(name, a, b, c, T.One)
+    {
     }
 
     protected T A { get; }
@@ -26,8 +31,6 @@ public abstract class BaseCauchyFunction<T> : BaseMembershipFunction<T>, IAsympt
     public override bool IsOpenRight() => false;
 
     public override bool IsSymmetric() => true;
-
-    public override bool IsNormal() => true;
 
     public override Func<T, double> SimpleFunction() => x =>
         1 / (1 + Math.Pow(Math.Abs((x.ToDouble(null) - C.ToDouble(null)) / A.ToDouble(null)), 2 * B.ToDouble(null)));

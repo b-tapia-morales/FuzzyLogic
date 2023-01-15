@@ -5,6 +5,10 @@ namespace FuzzyLogic.Function.Real;
 
 public class SigmoidFunction : BaseSigmoidFunction<double>, IRealFunction
 {
+    public SigmoidFunction(string name, double a, double c, double h) : base(name, a, c, h)
+    {
+    }
+    
     public SigmoidFunction(string name, double a, double c) : base(name, a, c)
     {
     }
