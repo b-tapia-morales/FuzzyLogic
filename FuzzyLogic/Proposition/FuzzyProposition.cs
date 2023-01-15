@@ -8,10 +8,10 @@ namespace FuzzyLogic.Proposition;
 
 public class FuzzyProposition : IProposition
 {
-    public FuzzyProposition(IVariable linguisticVariable, LiteralToken literalToken, HedgeToken hedgeToken,
-        IRealFunction function)
+    private FuzzyProposition(IVariable linguisticVariable, LiteralToken literalToken, IRealFunction function,
+        HedgeToken hedgeToken = HedgeToken.None, ConnectiveToken connectiveToken = ConnectiveToken.None)
     {
-        Connective = Connective.None;
+        Connective = Connective.FromToken(connectiveToken);
         LinguisticVariable = linguisticVariable;
         Literal = Literal.FromToken(literalToken);
         LinguisticHedge = LinguisticHedge.FromToken(hedgeToken);
@@ -36,26 +36,24 @@ public class FuzzyProposition : IProposition
     {
         var connective = Connective != Connective.None ? $"{Connective} " : string.Empty;
         var linguisticHedge = LinguisticHedge != LinguisticHedge.None ? $"{LinguisticHedge} " : string.Empty;
-        return $"{connective}{LinguisticVariable} {Literal.ReadableName} {linguisticHedge}{Function.Name}";
+        return $"{connective}{LinguisticVariable.Name} {Literal.ReadableName} {linguisticHedge}{Function.Name}";
     }
 
-    public static IProposition Is(ILinguisticBase @base, string variableName, string entryName,
-        HedgeToken hedgeToken = HedgeToken.None)
+    public static IProposition Is(ILinguisticBase linguisticBase, string variableName, string entryName,
+        HedgeToken hedgeToken = HedgeToken.None) =>
+        Create(linguisticBase, variableName, LiteralToken.Affirmation, hedgeToken, entryName);
+
+    public static IProposition IsNot(ILinguisticBase linguisticBase, string variableName, string entryName,
+        HedgeToken hedgeToken = HedgeToken.None) =>
+        Create(linguisticBase, variableName, LiteralToken.Negation, hedgeToken, entryName);
+
+    private static IProposition Create(ILinguisticBase linguisticBase, string variableName, LiteralToken literalToken,
+        HedgeToken hedgeToken, string entryName)
     {
-        var variable = @base.Retrieve(variableName) ??
+        var variable = linguisticBase.Retrieve(variableName) ??
                        throw new VariableNotFoundException(variableName);
         var entry = variable.RetrieveLinguisticEntry(entryName) ??
                     throw new EntryNotFoundException(variableName, entryName);
-        return new FuzzyProposition(variable, LiteralToken.Affirmation, hedgeToken, entry);
-    }
-
-    public static IProposition IsNot(ILinguisticBase @base, string variableName, string entryName,
-        HedgeToken hedgeToken = HedgeToken.None)
-    {
-        var variable = @base.Retrieve(variableName) ??
-                       throw new VariableNotFoundException(variableName);
-        var entry = variable.RetrieveLinguisticEntry(entryName) ??
-                    throw new EntryNotFoundException(variableName, entryName);
-        return new FuzzyProposition(variable, LiteralToken.Negation, hedgeToken, entry);
+        return new FuzzyProposition(variable, literalToken, entry, hedgeToken);
     }
 }
