@@ -8,7 +8,7 @@ namespace FuzzyLogic.Test.Three;
 
 public class RuleBaseImpl3 : RuleBase
 {
-    public new static IRuleBase Initialize(ILinguisticBase linguisticBase, ComparingMethod method = Priority)
+    public new static IRuleBase Initialize(ILinguisticBase linguisticBase, ComparingMethod method = ComparingMethod.HighestPriority)
     {
         var r1 = FuzzyRule.Create(RulePriority.High)
             .If(Is(linguisticBase, "Peso", "Medio"))

@@ -4,22 +4,29 @@ using FuzzyLogic.Number;
 using FuzzyLogic.Proposition;
 using FuzzyLogic.Proposition.Enums;
 using static System.StringComparison;
+using static FuzzyLogic.Proposition.Enums.Literal;
 using static FuzzyLogic.Rule.RulePriority;
 
 namespace FuzzyLogic.Rule;
 
 public class FuzzyRule : IRule
 {
+    private static readonly IComparer<IRule> DefaultComparer = new HighestPriority();
+
     private FuzzyRule(RulePriority priority = Normal) => Priority = priority;
 
     public IProposition? Antecedent { get; set; }
     public ICollection<IProposition> Connectives { get; } = new List<IProposition>();
     public IProposition? Consequent { get; set; }
     public bool IsFinalized { get; set; } = false;
-    public RulePriority Priority { get; set; }
+    public RulePriority Priority { get; }
 
     public override string ToString() =>
         $"{Antecedent} {(Connectives.Any() ? $"{string.Join(' ', Connectives)} " : string.Empty)}{Consequent}";
+
+    public int Compare(IRule? x, IRule? y) => DefaultComparer.Compare(x, y);
+
+    public int CompareTo(IRule? other) => DefaultComparer.Compare(this, other);
 
     public IRule If(IProposition proposition) => If(this, proposition);
 
@@ -121,9 +128,10 @@ public class FuzzyRule : IRule
 
     private static IRule If(IRule rule, IProposition proposition)
     {
-        if (rule.IsFinalized) throw new FinalizedRuleException();
-
-        if (rule.Antecedent != null) throw new DuplicatedAntecedentException();
+        if (rule.IsFinalized)
+            throw new FinalizedRuleException();
+        if (rule.Antecedent != null)
+            throw new DuplicatedAntecedentException();
 
         proposition.Connective = Connective.If;
         rule.Antecedent = proposition;
@@ -132,9 +140,10 @@ public class FuzzyRule : IRule
 
     private static IRule And(IRule rule, IProposition proposition)
     {
-        if (rule.IsFinalized) throw new FinalizedRuleException();
-
-        if (rule.Antecedent == null) throw new MissingAntecedentException();
+        if (rule.IsFinalized)
+            throw new FinalizedRuleException();
+        if (rule.Antecedent == null)
+            throw new MissingAntecedentException();
 
         proposition.Connective = Connective.And;
         rule.Connectives.Add(proposition);
@@ -143,9 +152,10 @@ public class FuzzyRule : IRule
 
     private static IRule Or(IRule rule, IProposition proposition)
     {
-        if (rule.IsFinalized) throw new FinalizedRuleException();
-
-        if (rule.Antecedent == null) throw new MissingAntecedentException();
+        if (rule.IsFinalized)
+            throw new FinalizedRuleException();
+        if (rule.Antecedent == null)
+            throw new MissingAntecedentException();
 
         proposition.Connective = Connective.Or;
         rule.Connectives.Add(proposition);
@@ -154,9 +164,12 @@ public class FuzzyRule : IRule
 
     public static IRule Then(IRule rule, IProposition proposition)
     {
-        if (rule.IsFinalized) throw new FinalizedRuleException();
-
-        if (rule.Antecedent == null) throw new MissingAntecedentException();
+        if (rule.IsFinalized)
+            throw new FinalizedRuleException();
+        if (rule.Antecedent == null)
+            throw new MissingAntecedentException();
+        if (proposition.Literal == IsNot)
+            throw new NegatedConsequentException();
 
         proposition.Connective = Connective.Then;
         rule.Consequent = proposition;

@@ -8,7 +8,7 @@ namespace FuzzyLogic.Test.One;
 
 public class TestRuleImpl : RuleBase
 {
-    public new static IRuleBase Initialize(ILinguisticBase linguisticBase, ComparingMethod method = Priority)
+    public new static IRuleBase Initialize(ILinguisticBase linguisticBase, ComparingMethod method = ComparingMethod.HighestPriority)
     {
         var r1 = FuzzyRule.Create()
             .If(Is(linguisticBase, "Ret", "Alto"))

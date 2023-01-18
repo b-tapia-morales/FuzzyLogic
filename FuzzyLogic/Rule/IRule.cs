@@ -1,19 +1,20 @@
 ﻿using FuzzyLogic.Function.Interface;
 using FuzzyLogic.Number;
 using FuzzyLogic.Proposition;
+using FuzzyLogic.Proposition.Enums;
 
 namespace FuzzyLogic.Rule;
 
 /// <summary>
 ///     <para>
 ///         A class representation for a fuzzy rule. Fuzzy rules are built from existing
-///         <see cref="IProposition">Propositions</see> and <see cref="Proposition.Enums.Connective">Connectives</see>.
+///         <see cref="IProposition">Propositions</see> and <see cref="Connective">Connectives</see>.
 ///     </para>
 ///     <para>
 ///         According to propositional logic, in order to be considered valid, a rule must have both an
 ///         <see cref="Antecedent" /> and a <see cref="Consequent" />. <see cref="IProposition">Propositions</see> using
-///         the <see cref="Proposition.Enums.Connective.And">Disjunctive</see> and
-///         <see cref="Proposition.Enums.Connective.Or">Conjunctive</see> operators in between are considered optional.
+///         the <see cref="Connective.And">Disjunctive</see> and <see cref="Connective.Or">Conjunctive</see> operators in
+///         between are considered optional.
 ///     </para>
 ///     <para>
 ///         In addition to the conditions written above, the rule creation process must comply with the following
@@ -22,37 +23,41 @@ namespace FuzzyLogic.Rule;
 ///     <list type="number">
 ///         <item>
 ///             <description>
-///                 There can be one and only one proposition with the <see cref="Proposition.Enums.Connective.If" />
-///                 connective.
+///                 There can be one and only one proposition with the <see cref="Connective.If" /> connective.
 ///             </description>
 ///         </item>
 ///         <item>
 ///             <description>
 ///                 In order to append propositions with the connectives:
-///                 <see cref="Proposition.Enums.Connective.And" />, <see cref="Proposition.Enums.Connective.Or" />,
-///                 <see cref="Proposition.Enums.Connective.Then" />, there must already be a proposition with the
-///                 <see cref="Proposition.Enums.Connective.If" /> connective
+///                 <see cref="Connective.And" />, <see cref="Connective.Or" />, <see cref="Connective.Then" />, there
+///                 must already be a proposition appended with the <see cref="Connective.If" /> connective.
 ///             </description>
 ///         </item>
 ///         <item>
 ///             <description>
-///                 After a proposition with the <see cref="Proposition.Enums.Connective.Then" /> connective is appended,
-///                 the rule is considered to be <see cref="IsFinalized">Finalized</see>, meaning that no further propositions
-///                 can be appended.
+///                 There cannot be a proposition with the connective <see cref="Connective.Then" /> using the
+///                 <see cref="Literal.IsNot"/> literal. In other words, the consequent cannot be in negated form.
+///             </description>
+///         </item>
+///         <item>
+///             <description>
+///                 After a proposition with the <see cref="Connective.Then" /> connective is appended, no further
+///                 propositions can be appended, because the rule is considered to be <see cref="IsFinalized">Finalized</see>.
 ///             </description>
 ///         </item>
 ///     </list>
 /// </summary>
 /// <seealso cref="MissingAntecedentException" />
 /// <seealso cref="DuplicatedAntecedentException" />
+/// <seealso cref="NegatedConsequentException"/>
 /// <seealso cref="FinalizedRuleException" />
-public interface IRule
+public interface IRule : IComparable<IRule>, IComparer<IRule>
 {
     public IProposition? Antecedent { get; set; }
     public ICollection<IProposition> Connectives { get; }
     public IProposition? Consequent { get; set; }
     public bool IsFinalized { get; set; }
-    public RulePriority Priority { get; set; }
+    public RulePriority Priority { get; }
 
     /// <summary>
     ///     Appends a <see cref="IProposition">Proposition</see> with the <see cref="Proposition.Enums.Connective.If" />
@@ -83,13 +88,12 @@ public interface IRule
     IRule And(IProposition proposition);
 
     /// <summary>
-    ///     Appends a <see cref="IProposition">Proposition</see> with the <see cref="Proposition.Enums.Connective.Or" />
-    ///     connective to the rule.
+    ///     Appends a <see cref="IProposition">Proposition</see> with the <see cref="Connective.Or" /> connective to the rule.
     /// </summary>
     /// <param name="proposition">The proposition</param>
-    /// <returns>The rule itself with the <see cref="Proposition.Enums.Connective.If" /> part of the rule appended.</returns>
+    /// <returns>The rule itself with the <see cref="Connective.If" /> part of the rule appended.</returns>
     /// <exception cref="MissingAntecedentException">
-    ///     There is no existing proposition with the <see cref="Proposition.Enums.Connective.If" /> connective.
+    ///     There is no existing proposition with the <see cref="Connective.If" /> connective.
     /// </exception>
     /// <exception cref="FinalizedRuleException">
     ///     The rule has already been <see cref="IsFinalized">Finalized</see>.
@@ -101,9 +105,12 @@ public interface IRule
     ///     connective to the rule.
     /// </summary>
     /// <param name="proposition">The proposition</param>
-    /// <returns>The rule itself with the <see cref="Proposition.Enums.Connective.If" /> part of the rule appended.</returns>
+    /// <returns>The rule itself with the <see cref="Connective.If" /> part of the rule appended.</returns>
     /// <exception cref="MissingAntecedentException">
-    ///     There is no existing proposition with the <see cref="Proposition.Enums.Connective.If" /> connective.
+    ///     There is no existing proposition with the <see cref="Connective.If" /> connective.
+    /// </exception>
+    /// <exception cref="NegatedConsequentException">
+    ///     The proposition is in negated form.
     /// </exception>
     /// <exception cref="FinalizedRuleException">
     ///     The rule has already been <see cref="IsFinalized">Finalized</see>.
@@ -139,47 +146,60 @@ public interface IRule
     /// <returns>true if the rule is applicable; otherwise, null</returns>
     bool IsApplicable(IDictionary<string, double> facts);
 
+    /// <summary>
+    ///     Determines whether the rule uses the Linguistic Variable, which is uniquely identifiable by the name provided as
+    ///     a parameter, as a part of its premise.
+    /// </summary>
+    /// <param name="variableName">The name of the Linguistic Variable</param>
+    /// <returns>true if the rule uses the Linguistic Variable as a part of its premise; otherwise, false</returns>
     bool PremiseContainsVariable(string variableName);
 
+    /// <summary>
+    ///     Determines whether the rule uses the Linguistic Variable, which is uniquely identifiable by the name provided as
+    ///     a parameter, as a part of its conclusion.
+    /// </summary>
+    /// <param name="variableName">The name of the Linguistic Variable</param>
+    /// <returns>true if the rule uses the Linguistic Variable as a part of its conclusion; otherwise, false</returns>
     bool ConclusionContainsVariable(string variableName);
 
+    /// <summary>
+    ///     Gets the number of propositions contained in the premise part of the rule.
+    /// </summary>
+    /// <returns>The number of elements contained in the premise part of the rule.</returns>
     int PremiseLength();
 
     /// <summary>
     ///     <para>
     ///         Applies all the unary operators to each proposition in the premise part of the rule. A unary operator
     ///         only needs of an atomic term in order to be applied. In this context, examples of a unary operator are the
-    ///         <see cref="Proposition.Enums.Literal.Is">Affirmation</see> and the
-    ///         <see cref="Proposition.Enums.Literal.IsNot">Negation</see> of a proposition.
+    ///         <see cref="Literal.Is">Affirmation</see> and the <see cref="Literal.IsNot">Negation</see> of a proposition.
     ///     </para>
     ///     <para>The process complies with the following order of precedence:</para>
     ///     <list type="number">
     ///         <item>
     ///             <description>
     ///                 The <see cref="Double">Crisp number</see> (given as a fact from the function parameter) is
-    ///                 transformed to a <see cref="FuzzyLogic.Number.FuzzyNumber" /> by evaluating its
-    ///                 <see cref="IMembershipFunction{T}.MembershipDegree">
-    ///                     Membership Degree.
-    ///                 </see>
+    ///                 transformed to a <see cref="FuzzyNumber" /> by evaluating its
+    ///                 <see cref="IMembershipFunction{T}.MembershipDegree">Membership Degree.</see>
     ///             </description>
     ///         </item>
     ///         <item>
     ///             <description>
-    ///                 The <see cref="FuzzyLogic.Proposition.Enums.LinguisticHedge">Hedge function</see> is applied over it.
+    ///                 The <see cref="LinguisticHedge">Hedge function</see> is applied over it.
     ///             </description>
     ///         </item>
     ///         <item>
     ///             <description>
-    ///                 The <see cref="FuzzyLogic.Proposition.Enums.Literal">Literal function</see> is applied over it.
+    ///                 The <see cref="Literal">Literal function</see> is applied over it.
     ///             </description>
     ///         </item>
     ///     </list>
-    ///     In order to operate, it must be proven first that the rule is <see cref="IsApplicable">Applicable</see>;
+    ///     In order to operate, it must be proven first that the rule <see cref="IsApplicable">Is Applicable</see>;
     ///     otherwise, returns an empty collection.
     /// </summary>
     /// <param name="facts">A <see cref="IDictionary{TKey,TValue}">Dictionary</see> of facts</param>
     /// <returns>
-    ///     A collection of fuzzy numbers if the rule is <see cref="IsApplicable">Applicable</see>;
+    ///     A collection of fuzzy numbers if the rule <see cref="IsApplicable">Is Applicable</see>;
     ///     otherwise, an empty collection.
     /// </returns>
     /// <seealso cref="IsApplicable">IsApplicable</seealso>
@@ -187,17 +207,16 @@ public interface IRule
 
     /// <summary>
     ///     <para>
-    ///         Applies all the binary operators to each <see cref="FuzzyLogic.Number.FuzzyNumber" /> in the premise
+    ///         Applies all the binary operators to each <see cref="FuzzyNumber" /> in the premise
     ///         part of the rule and aggregates them into a single Fuzzy Number, which can be understood as the weight of the
     ///         premise itself. This process succeeds the application of unary operators in the
     ///         <see cref="ApplyOperators">ApplyOperators</see> method, which is why it operates directly over fuzzy numbers
     ///         instead of propositions.
     ///     </para>
     ///     <para>
-    ///         A binary operator needs of two atomic terms and a <see cref="FuzzyLogic.Proposition.Enums.Connective" />
-    ///         between them in order to be applied. In this context, examples of a unary operator are the
-    ///         <see cref="Proposition.Enums.Connective.Or">Conjunction</see> and the
-    ///         <see cref="Proposition.Enums.Connective.And">Disjunction</see> operators.
+    ///         A binary operator needs of two atomic terms and a <see cref="Connective" /> between them in order to be
+    ///         applied. In this context, examples of a unary operator are the <see cref="Connective.Or">Conjunction</see>
+    ///         and the <see cref="Connective.And">Disjunction</see> operators.
     ///     </para>
     ///     <para>
     ///         In order to operate, it must be proven first that the rule is <see cref="IsApplicable">Applicable</see>;
@@ -206,7 +225,7 @@ public interface IRule
     /// </summary>
     /// <param name="facts">A <see cref="IDictionary{TKey,TValue}">Dictionary</see> of facts</param>
     /// <returns>
-    ///     A <see cref="FuzzyLogic.Number.FuzzyNumber" /> if the rule is <see cref="IsApplicable">Applicable</see>;
+    ///     A <see cref="FuzzyNumber" /> if the rule is <see cref="IsApplicable">Applicable</see>;
     ///     otherwise, null.
     /// </returns>
     /// <seealso cref="IsApplicable">IsApplicable</seealso>

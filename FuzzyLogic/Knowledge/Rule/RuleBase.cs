@@ -7,19 +7,16 @@ namespace FuzzyLogic.Knowledge.Rule;
 
 public class RuleBase : IRuleBase
 {
-    protected RuleBase(ComparingMethod method = Priority)
-    {
-        ProductionRules = new List<IRule>();
+    protected RuleBase(ComparingMethod method = ComparingMethod.HighestPriority) =>
         RuleComparer = RuleComparerFactory.CreateInstance(method);
-    }
 
-    public ICollection<IRule> ProductionRules { get; set; }
+    public ICollection<IRule> ProductionRules { get; } = new List<IRule>();
     public IComparer<IRule> RuleComparer { get; }
 
-    public static IRuleBase Create(ComparingMethod method = Priority) =>
+    public static IRuleBase Create(ComparingMethod method = ComparingMethod.HighestPriority) =>
         new RuleBase(method);
 
-    public static IRuleBase Initialize(ILinguisticBase linguisticBase, ComparingMethod method = Priority) =>
+    public static IRuleBase Initialize(ILinguisticBase linguisticBase, ComparingMethod method = ComparingMethod.HighestPriority) =>
         Create(method);
 
     public IRuleBase Add(IRule rule) => Add(this, rule);
@@ -42,19 +39,18 @@ public class RuleBase : IRuleBase
 
     private static IRuleBase Add(IRuleBase ruleBase, IRule rule)
     {
-        if (!rule.IsValid()) throw new InvalidRuleException();
+        if (!rule.IsValid())
+            throw new InvalidRuleException();
         ruleBase.ProductionRules.Add(rule);
         return ruleBase;
     }
 
     private static IRuleBase AddAll(IRuleBase ruleBase, ICollection<IRule> rules)
     {
-        if (rules.Any(e => !e.IsValid())) throw new InvalidRuleException();
+        if (rules.Any(e => !e.IsValid()))
+            throw new InvalidRuleException();
         foreach (var rule in rules)
-        {
             ruleBase.ProductionRules.Add(rule);
-        }
-
         return ruleBase;
     }
 

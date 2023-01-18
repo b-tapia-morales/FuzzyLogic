@@ -5,21 +5,19 @@ namespace FuzzyLogic.Knowledge.Linguistic;
 
 public class LinguisticBase : ILinguisticBase
 {
-    public IDictionary<string, IVariable> LinguisticVariables { get; }
-
-    protected LinguisticBase() =>
-        LinguisticVariables = new Dictionary<string, IVariable>(InvariantCultureIgnoreCase);
+    public IDictionary<string, IVariable> LinguisticVariables { get; } =
+        new Dictionary<string, IVariable>(InvariantCultureIgnoreCase);
 
     public static ILinguisticBase Create() => new LinguisticBase();
 
     public static ILinguisticBase Initialize() => Create();
-    
+
     public ILinguisticBase Add(IVariable variable) =>
         Add(this, variable);
 
     public ILinguisticBase AddAll(ICollection<IVariable> variables) =>
         AddAll(this, variables);
-    
+
     public ILinguisticBase AddAll(params IVariable[] variables) =>
         AddAll(this, variables);
 

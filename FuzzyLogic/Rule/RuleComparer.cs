@@ -1,44 +1,73 @@
 ﻿namespace FuzzyLogic.Rule;
 
-public class PriorityComparer : IComparer<IRule>
+public class HighestPriority : IComparer<IRule>
 {
     public int Compare(IRule? x, IRule? y)
     {
         if (x == null || y == null)
             throw new ArgumentException("Rule references cannot be null");
+        if (ReferenceEquals(x, y))
+            return 0;
         var a = (int) x.Priority;
         var b = (int) y.Priority;
         return a.CompareTo(b);
     }
 }
 
-public class ShortestPremiseComparer : IComparer<IRule>
+public class ShortestPremise : IComparer<IRule>
 {
     public int Compare(IRule? x, IRule? y)
     {
         if (x == null || y == null)
             throw new ArgumentException("Rule references cannot be null");
-        var a = 1 + x.Connectives.Count;
-        var b = 1 + y.Connectives.Count;
+        if (ReferenceEquals(x, y))
+            return 0;
+        var a = x.PremiseLength();
+        var b = y.PremiseLength();
         return -(a.CompareTo(b));
     }
 }
 
-public class LargestPremiseComparer : IComparer<IRule>
+public class LargestPremise : IComparer<IRule>
 {
     public int Compare(IRule? x, IRule? y)
     {
         if (x == null || y == null)
             throw new ArgumentException("Rule references cannot be null");
-        var a = 1 + x.Connectives.Count;
-        var b = 1 + y.Connectives.Count;
+        if (ReferenceEquals(x, y))
+            return 0;
+        var a = x.PremiseLength();
+        var b = y.PremiseLength();
+        return a.CompareTo(b);
+    }
+}
+
+public class MostKnownFacts : IComparer<IRule>
+{
+    private readonly IDictionary<string, double> _facts;
+
+    public MostKnownFacts(IDictionary<string, double> facts) => _facts = facts;
+
+    public int Compare(IRule? x, IRule? y)
+    {
+        int KnownFactsCount(IRule rule) =>
+            (rule.Antecedent != null && rule.Antecedent.IsApplicable(_facts) ? 1 : 0) +
+            rule.Connectives.Count(e => e.IsApplicable(_facts));
+
+        if (x == null || y == null)
+            throw new ArgumentException("Rule references cannot be null");
+        if (ReferenceEquals(x, y))
+            return 0;
+        var a = KnownFactsCount(x);
+        var b = KnownFactsCount(y);
         return a.CompareTo(b);
     }
 }
 
 public enum ComparingMethod
 {
-    Priority = 1,
+    HighestPriority = 1,
     ShortestPremise = 2,
-    LargestPremise = 3
+    LargestPremise = 3,
+    MostKnownFacts = 4
 }
