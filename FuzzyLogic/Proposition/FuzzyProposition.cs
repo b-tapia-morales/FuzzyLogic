@@ -24,9 +24,11 @@ public class FuzzyProposition : IProposition
     public LinguisticHedge LinguisticHedge { get; }
     public IRealFunction Function { get; }
 
+    public bool IsApplicable(IDictionary<string, double> facts) => facts.ContainsKey(LinguisticVariable.Name);
+
     public FuzzyNumber ApplyUnaryOperators(double crispNumber)
     {
-        var membershipFunction = Function.SimpleFunction();
+        var membershipFunction = Function.AsFunction();
         var hedgeFunction = LinguisticHedge.Function;
         var literalFunction = Literal.Function!;
         return literalFunction(hedgeFunction(membershipFunction(crispNumber)));

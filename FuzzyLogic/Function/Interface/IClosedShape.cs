@@ -22,7 +22,7 @@ public interface IClosedShape
     static double CalculateArea(IRealFunction function, double errorMargin = DefaultErrorMargin)
     {
         var (x1, x2) = function.ClosedInterval();
-        return Integrate(function.SimpleFunction(), x1, x2, errorMargin);
+        return Integrate(function.AsFunction(), x1, x2, errorMargin);
     }
 
     static double CalculateArea(IRealFunction function, FuzzyNumber y, double errorMargin = DefaultErrorMargin)
@@ -32,8 +32,8 @@ public interface IClosedShape
         var (x1, x2) = function.ClosedInterval();
         var (l1, l2) = function.LambdaCutInterval(y);
         var rectangleArea = Math.Abs(l1 - l2) * y.Value;
-        var leftArea = Integrate(function.SimpleFunction(), x1, l1, errorMargin);
-        var rightArea = Integrate(function.SimpleFunction(), l2, x2, errorMargin);
+        var leftArea = Integrate(function.AsFunction(), x1, l1, errorMargin);
+        var rightArea = Integrate(function.AsFunction(), l2, x2, errorMargin);
         return leftArea + rectangleArea + rightArea;
     }
 
@@ -46,7 +46,7 @@ public interface IClosedShape
 
     static double CentroidXCoordinate(IRealFunction function, double errorMargin = DefaultErrorMargin)
     {
-        double Integral(double x) => x * function.SimpleFunction().Invoke(x);
+        double Integral(double x) => x * function.AsFunction().Invoke(x);
         var (x1, x2) = function.ClosedInterval();
         var area = CalculateArea(function, errorMargin);
         return (1 / area) * Integrate(Integral, x1, x2, errorMargin);
@@ -64,7 +64,7 @@ public interface IClosedShape
 
     static double CentroidYCoordinate(IRealFunction function, double errorMargin = DefaultErrorMargin)
     {
-        double Integral(double x) => function.SimpleFunction().Invoke(x) * function.SimpleFunction().Invoke(x);
+        double Integral(double x) => function.AsFunction().Invoke(x) * function.AsFunction().Invoke(x);
         var (x1, x2) = function.ClosedInterval();
         var area = CalculateArea(function, errorMargin);
         return (1 / (2.0 * area)) * Integrate(Integral, x1, x2, errorMargin);

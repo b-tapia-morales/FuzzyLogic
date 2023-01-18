@@ -24,7 +24,7 @@ public abstract class BaseMembershipFunction<T> : IMembershipFunction<T> where T
 
     public abstract T RightSupportEndpoint();
 
-    public abstract Func<T, double> SimpleFunction();
+    public abstract Func<T, double> AsFunction();
 
     public abstract (double X1, double X2) LambdaCutInterval(FuzzyNumber y);
 }

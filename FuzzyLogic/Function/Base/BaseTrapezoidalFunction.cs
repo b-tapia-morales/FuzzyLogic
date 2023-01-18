@@ -28,6 +28,20 @@ public abstract class BaseTrapezoidalFunction<T> : BaseMembershipFunction<T>, IT
     protected T C { get; }
     protected T D { get; }
 
+    public static Func<T, double> AsFunction(double a, double b, double c, double d, double h) => t =>
+    {
+        var x = t.ToDouble(null);
+        if (x > a && x < b)
+            return h * ((x - a) / (b - a));
+        if (x >= b && x <= c)
+            return h;
+        if (x > c && x < d)
+            return h * ((d - x) / (d - c));
+        return 0;
+    };
+
+    public static Func<T, double> AsFunction(double a, double b, double c, double d) => AsFunction(a, b, c, d, 1);
+
     public override bool IsOpenLeft() => false;
 
     public override bool IsOpenRight() => false;
@@ -44,16 +58,8 @@ public abstract class BaseTrapezoidalFunction<T> : BaseMembershipFunction<T>, IT
 
     public (T? X0, T? X1) CoreInterval() => (B, C);
 
-    public override Func<T, double> SimpleFunction() => x =>
-    {
-        if (x > A && x < B)
-            return H.ToDouble(null) * ((x.ToDouble(null) - A.ToDouble(null)) / (B.ToDouble(null) - A.ToDouble(null)));
-        if (x >= B && x <= C)
-            return H.ToDouble(null);
-        if (x > C && x < D)
-            return H.ToDouble(null) * ((D.ToDouble(null) - x.ToDouble(null)) / (D.ToDouble(null) - C.ToDouble(null)));
-        return 0;
-    };
+    public override Func<T, double> AsFunction() =>
+        AsFunction(A.ToDouble(null), B.ToDouble(null), C.ToDouble(null), D.ToDouble(null), H.ToDouble(null));
 
     public override (double X1, double X2) LambdaCutInterval(FuzzyNumber y) => y == 1
         ? (B.ToDouble(null), C.ToDouble(null))

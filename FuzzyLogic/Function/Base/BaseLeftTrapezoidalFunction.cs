@@ -20,20 +20,26 @@ public abstract class BaseLeftTrapezoidalFunction<T> : BaseMembershipFunction<T>
     protected T A { get; }
     protected T B { get; }
 
+    public static Func<T, double> AsFunction(double a, double b, double h) => t =>
+    {
+        var x = t.ToDouble(null);
+        if (x > a && x < b)
+            return h * ((b - x) / (b - a));
+        if (x <= a)
+            return h;
+        return 0;
+    };
+
+    public static Func<T, double> AsFunction(double a, double b) => AsFunction(a, b, 1);
+
     public override bool IsOpenLeft() => true;
 
     public override bool IsOpenRight() => false;
 
     public override bool IsSymmetric() => false;
 
-    public override Func<T, double> SimpleFunction() => x =>
-    {
-        if (x > A && x < B)
-            return H.ToDouble(null) * ((B.ToDouble(null) - x.ToDouble(null)) / (B.ToDouble(null) - A.ToDouble(null)));
-        if (x <= A)
-            return H.ToDouble(null);
-        return 0;
-    };
+    public override Func<T, double> AsFunction() =>
+        AsFunction(A.ToDouble(null), B.ToDouble(null), H.ToDouble(null));
 
     public (T? X0, T? X1) CoreInterval() => (LeftSupportEndpoint(), RightSupportEndpoint());
 }

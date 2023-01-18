@@ -19,7 +19,18 @@ public abstract class BaseRightTrapezoidalFunction<T> : BaseMembershipFunction<T
 
     protected T A { get; }
     protected T B { get; }
-    protected T H { get; }
+
+    public static Func<T, double> AsFunction(double a, double b, double h) => t =>
+    {
+        var x = t.ToDouble(null);
+        if (x > a && x < b)
+            return h * ((x - a) / (b - a));
+        if (x >= b)
+            return h;
+        return 0;
+    };
+
+    public static Func<T, double> AsFunction(double a, double b) => AsFunction(a, b, 1);
 
     public override bool IsOpenLeft() => false;
 
@@ -27,14 +38,8 @@ public abstract class BaseRightTrapezoidalFunction<T> : BaseMembershipFunction<T
 
     public override bool IsSymmetric() => false;
 
-    public override Func<T, double> SimpleFunction() => x =>
-    {
-        if (x > A && x < B) 
-            return H.ToDouble(null) * ((x.ToDouble(null) - A.ToDouble(null)) / (B.ToDouble(null) - A.ToDouble(null)));
-        if (x >= B) 
-            return H.ToDouble(null);
-        return 0;
-    };
+    public override Func<T, double> AsFunction() =>
+        AsFunction(A.ToDouble(null), B.ToDouble(null), H.ToDouble(null));
 
     public abstract (T? X0, T? X1) CoreInterval();
 }

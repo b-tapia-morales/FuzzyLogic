@@ -25,7 +25,7 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     ///     The name of the function.
     /// </summary>
     string Name { get; }
-    
+
     T H { get; }
 
     /// <summary>
@@ -118,7 +118,7 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     ///     Returns the membership function itself, represented as a <see cref="Func{T,TResult}" /> delegate.
     /// </summary>
     /// <returns>The membership function, represented as a <see cref="Func{T,TResult}" /> delegate.</returns>
-    Func<T, double> SimpleFunction();
+    Func<T, double> AsFunction();
 
     /// <summary>
     ///     <para>
@@ -140,15 +140,15 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// </summary>
     /// <param name="y">The height point at which the Lambda-cut is performed, represented as a <see cref="FuzzyNumber" />.</param>
     /// <returns>The new membership function, represented as a <see cref="Func{T,TResult}" /> delegate.</returns>
-    /// <seealso cref="SimpleFunction" />
+    /// <seealso cref="AsFunction" />
     Func<T, double> LambdaCutFunction(FuzzyNumber y) => x =>
     {
         if (y == 0) return 0.0;
-        if (y == 1) return SimpleFunction().Invoke(x);
+        if (y == 1) return AsFunction().Invoke(x);
         var (leftEndpoint, rightEndpoint) = ClosedInterval();
         if (x < leftEndpoint || x > rightEndpoint) return 0.0;
         var (leftCut, rightCut) = LambdaCutInterval(y);
-        return x.ToDouble(null) < leftCut || x.ToDouble(null) > rightCut ? SimpleFunction().Invoke(x) : y;
+        return x.ToDouble(null) < leftCut || x.ToDouble(null) > rightCut ? AsFunction().Invoke(x) : y;
     };
 
     /// <summary>
@@ -192,13 +192,13 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     ///     </para>
     ///     <para>
     ///         This method is equivalent to using the <see cref="Func{TResult}.Invoke" /> method on the resulting delegate
-    ///         of the <see cref="SimpleFunction" /> method.
+    ///         of the <see cref="AsFunction" /> method.
     ///     </para>
     /// </summary>
     /// <param name="x">The <i>x</i> value</param>
     /// <returns>The membership degree, represented as a <see cref="FuzzyNumber" /></returns>
-    /// <seealso cref="SimpleFunction" />
-    FuzzyNumber MembershipDegree(T x) => SimpleFunction().Invoke(x);
+    /// <seealso cref="AsFunction" />
+    FuzzyNumber MembershipDegree(T x) => AsFunction().Invoke(x);
 
     /// <summary>
     ///     Returns the <i>x</i> value provided as a parameter and its membership degree <i>y</i> value as a two-dimensional

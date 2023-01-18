@@ -13,5 +13,7 @@ public interface IProposition
     LinguisticHedge LinguisticHedge { get; }
     IRealFunction Function { get; }
 
+    bool IsApplicable(IDictionary<string, double> facts);
+    
     FuzzyNumber ApplyUnaryOperators(double crispNumber);
 }

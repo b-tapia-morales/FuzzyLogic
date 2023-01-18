@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using FuzzyLogic.Function.Interface;
 using FuzzyLogic.Number;
+using static System.Math;
 
 namespace FuzzyLogic.Function.Base;
 
@@ -26,14 +27,22 @@ public abstract class BaseCauchyFunction<T> : BaseMembershipFunction<T>, IAsympt
     protected T B { get; }
     protected T C { get; }
 
+    public static Func<T, double> AsFunction(double a, double b, double c, double h) => t =>
+    {
+        var x = t.ToDouble(null);
+        return h * (1 / (1 + Pow(Abs((x - c) / a), 2 * b)));
+    };
+
+    public static Func<T, double> AsFunction(double a, double b, double c) => AsFunction(a, b, c, 1);
+
     public override bool IsOpenLeft() => false;
 
     public override bool IsOpenRight() => false;
 
     public override bool IsSymmetric() => true;
 
-    public override Func<T, double> SimpleFunction() => x =>
-        1 / (1 + Math.Pow(Math.Abs((x.ToDouble(null) - C.ToDouble(null)) / A.ToDouble(null)), 2 * B.ToDouble(null)));
+    public override Func<T, double> AsFunction() =>
+        AsFunction(A.ToDouble(null), B.ToDouble(null), C.ToDouble(null), H.ToDouble(null));
 
     public override (double X1, double X2) LambdaCutInterval(FuzzyNumber y) =>
         (LeftSidedAlphaCut(y), RightSidedAlphaCut(y));
@@ -46,9 +55,9 @@ public abstract class BaseCauchyFunction<T> : BaseMembershipFunction<T>, IAsympt
 
     // c - a ((1 - α) / α) ^ (1 / 2b)
     private double LeftSidedAlphaCut(FuzzyNumber y) =>
-        C.ToDouble(null) - A.ToDouble(null) * Math.Pow((1 - y.Value) / y.Value, 1 / (2 * B.ToDouble(null)));
+        C.ToDouble(null) - A.ToDouble(null) * Pow((1 - y.Value) / y.Value, 1 / (2 * B.ToDouble(null)));
 
     // c + a ((1 - α) / α) ^ (1 / 2b)
     private double RightSidedAlphaCut(FuzzyNumber y) =>
-        C.ToDouble(null) + A.ToDouble(null) * Math.Pow((1 - y.Value) / y.Value, 1 / (2 * B.ToDouble(null)));
+        C.ToDouble(null) + A.ToDouble(null) * Pow((1 - y.Value) / y.Value, 1 / (2 * B.ToDouble(null)));
 }

@@ -2,6 +2,7 @@
 using FuzzyLogic.Function.Interface;
 using FuzzyLogic.Number;
 using FuzzyLogic.Utils;
+using static System.Math;
 
 namespace FuzzyLogic.Function.Base;
 
@@ -25,28 +26,34 @@ public abstract class BaseTriangularFunction<T> : BaseMembershipFunction<T>, ITr
     protected T A { get; }
     protected T B { get; }
     protected T C { get; }
-    protected T H { get; }
+
+    public static Func<T, double> AsFunction(double a, double b, double c, double h) => t =>
+    {
+        var x = t.ToDouble(null);
+        if (x > a && x < b)
+            return h * ((x - a) / (b - a));
+        if (Abs(x - b) < 1E-5)
+            return h;
+        if (x > b && x < c)
+            return h * ((c - x) / (c - b));
+        return 0;
+    };
+
+    public static Func<T, double> AsFunction(double a, double b, double c) => AsFunction(a, b, c, 1);
+
 
     public override bool IsOpenLeft() => false;
 
     public override bool IsOpenRight() => false;
 
     public override bool IsSymmetric() => _isSymmetric ??=
-        Math.Abs(
+        Abs(
             TrigonometricUtils.Distance((A.ToDouble(null), 0), (B.ToDouble(null), H.ToDouble(null))) -
             TrigonometricUtils.Distance((B.ToDouble(null), H.ToDouble(null)), (C.ToDouble(null), 0))
         ) < ITrapezoidalFunction<T>.DistanceTolerance;
 
-    public override Func<T, double> SimpleFunction() => x =>
-    {
-        if (x > A && x < B)
-            return H.ToDouble(null) * ((x.ToDouble(null) - A.ToDouble(null)) / (B.ToDouble(null) - A.ToDouble(null)));
-        if (x == B)
-            return H.ToDouble(null);
-        if (x > B && x < C)
-            return H.ToDouble(null) * ((C.ToDouble(null) - x.ToDouble(null)) / (C.ToDouble(null) - B.ToDouble(null)));
-        return 0;
-    };
+    public override Func<T, double> AsFunction() =>
+        AsFunction(A.ToDouble(null), B.ToDouble(null), C.ToDouble(null), H.ToDouble(null));
 
     public override T LeftSupportEndpoint() => A;
 

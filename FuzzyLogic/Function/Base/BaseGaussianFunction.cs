@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using FuzzyLogic.Function.Interface;
 using FuzzyLogic.Number;
+using static System.Math;
 
 namespace FuzzyLogic.Function.Base;
 
@@ -24,14 +25,22 @@ public abstract class BaseGaussianFunction<T> : BaseMembershipFunction<T>, IAsym
     protected T M { get; }
     protected T O { get; }
 
+    public static Func<T, double> AsFunction(double m, double o, double h) => t =>
+    {
+        var x = t.ToDouble(null);
+        return h * Exp(-(1 / 2.0) * Pow((x - m) / o, 2));
+    };
+
+    public static Func<T, double> AsFunction(double m, double o) => AsFunction(m, o, 1);
+
     public override bool IsOpenLeft() => true;
 
     public override bool IsOpenRight() => true;
 
     public override bool IsSymmetric() => true;
 
-    public override Func<T, double> SimpleFunction() =>
-        x => Math.Exp(-0.5 * Math.Pow((x.ToDouble(null) - M.ToDouble(null)) / O.ToDouble(null), 2));
+    public override Func<T, double> AsFunction() =>
+        AsFunction(M.ToDouble(null), O.ToDouble(null), H.ToDouble(null));
 
     public override (double X1, double X2) LambdaCutInterval(FuzzyNumber y) =>
         (LeftSidedLambdaCut(y), RightSidedLambdaCut(y));
@@ -43,8 +52,8 @@ public abstract class BaseGaussianFunction<T> : BaseMembershipFunction<T>, IAsym
         _maxCrispValue ??= (T) Convert.ChangeType(M.ToDouble(null) + 3 * O.ToDouble(null), typeof(T));
 
     private double LeftSidedLambdaCut(FuzzyNumber y) =>
-        M.ToDouble(null) - O.ToDouble(null) * Math.Sqrt(2 * Math.Log(1 / y.Value));
+        M.ToDouble(null) - O.ToDouble(null) * Sqrt(2 * Log(1 / y.Value));
 
     private double RightSidedLambdaCut(FuzzyNumber y) =>
-        M.ToDouble(null) + O.ToDouble(null) * Math.Sqrt(2 * Math.Log(1 / y.Value));
+        M.ToDouble(null) + O.ToDouble(null) * Sqrt(2 * Log(1 / y.Value));
 }
