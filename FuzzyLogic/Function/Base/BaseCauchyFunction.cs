@@ -44,6 +44,9 @@ public abstract class BaseCauchyFunction<T> : BaseMembershipFunction<T>, IAsympt
     public override Func<T, double> AsFunction() =>
         AsFunction(A.ToDouble(null), B.ToDouble(null), C.ToDouble(null), H.ToDouble(null));
 
+    public override Func<T, double> HeightFunction(FuzzyNumber y) =>
+        AsFunction(A.ToDouble(null), B.ToDouble(null), C.ToDouble(null), y.Value);
+
     public override (double X1, double X2) LambdaCutInterval(FuzzyNumber y) =>
         (LeftSidedAlphaCut(y), RightSidedAlphaCut(y));
 

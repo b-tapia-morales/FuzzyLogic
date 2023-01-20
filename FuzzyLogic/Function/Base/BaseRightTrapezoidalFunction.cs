@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using FuzzyLogic.Function.Interface;
+using FuzzyLogic.Number;
 
 namespace FuzzyLogic.Function.Base;
 
@@ -40,6 +41,9 @@ public abstract class BaseRightTrapezoidalFunction<T> : BaseMembershipFunction<T
 
     public override Func<T, double> AsFunction() =>
         AsFunction(A.ToDouble(null), B.ToDouble(null), H.ToDouble(null));
+    
+    public override Func<T, double> HeightFunction(FuzzyNumber y) =>
+        AsFunction(A.ToDouble(null), B.ToDouble(null), y.Value);
 
     public abstract (T? X0, T? X1) CoreInterval();
 }

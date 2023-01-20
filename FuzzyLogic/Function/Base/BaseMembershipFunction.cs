@@ -26,5 +26,7 @@ public abstract class BaseMembershipFunction<T> : IMembershipFunction<T> where T
 
     public abstract Func<T, double> AsFunction();
 
+    public abstract Func<T, double> HeightFunction(FuzzyNumber y);
+
     public abstract (double X1, double X2) LambdaCutInterval(FuzzyNumber y);
 }

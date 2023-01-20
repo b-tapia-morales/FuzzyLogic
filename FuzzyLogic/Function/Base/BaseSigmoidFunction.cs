@@ -49,6 +49,9 @@ public abstract class BaseSigmoidFunction<T> : BaseMembershipFunction<T>, IAsymp
 
     public override Func<T, double> AsFunction() =>
         AsFunction(A.ToDouble(null), C.ToDouble(null), H.ToDouble(null));
+    
+    public override Func<T, double> HeightFunction(FuzzyNumber y) =>
+        AsFunction(A.ToDouble(null), C.ToDouble(null), y.Value);
 
     public override (double X1, double X2) LambdaCutInterval(FuzzyNumber y) => A.ToDouble(null) < 0
         ? (double.NegativeInfinity, LambdaCut(y))

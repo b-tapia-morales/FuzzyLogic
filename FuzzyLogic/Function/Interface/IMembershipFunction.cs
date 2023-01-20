@@ -120,6 +120,8 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// <returns>The membership function, represented as a <see cref="Func{T,TResult}" /> delegate.</returns>
     Func<T, double> AsFunction();
 
+    Func<T, double> HeightFunction(FuzzyNumber y);
+
     /// <summary>
     ///     <para>
     ///         Returns a new membership function, represented as a <see cref="Func{T,TResult}" /> delegate, originating

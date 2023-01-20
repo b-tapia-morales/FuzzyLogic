@@ -55,6 +55,9 @@ public abstract class BaseTriangularFunction<T> : BaseMembershipFunction<T>, ITr
     public override Func<T, double> AsFunction() =>
         AsFunction(A.ToDouble(null), B.ToDouble(null), C.ToDouble(null), H.ToDouble(null));
 
+    public override Func<T, double> HeightFunction(FuzzyNumber y) =>
+        AsFunction(A.ToDouble(null), B.ToDouble(null), C.ToDouble(null), y.Value);
+
     public override T LeftSupportEndpoint() => A;
 
     public override T RightSupportEndpoint() => C;
