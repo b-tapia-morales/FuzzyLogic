@@ -1,16 +1,10 @@
 ﻿using System.Numerics;
-using FuzzyLogic.Function.Interface;
-using FuzzyLogic.Number;
 using static System.Math;
 
 namespace FuzzyLogic.Function.Base;
 
-public abstract class BaseCauchyFunction<T> : BaseMembershipFunction<T>, IAsymptoteFunction<T>
-    where T : unmanaged, INumber<T>, IConvertible
+public abstract class BaseCauchyFunction<T> : BaseMembershipFunction<T> where T : unmanaged, INumber<T>, IConvertible
 {
-    private T? _minCrispValue;
-    private T? _maxCrispValue;
-
     protected BaseCauchyFunction(string name, T a, T b, T c, T h) : base(name)
     {
         A = a;
@@ -41,26 +35,11 @@ public abstract class BaseCauchyFunction<T> : BaseMembershipFunction<T>, IAsympt
 
     public override bool IsSymmetric() => true;
 
+    public override bool IsSingleton() => false;
+
     public override Func<T, double> AsFunction() =>
         AsFunction(A.ToDouble(null), B.ToDouble(null), C.ToDouble(null), H.ToDouble(null));
 
-    public override Func<T, double> HeightFunction(FuzzyNumber y) =>
-        AsFunction(A.ToDouble(null), B.ToDouble(null), C.ToDouble(null), y.Value);
-
-    public override (double X1, double X2) LambdaCutInterval(FuzzyNumber y) =>
-        (LeftSidedAlphaCut(y), RightSidedAlphaCut(y));
-
-    public T ApproximateLowerBoundary() =>
-        _minCrispValue ??= (T) Convert.ChangeType(LeftSidedAlphaCut(IAsymptoteFunction<T>.MinLambdaCut), typeof(T));
-
-    public T ApproximateUpperBoundary() =>
-        _maxCrispValue ??= (T) Convert.ChangeType(RightSidedAlphaCut(IAsymptoteFunction<T>.MinLambdaCut), typeof(T));
-
-    // c - a ((1 - α) / α) ^ (1 / 2b)
-    private double LeftSidedAlphaCut(FuzzyNumber y) =>
-        C.ToDouble(null) - A.ToDouble(null) * Pow((1 - y.Value) / y.Value, 1 / (2 * B.ToDouble(null)));
-
-    // c + a ((1 - α) / α) ^ (1 / 2b)
-    private double RightSidedAlphaCut(FuzzyNumber y) =>
-        C.ToDouble(null) + A.ToDouble(null) * Pow((1 - y.Value) / y.Value, 1 / (2 * B.ToDouble(null)));
+    public override Func<T, double> HeightFunction<TNumber>(TNumber y) =>
+        AsFunction(A.ToDouble(null), B.ToDouble(null), C.ToDouble(null), Min(H.ToDouble(null), y.Value));
 }

@@ -1,40 +1,41 @@
 ﻿using System.Collections.Immutable;
+using FuzzyLogic.Function.Implication;
 using FuzzyLogic.Function.Interface;
 using FuzzyLogic.Number;
 using FuzzyLogic.Proposition;
 using FuzzyLogic.Proposition.Enums;
 using static System.StringComparison;
-using static FuzzyLogic.Proposition.Enums.Literal;
+using static FuzzyLogic.Function.Implication.InferenceMethod;
 using static FuzzyLogic.Rule.RulePriority;
 
 namespace FuzzyLogic.Rule;
 
-public class FuzzyRule : IRule
+public class FuzzyRule<T> : IRule<T> where T : struct, IFuzzyNumber<T>
 {
-    private static readonly IComparer<IRule> DefaultComparer = new HighestPriority();
+    private static readonly IComparer<IRule<T>> DefaultComparer = new HighestPriority<T>();
 
     private FuzzyRule(RulePriority priority = Normal) => Priority = priority;
 
-    public IProposition? Antecedent { get; set; }
-    public ICollection<IProposition> Connectives { get; } = new List<IProposition>();
-    public IProposition? Consequent { get; set; }
+    public IProposition<T>? Antecedent { get; set; }
+    public ICollection<IProposition<T>> Connectives { get; } = new List<IProposition<T>>();
+    public IProposition<T>? Consequent { get; set; }
     public bool IsFinalized { get; set; } = false;
     public RulePriority Priority { get; }
 
     public override string ToString() =>
         $"{Antecedent} {(Connectives.Any() ? $"{string.Join(' ', Connectives)} " : string.Empty)}{Consequent}";
 
-    public int Compare(IRule? x, IRule? y) => DefaultComparer.Compare(x, y);
+    public int Compare(IRule<T>? x, IRule<T>? y) => DefaultComparer.Compare(x, y);
 
-    public int CompareTo(IRule? other) => DefaultComparer.Compare(this, other);
+    public int CompareTo(IRule<T>? other) => DefaultComparer.Compare(this, other);
 
-    public IRule If(IProposition proposition) => If(this, proposition);
+    public IRule<T> If(IProposition<T> proposition) => If(this, proposition);
 
-    public IRule And(IProposition proposition) => And(this, proposition);
+    public IRule<T> And(IProposition<T> proposition) => And(this, proposition);
 
-    public IRule Or(IProposition proposition) => Or(this, proposition);
+    public IRule<T> Or(IProposition<T> proposition) => Or(this, proposition);
 
-    public IRule Then(IProposition proposition) => Then(this, proposition);
+    public IRule<T> Then(IProposition<T> proposition) => Then(this, proposition);
 
     public bool IsValid() => Antecedent != null && Consequent != null;
 
@@ -54,22 +55,22 @@ public class FuzzyRule : IRule
 
     public int PremiseLength() => (Antecedent == null ? 1 : 0) + Connectives.Count;
 
-    public IEnumerable<FuzzyNumber> ApplyOperators(IDictionary<string, double> facts) =>
+    public IEnumerable<T> ApplyOperators(IDictionary<string, double> facts) =>
         !IsApplicable(facts)
-            ? ImmutableList<FuzzyNumber>.Empty
+            ? ImmutableList<T>.Empty
             : Connectives
                 .Prepend(Antecedent!)
                 .Select(e => e.ApplyUnaryOperators(facts[e.LinguisticVariable.Name]));
 
-    public FuzzyNumber? EvaluatePremiseWeight(IDictionary<string, double> facts)
+    public T EvaluatePremiseWeight(IDictionary<string, double> facts)
     {
-        var numbers = new Queue<FuzzyNumber>(ApplyOperators(facts));
+        var numbers = new Queue<T>(ApplyOperators(facts));
         if (!numbers.Any())
-            return null;
+            throw new InvalidOperationException();
         if (numbers.Count == 1)
             return numbers.First();
 
-        var connectives = new Queue<Connective>(Connectives.Select(e => e.Connective));
+        var connectives = new Queue<Connective<T>>(Connectives.Select(e => e.Connective));
         while (numbers.Count > 1)
         {
             var firstNumber = numbers.Dequeue();
@@ -81,97 +82,104 @@ public class FuzzyRule : IRule
         return numbers.Dequeue();
     }
 
-    public Func<double, double>? ApplyImplication(IDictionary<string, double> facts)
+    public Func<double, double> ApplyImplication(IDictionary<string, double> facts, InferenceMethod method = Mamdani)
     {
+        var function = Consequent!.Function;
+        if (function is not IFuzzyInference surface)
+            throw new InvalidOperationException();
         var ruleWeight = EvaluatePremiseWeight(facts);
-        return ruleWeight == null ? null : Consequent!.Function.LambdaCutFunction(ruleWeight.GetValueOrDefault());
+        return surface.LambdaCutFunction(ruleWeight, method);
     }
 
-    public FuzzyNumber? EvaluateConclusionWeight(IDictionary<string, double> facts)
+    public T EvaluateConclusionWeight(IDictionary<string, double> facts)
     {
         if (Consequent == null || !facts.ContainsKey(Consequent.LinguisticVariable.Name))
-            return null;
+            throw new InvalidOperationException();
         var crispNumber = facts[Consequent.LinguisticVariable.Name];
         return Consequent.ApplyUnaryOperators(crispNumber);
     }
 
-    public FuzzyNumber? EvaluateRuleWeight(IDictionary<string, double> facts)
+    public T EvaluateRuleWeight(IDictionary<string, double> facts)
     {
-        if (!IsApplicable(facts)) return null;
-        return FuzzyNumber.Implication(EvaluatePremiseWeight(facts).GetValueOrDefault(),
-            EvaluateConclusionWeight(facts).GetValueOrDefault());
+        if (!IsApplicable(facts))
+            throw new InvalidOperationException();
+        return T.Implication(EvaluatePremiseWeight(facts), EvaluateConclusionWeight(facts));
     }
 
     public double? CalculateArea(IDictionary<string, double> facts,
+        InferenceMethod method = Mamdani,
         double errorMargin = IClosedShape.DefaultErrorMargin)
     {
-        if (!IsApplicable(facts)) return null;
+        if (!IsApplicable(facts))
+            throw new InvalidOperationException();
         var function = Consequent!.Function;
-        if (function is not IClosedShape) return null;
-        var surface = (IClosedShape) Consequent!.Function;
-        var cutPoint = EvaluatePremiseWeight(facts).GetValueOrDefault();
-        return cutPoint == 0 ? null : surface.CalculateArea(cutPoint, errorMargin);
+        if (function is not IFuzzyInference surface)
+            throw new InvalidOperationException();
+        var cutPoint = EvaluatePremiseWeight(facts);
+        return cutPoint == 0 ? null : surface.CalculateArea(cutPoint, errorMargin, method);
     }
 
     public (double X, double Y)? CalculateCentroid(IDictionary<string, double> facts,
+        InferenceMethod method = Mamdani,
         double errorMargin = IClosedShape.DefaultErrorMargin)
     {
-        if (!IsApplicable(facts)) return null;
+        if (!IsApplicable(facts))
+            throw new InvalidOperationException();
         var function = Consequent!.Function;
-        if (function is not IClosedShape) return null;
-        var surface = (IClosedShape) Consequent!.Function;
-        var cutPoint = EvaluatePremiseWeight(facts).GetValueOrDefault();
-        return cutPoint == 0 ? null : surface.CalculateCentroid(cutPoint, errorMargin);
+        if (function is not IFuzzyInference surface)
+            throw new InvalidOperationException();
+        var cutPoint = EvaluatePremiseWeight(facts);
+        return cutPoint == 0 ? null : surface.CalculateCentroid(cutPoint, errorMargin, method);
     }
 
-    public static IRule Create(RulePriority priority = Normal) => new FuzzyRule(priority);
+    public static IRule<T> Create(RulePriority priority = Normal) => new FuzzyRule<T>(priority);
 
-    private static IRule If(IRule rule, IProposition proposition)
+    private static IRule<T> If(IRule<T> rule, IProposition<T> proposition)
     {
         if (rule.IsFinalized)
             throw new FinalizedRuleException();
         if (rule.Antecedent != null)
             throw new DuplicatedAntecedentException();
 
-        proposition.Connective = Connective.If;
+        proposition.Connective = Connective<T>.If;
         rule.Antecedent = proposition;
         return rule;
     }
 
-    private static IRule And(IRule rule, IProposition proposition)
+    private static IRule<T> And(IRule<T> rule, IProposition<T> proposition)
     {
         if (rule.IsFinalized)
             throw new FinalizedRuleException();
         if (rule.Antecedent == null)
             throw new MissingAntecedentException();
 
-        proposition.Connective = Connective.And;
+        proposition.Connective = Connective<T>.And;
         rule.Connectives.Add(proposition);
         return rule;
     }
 
-    private static IRule Or(IRule rule, IProposition proposition)
+    private static IRule<T> Or(IRule<T> rule, IProposition<T> proposition)
     {
         if (rule.IsFinalized)
             throw new FinalizedRuleException();
         if (rule.Antecedent == null)
             throw new MissingAntecedentException();
 
-        proposition.Connective = Connective.Or;
+        proposition.Connective = Connective<T>.Or;
         rule.Connectives.Add(proposition);
         return rule;
     }
 
-    public static IRule Then(IRule rule, IProposition proposition)
+    public static IRule<T> Then(IRule<T> rule, IProposition<T> proposition)
     {
         if (rule.IsFinalized)
             throw new FinalizedRuleException();
         if (rule.Antecedent == null)
             throw new MissingAntecedentException();
-        if (proposition.Literal == IsNot)
+        if (proposition.Literal == Literal<T>.IsNot)
             throw new NegatedConsequentException();
 
-        proposition.Connective = Connective.Then;
+        proposition.Connective = Connective<T>.Then;
         rule.Consequent = proposition;
         rule.IsFinalized = true;
         return rule;

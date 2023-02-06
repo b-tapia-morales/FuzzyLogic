@@ -1,10 +1,11 @@
 ﻿using FuzzyLogic.Function.Base;
+using FuzzyLogic.Function.Implication;
 using FuzzyLogic.Function.Interface;
-using FuzzyLogic.Number;
+using static System.Math;
 
 namespace FuzzyLogic.Function.Real;
 
-public class CauchyFunction : BaseCauchyFunction<double>, IRealFunction, IClosedShape
+public class CauchyFunction : BaseCauchyFunction<double>, IFuzzyInference
 {
     public CauchyFunction(string name, double a, double b, double c, double h) : base(name, a, b, c, h)
     {
@@ -18,16 +19,21 @@ public class CauchyFunction : BaseCauchyFunction<double>, IRealFunction, IClosed
 
     public override double RightSupportEndpoint() => double.PositiveInfinity;
 
-    public double CalculateArea(double errorMargin = IClosedShape.DefaultErrorMargin) =>
-        IClosedShape.CalculateArea(this, errorMargin);
+    public override double MaxHeightLeftEndpoint() => C;
 
-    public double CalculateArea(FuzzyNumber y, double errorMargin = IClosedShape.DefaultErrorMargin) =>
-        IClosedShape.CalculateArea(this, y, errorMargin);
+    public override double MaxHeightRightEndpoint() => C;
 
-    public (double X, double Y) CalculateCentroid(double errorMargin = IClosedShape.DefaultErrorMargin) =>
-        (C, IClosedShape.CentroidYCoordinate(this));
+    double IClosedShape.CentroidXCoordinate(double errorMargin) => C;
 
-    public (double X, double Y) CalculateCentroid(FuzzyNumber y,
-        double errorMargin = IClosedShape.DefaultErrorMargin) =>
-        (C, IClosedShape.CentroidYCoordinate(this, y, errorMargin));
+    // c - a × ((H - λ) / λ) ^ (1 / 2b)
+    double? IMamdaniMinimum.MamdaniCutLeftEndpoint<T>(T y) =>
+        y > H ? null : C - A * Pow((H - Min(y, H)) / y, 1 / (2 * B));
+
+    // c + a × ((H - λ) / λ) ^ (1 / 2b)
+    double? IMamdaniMinimum.MamdaniCutRightEndpoint<T>(T y) =>
+        y > H ? null : C + A * Pow((H - Min(y, H)) / y, 1 / (2 * B));
+
+    double IMamdaniMinimum.MamdaniCentroidXCoordinate<TNumber>(TNumber y, double errorMargin) => C;
+
+    double ILarsenProduct.LarsenCentroidXCoordinate<TNumber>(TNumber y, double errorMargin) => C;
 }

@@ -1,36 +1,37 @@
 ﻿using Ardalis.SmartEnum;
 using FuzzyLogic.Number;
+using static System.Math;
 
 namespace FuzzyLogic.Proposition.Enums;
 
-public class LinguisticHedge : SmartEnum<LinguisticHedge>
+public class LinguisticHedge<T> : SmartEnum<LinguisticHedge<T>> where T : IFuzzyNumber<T>
 {
-    public static readonly LinguisticHedge None =
+    public static readonly LinguisticHedge<T> None =
         new(nameof(None), string.Empty, y => y, (int) HedgeToken.None);
 
-    public static readonly LinguisticHedge Very =
-        new(nameof(Very), "Very", y => Math.Pow(y.Value, 2), (int) HedgeToken.Very);
+    public static readonly LinguisticHedge<T> Very =
+        new(nameof(Very), "Very", y => T.Of(Pow(y.Value, 2)), (int) HedgeToken.Very);
 
-    public static readonly LinguisticHedge VeryVery =
-        new(nameof(VeryVery), "Very, very", y => Math.Pow(y.Value, 4), (int) HedgeToken.VeryVery);
+    public static readonly LinguisticHedge<T> VeryVery =
+        new(nameof(VeryVery), "Very, very", y => T.Of(Pow(y.Value, 4)), (int) HedgeToken.VeryVery);
 
-    public static readonly LinguisticHedge Plus =
-        new(nameof(Plus), "Plus", y => Math.Pow(y.Value, 1.25), (int) HedgeToken.Plus);
+    public static readonly LinguisticHedge<T> Plus =
+        new(nameof(Plus), "Plus", y => T.Of(Pow(y.Value, 5 / 4.0)), (int) HedgeToken.Plus);
 
-    public static readonly LinguisticHedge Slightly =
-        new(nameof(Slightly), "Slightly", y => Math.Sqrt(y.Value), (int) HedgeToken.Slightly);
+    public static readonly LinguisticHedge<T> Slightly =
+        new(nameof(Slightly), "Slightly", y => T.Of(Sqrt(y.Value)), (int) HedgeToken.Slightly);
 
-    public static readonly LinguisticHedge Minus =
-        new(nameof(Minus), "Minus", y => Math.Pow(y.Value, 0.75), (int) HedgeToken.Minus);
+    public static readonly LinguisticHedge<T> Minus =
+        new(nameof(Minus), "Minus", y => T.Of(Pow(y.Value, 3 / 4.0)), (int) HedgeToken.Minus);
 
-    public static readonly LinguisticHedge Indeed = new(nameof(Indeed), "Indeed",
+    public static readonly LinguisticHedge<T> Indeed = new(nameof(Indeed), "Indeed",
         y =>
         {
-            if (y == 0.5) return y;
-            return y < 0.5 ? 2 * Math.Pow(y.Value, 2) : 1 - 2 * Math.Pow(1 - y.Value, 2);
+            if (Abs(y.Value - 0.5) < IFuzzyNumber<T>.Tolerance) return y;
+            return y.Value < 0.5 ? T.Of(2 * Pow(y.Value, 2)) : T.Of(1 - 2 * Pow(1 - y.Value, 2));
         }, (int) HedgeToken.Indeed);
 
-    private static readonly Dictionary<HedgeToken, LinguisticHedge> TokenDictionary = new()
+    private static readonly Dictionary<HedgeToken, LinguisticHedge<T>> TokenDictionary = new()
     {
         {HedgeToken.None, None},
         {HedgeToken.Very, Very},
@@ -41,11 +42,11 @@ public class LinguisticHedge : SmartEnum<LinguisticHedge>
         {HedgeToken.Indeed, Indeed}
     };
 
-    private static readonly Dictionary<string, LinguisticHedge> ReadableNameDictionary =
+    private static readonly Dictionary<string, LinguisticHedge<T>> ReadableNameDictionary =
         TokenDictionary.ToDictionary(e => e.Value.ReadableName, e => e.Value,
             StringComparer.InvariantCultureIgnoreCase);
 
-    public LinguisticHedge(string name, string readableName, Func<FuzzyNumber, FuzzyNumber> function, int value) :
+    public LinguisticHedge(string name, string readableName, Func<T, T> function, int value) :
         base(name, value)
     {
         ReadableName = readableName;
@@ -53,11 +54,11 @@ public class LinguisticHedge : SmartEnum<LinguisticHedge>
     }
 
     public string ReadableName { get; }
-    public Func<FuzzyNumber, FuzzyNumber> Function { get; }
+    public Func<T, T> Function { get; }
 
-    public static LinguisticHedge FromToken(HedgeToken token) => TokenDictionary[token];
+    public static LinguisticHedge<T> FromToken(HedgeToken token) => TokenDictionary[token];
 
-    public static LinguisticHedge FromReadableName(string readableName) => ReadableNameDictionary[readableName];
+    public static LinguisticHedge<T> FromReadableName(string readableName) => ReadableNameDictionary[readableName];
 
     public override string ToString() => ReadableName;
 }

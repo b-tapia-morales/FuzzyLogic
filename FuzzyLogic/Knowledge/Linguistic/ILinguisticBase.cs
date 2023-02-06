@@ -87,7 +87,7 @@ public interface ILinguisticBase
     /// </returns>
     /// <seealso cref="LinguisticVariables" />
     /// <seealso cref="IVariable.LinguisticEntries" />
-    IRealFunction? RetrieveLinguisticEntry(string variableName, string entryName) =>
+    IMembershipFunction<double>? RetrieveLinguisticEntry(string variableName, string entryName) =>
         Retrieve(variableName)?.RetrieveLinguisticEntry(entryName);
 
     /// <summary>

@@ -1,9 +1,10 @@
-﻿using System.Globalization;
-using static FuzzyLogic.Number.IFuzzyNumber<FuzzyLogic.Number.ProductNumber>;
+﻿using static FuzzyLogic.Number.IFuzzyNumber<FuzzyLogic.Number.ProductNumber>;
+
+// ReSharper disable HeapView.PossibleBoxingAllocation
 
 namespace FuzzyLogic.Number;
 
-public readonly record struct ProductNumber : IFuzzyNumber<ProductNumber>, IComparable<ProductNumber>
+public readonly record struct ProductNumber : IFuzzyNumber<ProductNumber>
 {
     private static readonly ProductNumber Min = Of(0);
     private static readonly ProductNumber Max = Of(1);
@@ -38,14 +39,14 @@ public readonly record struct ProductNumber : IFuzzyNumber<ProductNumber>, IComp
 
     public static ProductNumber MaxValue() => Max;
 
-    public static ProductNumber operator !(ProductNumber x) => (1 - x.Value);
+    public static ProductNumber operator !(ProductNumber x) => 1 - x.Value;
 
-    public static ProductNumber operator &(ProductNumber a, ProductNumber b) => (a.Value * b.Value);
+    public static ProductNumber operator &(ProductNumber x, ProductNumber y) => x.Value * y.Value;
 
-    public static ProductNumber operator |(ProductNumber a, ProductNumber b) => (a.Value + b.Value - a.Value * b.Value);
+    public static ProductNumber operator |(ProductNumber x, ProductNumber y) => x.Value + y.Value - x.Value * y.Value;
 
-    public static ProductNumber Implication(ProductNumber a, ProductNumber b) =>
-        a.Value <= b.Value ? 1 : (b.Value / a.Value);
+    public static ProductNumber Implication(ProductNumber x, ProductNumber y) =>
+        x.Value <= y.Value ? 1 : y.Value / x.Value;
 
     /// <summary>
     ///     Defines a implicit conversion from a <see cref="double" /> value to a <see cref="ProductNumber" />.
@@ -62,15 +63,5 @@ public readonly record struct ProductNumber : IFuzzyNumber<ProductNumber>, IComp
     /// <returns>The <see cref="ProductNumber" /> value.</returns>
     public static implicit operator double(ProductNumber x) => x.Value;
 
-    public int CompareTo(ProductNumber other) => Value.CompareTo(other.Value);
-
-    /// <inheritdoc />
-    public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);
-
-    private static void RangeCheck(double value)
-    {
-        if (value is < 0.0 or > 1.0)
-            throw new ArgumentException(
-                $"Value can't be lesser than 0 or greater than 1 (Value provided was: {value})");
-    }
+    public static implicit operator FuzzyNumber(ProductNumber x) => FuzzyNumber.Of(x.Value);
 }

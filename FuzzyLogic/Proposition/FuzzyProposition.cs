@@ -6,27 +6,28 @@ using FuzzyLogic.Variable;
 
 namespace FuzzyLogic.Proposition;
 
-public class FuzzyProposition : IProposition
+public class FuzzyProposition<T> : IProposition<T> where T : struct, IFuzzyNumber<T>
 {
-    private FuzzyProposition(IVariable linguisticVariable, LiteralToken literalToken, IRealFunction function,
-        HedgeToken hedgeToken = HedgeToken.None, ConnectiveToken connectiveToken = ConnectiveToken.None)
+    private FuzzyProposition(IVariable linguisticVariable, LiteralToken literalToken,
+        IMembershipFunction<double> function, HedgeToken hedgeToken = HedgeToken.None,
+        ConnectiveToken connectiveToken = ConnectiveToken.None)
     {
-        Connective = Connective.FromToken(connectiveToken);
+        Connective = Connective<T>.FromToken(connectiveToken);
         LinguisticVariable = linguisticVariable;
-        Literal = Literal.FromToken(literalToken);
-        LinguisticHedge = LinguisticHedge.FromToken(hedgeToken);
+        Literal = Literal<T>.FromToken(literalToken);
+        LinguisticHedge = LinguisticHedge<T>.FromToken(hedgeToken);
         Function = function;
     }
 
-    public Connective Connective { get; set; }
+    public Connective<T> Connective { get; set; }
     public IVariable LinguisticVariable { get; }
-    public Literal Literal { get; }
-    public LinguisticHedge LinguisticHedge { get; }
-    public IRealFunction Function { get; }
+    public Literal<T> Literal { get; }
+    public LinguisticHedge<T> LinguisticHedge { get; }
+    public IMembershipFunction<double> Function { get; }
 
     public bool IsApplicable(IDictionary<string, double> facts) => facts.ContainsKey(LinguisticVariable.Name);
 
-    public FuzzyNumber ApplyUnaryOperators(double crispNumber)
+    public T ApplyUnaryOperators(double crispNumber)
     {
         var membershipFunction = Function.AsFunction();
         var hedgeFunction = LinguisticHedge.Function;
@@ -36,26 +37,26 @@ public class FuzzyProposition : IProposition
 
     public override string ToString()
     {
-        var connective = Connective != Connective.None ? $"{Connective} " : string.Empty;
-        var linguisticHedge = LinguisticHedge != LinguisticHedge.None ? $"{LinguisticHedge} " : string.Empty;
+        var connective = Connective != Connective<T>.None ? $"{Connective} " : string.Empty;
+        var linguisticHedge = LinguisticHedge != LinguisticHedge<T>.None ? $"{LinguisticHedge} " : string.Empty;
         return $"{connective}{LinguisticVariable.Name} {Literal.ReadableName} {linguisticHedge}{Function.Name}";
     }
 
-    public static IProposition Is(ILinguisticBase linguisticBase, string variableName, string entryName,
+    public static IProposition<T> Is(ILinguisticBase linguisticBase, string variableName, string entryName,
         HedgeToken hedgeToken = HedgeToken.None) =>
         Create(linguisticBase, variableName, LiteralToken.Affirmation, hedgeToken, entryName);
 
-    public static IProposition IsNot(ILinguisticBase linguisticBase, string variableName, string entryName,
+    public static IProposition<T> IsNot(ILinguisticBase linguisticBase, string variableName, string entryName,
         HedgeToken hedgeToken = HedgeToken.None) =>
         Create(linguisticBase, variableName, LiteralToken.Negation, hedgeToken, entryName);
 
-    private static IProposition Create(ILinguisticBase linguisticBase, string variableName, LiteralToken literalToken,
-        HedgeToken hedgeToken, string entryName)
+    private static IProposition<T> Create(ILinguisticBase linguisticBase, string variableName,
+        LiteralToken literalToken, HedgeToken hedgeToken, string entryName)
     {
         var variable = linguisticBase.Retrieve(variableName) ??
                        throw new VariableNotFoundException(variableName);
         var entry = variable.RetrieveLinguisticEntry(entryName) ??
                     throw new EntryNotFoundException(variableName, entryName);
-        return new FuzzyProposition(variable, literalToken, entry, hedgeToken);
+        return new FuzzyProposition<T>(variable, literalToken, entry, hedgeToken);
     }
 }

@@ -1,9 +1,8 @@
 ﻿using FuzzyLogic.Engine;
 using FuzzyLogic.Knowledge;
+using FuzzyLogic.Number;
 using FuzzyLogic.Test.One;
-using FuzzyLogic.Test.Two;
 using static System.Globalization.CultureInfo;
-using static FuzzyLogic.Engine.Defuzzify.DefuzzificationMethod;
 
 var linguisticBase = TestLinguisticImpl.Initialize();
 
@@ -11,9 +10,9 @@ var ruleBase = TestRuleImpl.Initialize(linguisticBase);
 
 var workingMemory = TestWorkingMemoryImpl.Initialize();
 
-var knowledgeBase = KnowledgeBase.Create(linguisticBase, ruleBase);
+var knowledgeBase = KnowledgeBase<FuzzyNumber>.Create(linguisticBase, ruleBase);
 
-var inferenceEngine = InferenceEngine.Create(knowledgeBase, workingMemory, MeanOfMaxima);
+var inferenceEngine = InferenceEngine<FuzzyNumber>.Create(knowledgeBase, workingMemory);
 
 var value = inferenceEngine.Defuzzify("Hab");
 Console.WriteLine();

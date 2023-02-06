@@ -1,11 +1,14 @@
-﻿using FuzzyLogic.Rule;
+﻿using FuzzyLogic.Function.Implication;
+using FuzzyLogic.Number;
+using FuzzyLogic.Rule;
 using static System.StringComparison;
+using static FuzzyLogic.Function.Implication.InferenceMethod;
 
 namespace FuzzyLogic.Engine.Defuzzify;
 
-public interface IDefuzzifier
+public interface IDefuzzifier<T> where T : struct, IFuzzyNumber<T>
 {
-    static void RulesCheck(ICollection<IRule> rules, IDictionary<string, double> facts)
+    protected static void RulesCheck(ICollection<IRule<T>> rules, IDictionary<string, double> facts)
     {
         if (!rules.Any())
             throw new ArgumentException("The list of rules provided as a parameter contains no elements");
@@ -19,5 +22,6 @@ public interface IDefuzzifier
             throw new MismatchedConsequentException();
     }
 
-    double? Defuzzify(ICollection<IRule> rules, IDictionary<string, double> facts);
+    double? Defuzzify(ICollection<IRule<T>> rules, IDictionary<string, double> facts,
+        InferenceMethod method = Mamdani);
 }

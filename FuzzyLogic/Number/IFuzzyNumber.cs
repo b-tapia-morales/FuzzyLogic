@@ -1,4 +1,6 @@
-﻿namespace FuzzyLogic.Number;
+﻿using System.Globalization;
+
+namespace FuzzyLogic.Number;
 
 /// <summary>
 ///     <para>
@@ -10,7 +12,7 @@
 ///         which the aforementioned operators are applied.
 ///     </para>
 /// </summary>
-public interface IFuzzyNumber<T> where T : IFuzzyNumber<T>, IComparable<T>
+public interface IFuzzyNumber<T> : IComparable<T>, IComparer<T> where T : IFuzzyNumber<T>
 {
     /// <summary>
     ///     <para>
@@ -83,18 +85,18 @@ public interface IFuzzyNumber<T> where T : IFuzzyNumber<T>, IComparable<T>
     /// <summary>
     ///     Represents the basic operation OR: A ∨ B.
     /// </summary>
-    /// <param name="a">A fuzzy number</param>
-    /// <param name="b">A fuzzy number</param>
+    /// <param name="x">A fuzzy number</param>
+    /// <param name="y">A fuzzy number</param>
     /// <returns>The resulting fuzzy number after applying the OR operator.</returns>
-    static abstract T operator &(T a, T b);
+    static abstract T operator &(T x, T y);
 
     /// <summary>
     ///     Represents the basic operation AND: A ∧ B.
     /// </summary>
-    /// <param name="a">A fuzzy number</param>
-    /// <param name="b">A fuzzy number</param>
+    /// <param name="x">A fuzzy number</param>
+    /// <param name="y">A fuzzy number</param>
     /// <returns>The resulting fuzzy number after applying the AND operator.</returns>
-    static abstract T operator |(T a, T b);
+    static abstract T operator |(T x, T y);
 
     /// <summary>
     ///     <para>Represents the operation of residuum THEN: A ⇒ B.</para>
@@ -103,8 +105,53 @@ public interface IFuzzyNumber<T> where T : IFuzzyNumber<T>, IComparable<T>
     ///         Zadeh implication: A ⇒ B ≡ max{1 − a, min{a, b}}
     ///     </para>
     /// </summary>
-    /// <param name="a">A fuzzy number</param>
-    /// <param name="b">A fuzzy number</param>
+    /// <param name="x">A fuzzy number</param>
+    /// <param name="y">A fuzzy number</param>
     /// <returns>The resulting fuzzy number after applying the THEN operator.</returns>
-    static abstract T Implication(T a, T b);
+    static abstract T Implication(T x, T y);
+
+    /// <summary>
+    ///     Defines a implicit conversion from a <see cref="IFuzzyNumber{T}" /> to a <see cref="double" /> value.
+    /// </summary>
+    /// <param name="x">The <see cref="double" /> value.</param>
+    /// <returns>The <see cref="T" /> value.</returns>
+    static abstract implicit operator double(T x);
+
+    /// <summary>
+    ///     Defines a implicit conversion from a <see cref="double" /> value to a <see cref="IFuzzyNumber{T}" />.
+    ///     Note that this value must be in the range μ(x) ∈ [0, 1].
+    /// </summary>
+    /// <param name="x">The <see cref="double" /> value.</param>
+    /// <returns>The <see cref="IFuzzyNumber{T}" /> value.</returns>
+    static abstract implicit operator T(double x);
+
+    /// <summary>
+    ///     Defines a implicit conversion from a <see cref="IFuzzyNumber{T}" /> to its default type: a
+    ///     <see cref="FuzzyNumber" /> value.
+    /// </summary>
+    /// <param name="x">The <see cref="IFuzzyNumber{T}" /> value.</param>
+    /// <returns>The <see cref="FuzzyNumber" /> value.</returns>
+    static abstract implicit operator FuzzyNumber(T x);
+
+    string ToString() => Value.ToString(CultureInfo.InvariantCulture);
+    
+    int IComparer<T>.Compare(T? x, T? y)
+    {
+        if (x == null && y == null)
+            return 0;
+        if (x == null)
+            return -1;
+        if (y == null)
+            return +1;
+        return x.Value.CompareTo(y.Value);
+    }
+
+    int IComparable<T>.CompareTo(T? other) => other == null ? 1 : Value.CompareTo(other.Value);
+
+    protected static void RangeCheck(double value)
+    {
+        if (value is < 0.0 or > 1.0)
+            throw new ArgumentException(
+                $"Value can't be lesser than 0 or greater than 1 (Value provided was: {value})");
+    }
 }

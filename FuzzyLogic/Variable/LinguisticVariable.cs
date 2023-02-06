@@ -10,8 +10,8 @@ public class LinguisticVariable : IVariable
     public bool IsClosed { get; }
     public string Name { get; }
 
-    public IDictionary<string, IRealFunction> LinguisticEntries { get; } =
-        new Dictionary<string, IRealFunction>(StringComparer.InvariantCultureIgnoreCase);
+    public IDictionary<string, IMembershipFunction<double>> LinguisticEntries { get; } =
+        new Dictionary<string, IMembershipFunction<double>>(StringComparer.InvariantCultureIgnoreCase);
 
     private LinguisticVariable(string name, double lowerBoundary, double upperBoundary)
     {
@@ -40,7 +40,8 @@ public class LinguisticVariable : IVariable
         return new LinguisticVariable(name, lowerBoundary, upperBoundary);
     }
 
-    public IVariable AddAll(IDictionary<string, IRealFunction> linguisticEntries) => AddAll(this, linguisticEntries);
+    public IVariable AddAll(IDictionary<string, IMembershipFunction<double>> linguisticEntries) =>
+        AddAll(this, linguisticEntries);
 
     public IVariable AddTrapezoidFunction(string name, double a, double b, double c, double d, double h = 1) =>
         AddTrapezoidFunction(this, name, a, b, c, d, h);
@@ -63,14 +64,15 @@ public class LinguisticVariable : IVariable
     public IVariable AddSigmoidFunction(string name, double a, double c, double h = 1) =>
         AddSigmoidFunction(this, name, a, c, h);
 
-    public IVariable AddFunction(string name, IRealFunction function) => AddFunction(this, name, function);
+    public IVariable AddFunction(string name, IMembershipFunction<double> function) => AddFunction(this, name, function);
 
     public bool ContainsLinguisticEntry(string name) => LinguisticEntries.ContainsKey(name);
 
-    public IRealFunction? RetrieveLinguisticEntry(string name) =>
+    public IMembershipFunction<double>? RetrieveLinguisticEntry(string name) =>
         LinguisticEntries.TryGetValue(name, out var function) ? function : null;
 
-    private static IVariable AddAll(IVariable variable, IDictionary<string, IRealFunction> linguisticEntries)
+    private static IVariable AddAll(IVariable variable,
+        IDictionary<string, IMembershipFunction<double>> linguisticEntries)
     {
         if (linguisticEntries == null)
             throw new ArgumentNullException(nameof(linguisticEntries));
@@ -112,7 +114,7 @@ public class LinguisticVariable : IVariable
     private static IVariable AddSigmoidFunction(IVariable variable, string name, double a, double c, double h = 1) =>
         variable.AddFunction(name, new SigmoidFunction(name, a, c, h));
 
-    private static IVariable AddFunction(IVariable variable, string name, IRealFunction function)
+    private static IVariable AddFunction(IVariable variable, string name, IMembershipFunction<double> function)
     {
         CheckLinguisticEntry(variable, name);
         CheckRange(variable, function);
@@ -128,7 +130,7 @@ public class LinguisticVariable : IVariable
             throw new DuplicatedEntryException(variable.Name, name);
     }
 
-    public static void CheckRange(IVariable variable, IRealFunction function)
+    public static void CheckRange(IVariable variable, IMembershipFunction<double> function)
     {
         var (lower, upper) = function is IAsymptoteFunction<double> asymptote
             ? asymptote.ApproximateBoundaryInterval()

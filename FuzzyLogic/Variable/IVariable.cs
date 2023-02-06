@@ -25,9 +25,9 @@ public interface IVariable
     public double UpperBoundary { get; }
     public bool IsClosed { get; }
     public string Name { get; }
-    public IDictionary<string, IRealFunction> LinguisticEntries { get; }
+    public IDictionary<string, IMembershipFunction<double>> LinguisticEntries { get; }
 
-    IVariable AddAll(IDictionary<string, IRealFunction> linguisticEntries);
+    IVariable AddAll(IDictionary<string, IMembershipFunction<double>> linguisticEntries);
 
     IVariable AddTrapezoidFunction(string name, double a, double b, double c, double d, double h = 1);
 
@@ -43,9 +43,9 @@ public interface IVariable
 
     IVariable AddSigmoidFunction(string name, double a, double c, double h = 1);
 
-    IVariable AddFunction(string name, IRealFunction function);
+    IVariable AddFunction(string name, IMembershipFunction<double> function);
 
     bool ContainsLinguisticEntry(string name);
 
-    IRealFunction? RetrieveLinguisticEntry(string name);
+    IMembershipFunction<double>? RetrieveLinguisticEntry(string name);
 }

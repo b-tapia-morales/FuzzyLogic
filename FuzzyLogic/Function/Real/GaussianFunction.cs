@@ -1,15 +1,16 @@
 ﻿using FuzzyLogic.Function.Base;
+using FuzzyLogic.Function.Implication;
 using FuzzyLogic.Function.Interface;
-using FuzzyLogic.Number;
+using static System.Math;
 
 namespace FuzzyLogic.Function.Real;
 
-public class GaussianFunction : BaseGaussianFunction<double>, IRealFunction, IClosedShape
+public class GaussianFunction : BaseGaussianFunction<double>, IFuzzyInference
 {
     public GaussianFunction(string name, double m, double o, double h) : base(name, m, o, h)
     {
     }
-    
+
     public GaussianFunction(string name, double m, double o) : base(name, m, o)
     {
     }
@@ -18,16 +19,19 @@ public class GaussianFunction : BaseGaussianFunction<double>, IRealFunction, ICl
 
     public override double RightSupportEndpoint() => double.PositiveInfinity;
 
-    public double CalculateArea(double errorMargin = IClosedShape.DefaultErrorMargin) =>
-        IClosedShape.CalculateArea(this, errorMargin);
+    public override double MaxHeightLeftEndpoint() => M;
 
-    public double CalculateArea(FuzzyNumber y, double errorMargin = IClosedShape.DefaultErrorMargin) =>
-        IClosedShape.CalculateArea(this, y, errorMargin);
+    public override double MaxHeightRightEndpoint() => M;
 
-    public (double X, double Y) CalculateCentroid(double errorMargin = IClosedShape.DefaultErrorMargin) =>
-        (M, 0);
+    double IClosedShape.CentroidXCoordinate(double errorMargin) => M;
 
-    public (double X, double Y) CalculateCentroid(FuzzyNumber y,
-        double errorMargin = IClosedShape.DefaultErrorMargin) =>
-        (M, IClosedShape.CentroidYCoordinate(this, y, errorMargin));
+    double? IMamdaniMinimum.MamdaniCutLeftEndpoint<T>(T y) =>
+        y > H ? null : M - O * Sqrt(2 * Log(Min(H, y) / y));
+
+    double? IMamdaniMinimum.MamdaniCutRightEndpoint<TNumber>(TNumber y) =>
+        y > H ? null : M + O * Sqrt(2 * Log(Min(H, y) / y));
+
+    double IMamdaniMinimum.MamdaniCentroidXCoordinate<TNumber>(TNumber y, double errorMargin) => M;
+
+    double ILarsenProduct.LarsenCentroidXCoordinate<TNumber>(TNumber y, double errorMargin) => M;
 }

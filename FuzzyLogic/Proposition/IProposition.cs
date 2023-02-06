@@ -5,15 +5,15 @@ using FuzzyLogic.Variable;
 
 namespace FuzzyLogic.Proposition;
 
-public interface IProposition
+public interface IProposition<T> where T : struct, IFuzzyNumber<T>
 {
-    Connective Connective { get; set; }
+    Connective<T> Connective { get; set; }
     IVariable LinguisticVariable { get; }
-    Literal Literal { get; }
-    LinguisticHedge LinguisticHedge { get; }
-    IRealFunction Function { get; }
+    Literal<T> Literal { get; }
+    LinguisticHedge<T> LinguisticHedge { get; }
+    IMembershipFunction<double> Function { get; }
 
     bool IsApplicable(IDictionary<string, double> facts);
-    
-    FuzzyNumber ApplyUnaryOperators(double crispNumber);
+
+    T ApplyUnaryOperators(double crispNumber);
 }

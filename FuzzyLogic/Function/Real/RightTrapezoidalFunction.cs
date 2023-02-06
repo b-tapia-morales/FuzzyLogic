@@ -1,10 +1,9 @@
 ﻿using FuzzyLogic.Function.Base;
 using FuzzyLogic.Function.Interface;
-using FuzzyLogic.Number;
 
 namespace FuzzyLogic.Function.Real;
 
-public class RightTrapezoidalFunction : BaseLeftTrapezoidalFunction<double>, IRealFunction
+public class RightTrapezoidalFunction : BaseLeftTrapezoidalFunction<double>, IMembershipFunction<double>
 {
     public RightTrapezoidalFunction(string name, double a, double b, double h) : base(name, a, b, h)
     {
@@ -18,5 +17,7 @@ public class RightTrapezoidalFunction : BaseLeftTrapezoidalFunction<double>, IRe
 
     public override double RightSupportEndpoint() => double.PositiveInfinity;
 
-    public override (double X1, double X2) LambdaCutInterval(FuzzyNumber y) => throw new NotImplementedException();
+    public override double MaxHeightLeftEndpoint() => A;
+
+    public override double MaxHeightRightEndpoint() => double.PositiveInfinity;
 }

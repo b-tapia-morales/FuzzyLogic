@@ -1,22 +1,22 @@
 ﻿using FuzzyLogic.Knowledge.Linguistic;
 using FuzzyLogic.Knowledge.Rule;
+using FuzzyLogic.Number;
 using FuzzyLogic.Rule;
-using static FuzzyLogic.Proposition.FuzzyProposition;
-using static FuzzyLogic.Rule.ComparingMethod;
+using static FuzzyLogic.Proposition.FuzzyProposition<FuzzyLogic.Number.FuzzyNumber>;
 
 namespace FuzzyLogic.Test.One;
 
-public class TestRuleImpl : RuleBase
+public class TestRuleImpl : RuleBase<FuzzyNumber>
 {
-    public new static IRuleBase Initialize(ILinguisticBase linguisticBase, ComparingMethod method = ComparingMethod.HighestPriority)
+    public new static IRuleBase<FuzzyNumber> Initialize(ILinguisticBase linguisticBase, ComparingMethod method = ComparingMethod.HighestPriority)
     {
-        var r1 = FuzzyRule.Create()
+        var r1 = FuzzyRule<FuzzyNumber>.Create()
             .If(Is(linguisticBase, "Ret", "Alto"))
             .And(Is(linguisticBase, "Pc", "Bajo"))
             .And(Is(linguisticBase, "Est", "Alto"))
             .And(Is(linguisticBase, "Fz", "Alto"))
             .Then(Is(linguisticBase, "Por", "Alto"));
-        var r2 = FuzzyRule.Create()
+        var r2 = FuzzyRule<FuzzyNumber>.Create()
             .If(Is(linguisticBase, "Ret", "Alto"))
             .And(Is(linguisticBase, "Dpj", "Alto"))
             .And(Is(linguisticBase, "Pc", "Bajo"))
@@ -24,7 +24,7 @@ public class TestRuleImpl : RuleBase
             .And(Is(linguisticBase, "Rea", "Medio"))
             .And(Is(linguisticBase, "Vlsp", "Medio"))
             .Then(Is(linguisticBase, "Def", "Medio"));
-        var r3 = FuzzyRule.Create()
+        var r3 = FuzzyRule<FuzzyNumber>.Create()
             .If(Is(linguisticBase, "Ret", "Alto"))
             .And(Is(linguisticBase, "Dpj", "Alto"))
             .And(Is(linguisticBase, "Pc", "Bajo"))
@@ -32,18 +32,18 @@ public class TestRuleImpl : RuleBase
             .And(Is(linguisticBase, "Sal", "Medio"))
             .And(Is(linguisticBase, "Rea", "Alto"))
             .Then(Is(linguisticBase, "Por", "Medio"));
-        var r4 = FuzzyRule.Create()
+        var r4 = FuzzyRule<FuzzyNumber>.Create()
             .If(Is(linguisticBase, "Reg", "Medio"))
             .And(Is(linguisticBase, "Elmp", "Alto"))
             .And(Is(linguisticBase, "Vs", "Bajo"))
             .And(Is(linguisticBase, "Vlsp", "Medio"))
             .And(Is(linguisticBase, "Ag", "Alto"))
             .Then(Is(linguisticBase, "Def", "Medio"));
-        var r5 = FuzzyRule.Create()
+        var r5 = FuzzyRule<FuzzyNumber>.Create()
             .If(Is(linguisticBase, "Cnt", "Bajo"))
             .And(Is(linguisticBase, "Pc", "Bajo"))
             .Then(Is(linguisticBase, "Def", "Bajo"));
-        var r6 = FuzzyRule.Create()
+        var r6 = FuzzyRule<FuzzyNumber>.Create()
             .If(Is(linguisticBase, "Cnt", "Medio"))
             .And(Is(linguisticBase, "Elmp", "Alto"))
             .And(Is(linguisticBase, "Int", "Medio"))
@@ -51,7 +51,7 @@ public class TestRuleImpl : RuleBase
             .And(Is(linguisticBase, "Ag", "Medio"))
             .And(Is(linguisticBase, "Sal", "Medio"))
             .Then(Is(linguisticBase, "Med", "Medio"));
-        var r7 = FuzzyRule.Create()
+        var r7 = FuzzyRule<FuzzyNumber>.Create()
             .If(Is(linguisticBase, "Cnt", "Medio"))
             .And(Is(linguisticBase, "Acel", "Medio"))
             .And(Is(linguisticBase, "Elmp", "Alto"))
@@ -61,28 +61,28 @@ public class TestRuleImpl : RuleBase
             .And(Is(linguisticBase, "Bol", "Medio"))
             .And(Is(linguisticBase, "Rea", "Medio"))
             .Then(Is(linguisticBase, "Del", "Medio"));
-        var r8 = FuzzyRule.Create()
+        var r8 = FuzzyRule<FuzzyNumber>.Create()
             .If(Is(linguisticBase, "Elmp", "Medio"))
             .And(Is(linguisticBase, "Ag", "Alto"))
             .Then(Is(linguisticBase, "Del", "Medio"));
-        var r9 = FuzzyRule.Create()
+        var r9 = FuzzyRule<FuzzyNumber>.Create()
             .If(Is(linguisticBase, "Cmp", "Alto"))
             .And(Is(linguisticBase, "Tl", "Medio"))
             .And(Is(linguisticBase, "Elmp", "Bajo"))
             .And(Is(linguisticBase, "Mcje", "Bajo"))
             .Then(Is(linguisticBase, "Del", "Bajo"));
-        var r10 = FuzzyRule.Create()
+        var r10 = FuzzyRule<FuzzyNumber>.Create()
             .If(Is(linguisticBase, "Mcje", "Alto"))
             .And(Is(linguisticBase, "Cnt", "Alto"))
             .And(Is(linguisticBase, "Rea", "Medio"))
             .Then(Is(linguisticBase, "Med", "Medio"));
-        var r11 = FuzzyRule.Create()
+        var r11 = FuzzyRule<FuzzyNumber>.Create()
             .If(Is(linguisticBase, "Def", "Bajo"))
             .Then(Is(linguisticBase, "Hab", "Bajo"));
-        var r12 = FuzzyRule.Create()
+        var r12 = FuzzyRule<FuzzyNumber>.Create()
             .If(Is(linguisticBase, "Def", "Medio"))
             .Then(Is(linguisticBase, "Hab", "Medio"));
-        var r13 = FuzzyRule.Create()
+        var r13 = FuzzyRule<FuzzyNumber>.Create()
             .If(Is(linguisticBase, "Def", "Alto"))
             .And(Is(linguisticBase, "Med", "Alto"))
             .Then(Is(linguisticBase, "Hab", "Alto"));

@@ -1,6 +1,5 @@
 ﻿using System.Numerics;
 using FuzzyLogic.Function.Interface;
-using FuzzyLogic.Number;
 using FuzzyLogic.Utils;
 using static System.Math;
 
@@ -52,25 +51,17 @@ public abstract class BaseTriangularFunction<T> : BaseMembershipFunction<T>, ITr
             TrigonometricUtils.Distance((B.ToDouble(null), H.ToDouble(null)), (C.ToDouble(null), 0))
         ) < ITrapezoidalFunction<T>.DistanceTolerance;
 
+    public override bool IsSingleton() => H == T.One;
+
     public override Func<T, double> AsFunction() =>
         AsFunction(A.ToDouble(null), B.ToDouble(null), C.ToDouble(null), H.ToDouble(null));
 
-    public override Func<T, double> HeightFunction(FuzzyNumber y) =>
-        AsFunction(A.ToDouble(null), B.ToDouble(null), C.ToDouble(null), y.Value);
+    public override Func<T, double> HeightFunction<TNumber>(TNumber y) =>
+        AsFunction(A.ToDouble(null), B.ToDouble(null), C.ToDouble(null), Min(H.ToDouble(null), y.Value));
 
     public override T LeftSupportEndpoint() => A;
 
     public override T RightSupportEndpoint() => C;
 
-    public virtual (T? X0, T? X1) CoreInterval() => (A, C);
-
-    public override (double X1, double X2) LambdaCutInterval(FuzzyNumber y) => y == 1
-        ? (B.ToDouble(null), B.ToDouble(null))
-        : (LeftSidedLambdaCut(y), RightSidedLambdaCut(y));
-
-    private double LeftSidedLambdaCut(FuzzyNumber y) =>
-        y.Value * (B.ToDouble(null) - A.ToDouble(null)) + A.ToDouble(null);
-
-    private double RightSidedLambdaCut(FuzzyNumber y) =>
-        C.ToDouble(null) - y.Value * (C.ToDouble(null) - B.ToDouble(null));
+    public virtual (T X0, T X1)? CoreInterval() => (A, C);
 }

@@ -9,10 +9,7 @@ public abstract class BaseMembershipFunction<T> : IMembershipFunction<T> where T
     public string Name { get; }
     public T H { get; protected init; }
 
-    protected BaseMembershipFunction(string name)
-    {
-        Name = name;
-    }
+    protected BaseMembershipFunction(string name) => Name = name;
 
     public abstract bool IsOpenLeft();
 
@@ -20,13 +17,17 @@ public abstract class BaseMembershipFunction<T> : IMembershipFunction<T> where T
 
     public abstract bool IsSymmetric();
 
+    public abstract bool IsSingleton();
+
     public abstract T LeftSupportEndpoint();
 
     public abstract T RightSupportEndpoint();
 
+    public abstract T MaxHeightLeftEndpoint();
+
+    public abstract T MaxHeightRightEndpoint();
+
     public abstract Func<T, double> AsFunction();
 
-    public abstract Func<T, double> HeightFunction(FuzzyNumber y);
-
-    public abstract (double X1, double X2) LambdaCutInterval(FuzzyNumber y);
+    public abstract Func<T, double> HeightFunction<TNumber>(TNumber y) where TNumber : struct, IFuzzyNumber<TNumber>;
 }

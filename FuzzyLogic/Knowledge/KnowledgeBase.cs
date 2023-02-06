@@ -1,29 +1,30 @@
 ﻿using FuzzyLogic.Knowledge.Linguistic;
 using FuzzyLogic.Knowledge.Rule;
+using FuzzyLogic.Number;
 
 namespace FuzzyLogic.Knowledge;
 
-public class KnowledgeBase : IKnowledgeBase
+public class KnowledgeBase<T>: IKnowledgeBase<T> where T : struct, IFuzzyNumber<T>
 {
     public ILinguisticBase LinguisticBase { get; }
-    public IRuleBase RuleBase { get; }
+    public IRuleBase<T> RuleBase { get; }
 
     protected KnowledgeBase()
     {
         LinguisticBase = Linguistic.LinguisticBase.Create();
-        RuleBase = Rule.RuleBase.Create();
+        RuleBase = RuleBase<T>.Create();
     }
 
-    private KnowledgeBase(ILinguisticBase linguisticBase, IRuleBase ruleBase)
+    private KnowledgeBase(ILinguisticBase linguisticBase, IRuleBase<T> ruleBase)
     {
         LinguisticBase = linguisticBase;
         RuleBase = ruleBase;
     }
 
-    public IKnowledgeBase Clone() => (KnowledgeBase) MemberwiseClone();
+    public IKnowledgeBase<T> Clone() => (KnowledgeBase<T>) MemberwiseClone();
 
-    public static IKnowledgeBase Create() => new KnowledgeBase();
+    public static IKnowledgeBase<T> Create() => new KnowledgeBase<T>();
 
-    public static IKnowledgeBase Create(ILinguisticBase linguisticBase, IRuleBase ruleBase) =>
-        new KnowledgeBase(linguisticBase, ruleBase);
+    public static IKnowledgeBase<T> Create(ILinguisticBase linguisticBase, IRuleBase<T> ruleBase) =>
+        new KnowledgeBase<T>(linguisticBase, ruleBase);
 }

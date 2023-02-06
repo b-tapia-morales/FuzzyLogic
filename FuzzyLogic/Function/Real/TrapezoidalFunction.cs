@@ -1,11 +1,13 @@
 ﻿using FuzzyLogic.Function.Base;
+using FuzzyLogic.Function.Implication;
 using FuzzyLogic.Function.Interface;
 using FuzzyLogic.Number;
 using FuzzyLogic.Utils;
+using static System.Math;
 
 namespace FuzzyLogic.Function.Real;
 
-public class TrapezoidalFunction : BaseTrapezoidalFunction<double>, IRealFunction, IClosedShape
+public class TrapezoidalFunction : BaseTrapezoidalFunction<double>, IFuzzyInference
 {
     public TrapezoidalFunction(string name, double a, double b, double c, double d, double h) :
         base(name, a, b, c, d, h)
@@ -17,31 +19,52 @@ public class TrapezoidalFunction : BaseTrapezoidalFunction<double>, IRealFunctio
     }
 
     public double CalculateArea(double errorMargin = IClosedShape.DefaultErrorMargin) =>
-        TrigonometricUtils.TrapezoidArea(Math.Abs(B - C), Math.Abs(A - D), H);
+        TrigonometricUtils.TrapezoidArea(Abs(B - C), Abs(A - D), H);
 
-    public double CalculateArea(FuzzyNumber y, double errorMargin = IClosedShape.DefaultErrorMargin)
+    public double CentroidXCoordinate(double errorMargin = IClosedShape.DefaultErrorMargin) =>
+        CalculateCentroid(errorMargin).X;
+
+    public double CentroidYCoordinate(double errorMargin = IClosedShape.DefaultErrorMargin) =>
+        CalculateCentroid(errorMargin).Y;
+
+    public (double X, double Y) CalculateCentroid(double errorMargin = IClosedShape.DefaultErrorMargin) =>
+        TrigonometricUtils.TrapezoidCentroid(A, B, C, D, H);
+
+    public double? MamdaniCutLeftEndpoint<T>(T y) where T : struct, IFuzzyNumber<T> =>
+        y > H ? null : A + (Min(y, H) / H) * (B - A);
+
+    public double? MamdaniCutRightEndpoint<T>(T y) where T : struct, IFuzzyNumber<T> =>
+        y > H ? null : D - (Min(y, H) / H) * (D - C);
+
+    public double MamdaniCutArea<T>(T y, double errorMargin = IClosedShape.DefaultErrorMargin)
+        where T : struct, IFuzzyNumber<T>
     {
-        if (y == 0) throw new ArgumentException("Can't calculate the area of the zero-function");
-        if (y == 1) return CalculateArea(errorMargin);
-        var (x1, x2) = LambdaCutInterval(y);
-        return TrigonometricUtils.TrapezoidArea(Math.Abs(x1 - x2), Math.Abs(A - D), y.Value);
+        if (y == 0)
+            throw new ArgumentException("Can't calculate the area of the zero-function");
+        if (y >= H)
+            return CalculateArea(errorMargin);
+        var (x1, x2) = (this as IMamdaniMinimum).LambdaCutInterval<T>(Min(y, T.Of(H))).GetValueOrDefault();
+        return TrigonometricUtils.TrapezoidArea(Abs(x1 - x2), Abs(A - D), y);
     }
 
-    public (double X, double Y) CalculateCentroid(double errorMargin = IClosedShape.DefaultErrorMargin)
+    public double MamdaniCentroidXCoordinate<T>(T y, double errorMargin = IClosedShape.DefaultErrorMargin)
+        where T : struct, IFuzzyNumber<T> => TrigonometricUtils.TrapezoidCentroid(A, B, C, D, Min(y, H)).X;
+
+    public double MamdaniCentroidYCoordinate<T>(T y, double errorMargin = IClosedShape.DefaultErrorMargin)
+        where T : struct, IFuzzyNumber<T> => TrigonometricUtils.TrapezoidCentroid(A, B, C, D, Min(y, H)).Y;
+
+    public (double X, double Y) MamdaniCutCentroid<T>(T y, double errorMargin = IClosedShape.DefaultErrorMargin)
+        where T : struct, IFuzzyNumber<T>
     {
-        var a = Math.Abs(C - D);
-        var b = Math.Abs(A - D);
-        return ((1 / 2.0), (1 / 3.0) * (2 * a + b) / (a + b));
+        if (y == 0)
+            throw new ArgumentException("Can't calculate the area of the zero-function");
+        if (y >= H)
+            return CalculateCentroid(errorMargin);
+        var (x1, x2) = (this as IMamdaniMinimum).LambdaCutInterval<T>(Min(y, H)).GetValueOrDefault();
+        return TrigonometricUtils.TrapezoidCentroid(A, x1, x2, D, Min(y, H));
     }
 
-    public (double X, double Y) CalculateCentroid(FuzzyNumber y,
-        double errorMargin = IClosedShape.DefaultErrorMargin)
-    {
-        if (y == 0) throw new ArgumentException("Can't calculate the centroid of the zero-function");
-        if (y == 1) return CalculateCentroid(errorMargin);
-        var (x1, x2) = LambdaCutInterval(y);
-        var a = Math.Abs(x1 - x2);
-        var b = Math.Abs(A - D);
-        return ((1 / 2.0), (1 / 3.0) * (2 * a + b) / (a + b));
-    }
+    public override double MaxHeightLeftEndpoint() => B;
+
+    public override double MaxHeightRightEndpoint() => C;
 }

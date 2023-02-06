@@ -3,13 +3,11 @@ using static FuzzyLogic.Memory.EntryResolutionMethod;
 
 namespace FuzzyLogic.Test.One;
 
-public class TestWorkingMemoryImpl: WorkingMemory
+public class TestWorkingMemoryImpl : WorkingMemory
 {
-    private static readonly Random Random = new(Environment.TickCount);
-    
     public new static IWorkingMemory Initialize(EntryResolutionMethod method = Preserve)
     {
-        var workingMemory = Create();
+        var workingMemory = Create(method);
         workingMemory.AddFact("Ret", 0.65);
         workingMemory.AddFact("Reg", 0.34);
         workingMemory.AddFact("Cnt", 0.34);

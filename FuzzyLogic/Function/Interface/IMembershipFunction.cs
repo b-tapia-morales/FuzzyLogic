@@ -64,6 +64,8 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// <returns>true if the function is Normal; otherwise, false</returns>
     bool IsNormal() => H == T.One;
 
+    bool IsSingleton();
+
     /// <summary>
     ///     <para>
     ///         Returns the minimum value allowed for an <i>x</i> value that belongs to the support of the Membership
@@ -112,6 +114,12 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// <returns>The interval, represented as a <see cref="ValueTuple" />.</returns>
     (T X0, T X1) SupportInterval() => (LeftSupportEndpoint(), RightSupportEndpoint());
 
+    T MaxHeightLeftEndpoint();
+
+    T MaxHeightRightEndpoint();
+
+    (T X0, T X1) MaxHeightInterval() => (MaxHeightLeftEndpoint(), MaxHeightRightEndpoint());
+
     (T X0, T X1) ClosedInterval() => ClosedInterval(this);
 
     /// <summary>
@@ -120,72 +128,7 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// <returns>The membership function, represented as a <see cref="Func{T,TResult}" /> delegate.</returns>
     Func<T, double> AsFunction();
 
-    Func<T, double> HeightFunction(FuzzyNumber y);
-
-    /// <summary>
-    ///     <para>
-    ///         Returns a new membership function, represented as a <see cref="Func{T,TResult}" /> delegate, originating
-    ///         from performing a Lambda-cut over the original membership function at the height point <i>y</i>,
-    ///         represented as a <see cref="FuzzyNumber" />.
-    ///     </para>
-    ///     <para>
-    ///         <b>Special cases</b>:
-    ///     </para>
-    ///     <list type="bullet">
-    ///         <item>
-    ///             <description>μ(x) = 0 ⇒ The zero function.</description>
-    ///         </item>
-    ///         <item>
-    ///             <description>μ(x) = 1 ⇒ The original membership function.</description>
-    ///         </item>
-    ///     </list>
-    /// </summary>
-    /// <param name="y">The height point at which the Lambda-cut is performed, represented as a <see cref="FuzzyNumber" />.</param>
-    /// <returns>The new membership function, represented as a <see cref="Func{T,TResult}" /> delegate.</returns>
-    /// <seealso cref="AsFunction" />
-    Func<T, double> LambdaCutFunction(FuzzyNumber y) => x =>
-    {
-        if (y == 0) return 0.0;
-        if (y == 1) return AsFunction().Invoke(x);
-        var (leftEndpoint, rightEndpoint) = ClosedInterval();
-        if (x < leftEndpoint || x > rightEndpoint) return 0.0;
-        var (leftCut, rightCut) = LambdaCutInterval(y);
-        return x.ToDouble(null) < leftCut || x.ToDouble(null) > rightCut ? AsFunction().Invoke(x) : y;
-    };
-
-    /// <summary>
-    ///     <para>
-    ///         Returns a new membership function, represented as a <see cref="Func{T,TResult}" /> delegate, originating
-    ///         from performing a Lambda-cut over the original membership function at the height point <i>y</i>,
-    ///         represented as a <see cref="FuzzyNumber" />.
-    ///     </para>
-    ///     <para>
-    ///         This Lambda-cut differs from the original
-    ///         <see cref="LambdaCutFunction(FuzzyNumber)">LambdaCutFunction</see> in that it also performs
-    ///         horizontal cuts over the membership function. This can be specially relevant if the function
-    ///         <see cref="IsClosed">is not closed</see>, since it could have no lower or upper bound for <i>x</i> values
-    ///         other than -∞ and +∞.
-    ///     </para>
-    ///     <list type="bullet">
-    ///         <item>
-    ///             <description>x &lt; x₀ ∨ x &gt; x₁ ⇒ The zero function.</description>
-    ///         </item>
-    ///         <item>
-    ///             <description>μ(x) = 0 ⇒ The zero function.</description>
-    ///         </item>
-    ///         <item>
-    ///             <description>μ(x) = 1 ⇒ The original membership function.</description>
-    ///         </item>
-    ///     </list>
-    /// </summary>
-    /// <param name="y">The height point at which the Lambda-cut is performed, represented as a <see cref="FuzzyNumber" />.</param>
-    /// <param name="x0">The lower bound for the left horizontal cut.</param>
-    /// <param name="x1">The upper bound for the right horizontal cut.</param>
-    /// <returns></returns>
-    /// <seealso cref="LambdaCutFunction(FuzzyNumber)">LambdaCutFunction</seealso>
-    /// <seealso cref="IsClosed">IsClosed</seealso>
-    Func<T, double> LambdaCutFunction(FuzzyNumber y, double x0, double x1) => x =>
-        (x.ToDouble(null) < x0 || x.ToDouble(null) > x1) ? 0.0 : LambdaCutFunction(y).Invoke(x);
+    Func<T, double> HeightFunction<TNumber>(TNumber y) where TNumber : struct, IFuzzyNumber<TNumber>;
 
     /// <summary>
     ///     <para>
@@ -200,7 +143,8 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// <param name="x">The <i>x</i> value</param>
     /// <returns>The membership degree, represented as a <see cref="FuzzyNumber" /></returns>
     /// <seealso cref="AsFunction" />
-    FuzzyNumber MembershipDegree(T x) => AsFunction().Invoke(x);
+    TNumber MembershipDegree<TNumber>(T x) where TNumber : struct, IFuzzyNumber<TNumber> =>
+        AsFunction().Invoke(x);
 
     /// <summary>
     ///     Returns the <i>x</i> value provided as a parameter and its membership degree <i>y</i> value as a two-dimensional
@@ -211,37 +155,8 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     ///     The <i>x</i> value and its membership degree <i>y</i> value as a two-dimensional point, represented by
     ///     a <see cref="ValueTuple" />.
     /// </returns>
-    (T x, FuzzyNumber Y) ToPoint(T x) => (x, MembershipDegree(x));
-
-
-    /// <summary>
-    ///     <para>
-    ///         Returns the left and right sided coordinates, represented as a <see cref="ValueTuple" />, for a
-    ///         Lambda-cut performed at the height point <i>y</i>, represented as a <see cref="FuzzyNumber" />.
-    ///     </para>
-    ///     <para>
-    ///         Note that it should not be assumed that the lower or upper boundaries of this interval necessarily exist.
-    ///         It will depend on whether the function itself is <see cref="IsOpenLeft">Open Left</see> or
-    ///         <see cref="IsOpenRight">Open Right</see>.
-    ///     </para>
-    /// </summary>
-    /// <param name="y">The height point at which the Lambda-cut is performed, represented as a <see cref="FuzzyNumber" />.</param>
-    /// <returns>The interval, represented as a <see cref="ValueTuple" /></returns>
-    (double X1, double X2) LambdaCutInterval(FuzzyNumber y);
-
-    /// <summary>
-    ///     <para>
-    ///         Returns the left and right sided coordinates, represented as a <see cref="ValueTuple" />, for a
-    ///         Lambda-cut performed at the the crossover points.
-    ///     </para>
-    ///     <para>
-    ///         This method is equivalent to calling the <see cref="LambdaCutInterval(FuzzyNumber)">LambdaCutInterval</see>
-    ///         method with <i>0.5</i> as a parameter, which represents the height point at which the Lambda-cut is
-    ///         performed.
-    ///     </para>
-    /// </summary>
-    /// <returns>The crossover points interval, represented as a <see cref="ValueTuple" /></returns>
-    (double X1, double X2) CrossoverCutInterval() => LambdaCutInterval(0.5);
+    (T x, TNumber Y) ToPoint<TNumber>(T x) where TNumber : struct, IFuzzyNumber<TNumber> =>
+        (x, MembershipDegree<TNumber>(x));
 
     private static (T X0, T X1) ClosedInterval(IMembershipFunction<T> function)
     {

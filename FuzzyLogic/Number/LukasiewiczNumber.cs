@@ -1,17 +1,19 @@
-﻿using System.Globalization;
+﻿using static System.Math;
 using static FuzzyLogic.Number.IFuzzyNumber<FuzzyLogic.Number.LukasiewiczNumber>;
+
+// ReSharper disable HeapView.PossibleBoxingAllocation
 
 namespace FuzzyLogic.Number;
 
-public readonly record struct LukasiewiczNumber : IFuzzyNumber<LukasiewiczNumber>, IComparable<LukasiewiczNumber>
+public readonly record struct LukasiewiczNumber : IFuzzyNumber<LukasiewiczNumber>
 {
     private static readonly LukasiewiczNumber Min = Of(0);
     private static readonly LukasiewiczNumber Max = Of(1);
 
     private LukasiewiczNumber(double value)
     {
-        if (Math.Abs(0 - value) < Tolerance) Value = 0;
-        if (Math.Abs(1 - value) < Tolerance) Value = 1;
+        if (Abs(0 - value) < Tolerance) Value = 0;
+        if (Abs(1 - value) < Tolerance) Value = 1;
         RangeCheck(value);
         Value = value;
     }
@@ -29,7 +31,7 @@ public readonly record struct LukasiewiczNumber : IFuzzyNumber<LukasiewiczNumber
         }
         catch (ArgumentException)
         {
-            fuzzyNumber = number < 0 ? Math.Max(0, number) : Math.Min(1, number);
+            fuzzyNumber = number < 0 ? Max(0, number) : Min(1, number);
             return false;
         }
     }
@@ -38,16 +40,16 @@ public readonly record struct LukasiewiczNumber : IFuzzyNumber<LukasiewiczNumber
 
     public static LukasiewiczNumber MaxValue() => Max;
 
-    public static LukasiewiczNumber operator !(LukasiewiczNumber x) => (1 - x.Value);
+    public static LukasiewiczNumber operator !(LukasiewiczNumber x) => 1 - x.Value;
 
-    public static LukasiewiczNumber operator &(LukasiewiczNumber a, LukasiewiczNumber b) =>
-        Math.Min(1, a.Value + b.Value);
+    public static LukasiewiczNumber operator &(LukasiewiczNumber x, LukasiewiczNumber y) =>
+        Max(0, x.Value + y.Value - 1);
 
-    public static LukasiewiczNumber operator |(LukasiewiczNumber a, LukasiewiczNumber b) =>
-        Math.Max(0, a.Value + b.Value - 1);
+    public static LukasiewiczNumber operator |(LukasiewiczNumber x, LukasiewiczNumber y) =>
+        Min(1, x.Value + y.Value);
 
-    public static LukasiewiczNumber Implication(LukasiewiczNumber a, LukasiewiczNumber b) =>
-        Math.Min(1, 1 - a.Value + b.Value);
+    public static LukasiewiczNumber Implication(LukasiewiczNumber x, LukasiewiczNumber y) =>
+        Min(1, 1 - x.Value + y.Value);
 
     /// <summary>
     ///     Defines a implicit conversion from a <see cref="double" /> value to a <see cref="LukasiewiczNumber" />.
@@ -63,16 +65,6 @@ public readonly record struct LukasiewiczNumber : IFuzzyNumber<LukasiewiczNumber
     /// <param name="x">The <see cref="double" /> value.</param>
     /// <returns>The <see cref="LukasiewiczNumber" /> value.</returns>
     public static implicit operator double(LukasiewiczNumber x) => x.Value;
-    
-    public int CompareTo(LukasiewiczNumber other) => Value.CompareTo(other.Value);
 
-    /// <inheritdoc />
-    public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);
-
-    private static void RangeCheck(double value)
-    {
-        if (value is < 0.0 or > 1.0)
-            throw new ArgumentException(
-                $"Value can't be lesser than 0 or greater than 1 (Value provided was: {value})");
-    }
+    public static implicit operator FuzzyNumber(LukasiewiczNumber x) => FuzzyNumber.Of(x.Value);
 }
