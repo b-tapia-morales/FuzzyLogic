@@ -109,7 +109,7 @@ public class LinguisticVariable : IVariable
 
     private static IVariable AddCauchyFunction(IVariable variable, string name, double a, double b, double c,
         double h = 1) =>
-        variable.AddFunction(name, new CauchyFunction(name, a, b, c, h));
+        variable.AddFunction(name, new BellShapedFunction(name, a, b, c, h));
 
     private static IVariable AddSigmoidFunction(IVariable variable, string name, double a, double c, double h = 1) =>
         variable.AddFunction(name, new SigmoidFunction(name, a, c, h));

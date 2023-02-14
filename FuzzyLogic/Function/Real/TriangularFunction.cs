@@ -9,11 +9,7 @@ namespace FuzzyLogic.Function.Real;
 
 public class TriangularFunction : BaseTriangularFunction<double>, IFuzzyInference
 {
-    public TriangularFunction(string name, double a, double b, double c, double h) : base(name, a, b, c, h)
-    {
-    }
-
-    public TriangularFunction(string name, double a, double b, double c) : base(name, a, b, c)
+    public TriangularFunction(string name, double a, double b, double c, double h = 1) : base(name, a, b, c, h)
     {
     }
 

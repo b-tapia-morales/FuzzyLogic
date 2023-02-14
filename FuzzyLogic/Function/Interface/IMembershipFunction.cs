@@ -26,7 +26,7 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// </summary>
     string Name { get; }
 
-    T H { get; }
+    double H { get; }
 
     /// <summary>
     ///     Determines whether the function is Open Left. A function is said to be open left if the membership degree for
@@ -62,7 +62,7 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     ///     there's at least one <i>x</i> value such that its membership degree equals to one.
     /// </summary>
     /// <returns>true if the function is Normal; otherwise, false</returns>
-    bool IsNormal() => H == T.One;
+    bool IsNormal() => Math.Abs(H - 1) < 1E-5;
 
     bool IsSingleton();
 
@@ -82,7 +82,7 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// <returns>
     ///     The minimum value allowed for an <i>x</i> value that belongs to the support of the Membership Function.
     /// </returns>
-    T LeftSupportEndpoint();
+    T SupportLeftEndpoint();
 
     /// <summary>
     ///     <para>
@@ -99,7 +99,7 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// <returns>
     ///     The maximum value allowed for an <i>x</i> value that belongs to the support of the Membership Function.
     /// </returns>
-    T RightSupportEndpoint();
+    T SupportRightEndpoint();
 
     /// <summary>
     ///     <para>
@@ -108,11 +108,11 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     ///     </para>
     ///     <para>
     ///         The check for the existence of such values is delegated to the consumer of the class (see
-    ///         <see cref="LeftSupportEndpoint" /> and <see cref="RightSupportEndpoint" /> for reference).
+    ///         <see cref="SupportLeftEndpoint" /> and <see cref="SupportRightEndpoint" /> for reference).
     ///     </para>
     /// </summary>
     /// <returns>The interval, represented as a <see cref="ValueTuple" />.</returns>
-    (T X0, T X1) SupportInterval() => (LeftSupportEndpoint(), RightSupportEndpoint());
+    (T X0, T X1) SupportInterval() => (SupportLeftEndpoint(), SupportRightEndpoint());
 
     T MaxHeightLeftEndpoint();
 

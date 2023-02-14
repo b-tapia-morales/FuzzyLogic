@@ -5,19 +5,19 @@ using static System.Math;
 
 namespace FuzzyLogic.Function.Real;
 
-public class CauchyFunction : BaseCauchyFunction<double>, IFuzzyInference
+public class BellShapedFunction : BaseBellShapedFunction<double>, IFuzzyInference
 {
-    public CauchyFunction(string name, double a, double b, double c, double h) : base(name, a, b, c, h)
+    public BellShapedFunction(string name, double a, double b, double c, double h) : base(name, a, b, c, h)
     {
     }
 
-    public CauchyFunction(string name, double a, double b, double c) : base(name, a, b, c)
+    public BellShapedFunction(string name, double a, double b, double c) : base(name, a, b, c)
     {
     }
 
-    public override double LeftSupportEndpoint() => double.NegativeInfinity;
+    public override double SupportLeftEndpoint() => double.NegativeInfinity;
 
-    public override double RightSupportEndpoint() => double.PositiveInfinity;
+    public override double SupportRightEndpoint() => double.PositiveInfinity;
 
     public override double MaxHeightLeftEndpoint() => C;
 

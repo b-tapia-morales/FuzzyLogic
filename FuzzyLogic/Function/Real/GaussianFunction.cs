@@ -7,17 +7,13 @@ namespace FuzzyLogic.Function.Real;
 
 public class GaussianFunction : BaseGaussianFunction<double>, IFuzzyInference
 {
-    public GaussianFunction(string name, double m, double o, double h) : base(name, m, o, h)
+    public GaussianFunction(string name, double m, double o, double h = 1) : base(name, m, o, h)
     {
     }
 
-    public GaussianFunction(string name, double m, double o) : base(name, m, o)
-    {
-    }
+    public override double SupportLeftEndpoint() => double.NegativeInfinity;
 
-    public override double LeftSupportEndpoint() => double.NegativeInfinity;
-
-    public override double RightSupportEndpoint() => double.PositiveInfinity;
+    public override double SupportRightEndpoint() => double.PositiveInfinity;
 
     public override double MaxHeightLeftEndpoint() => M;
 

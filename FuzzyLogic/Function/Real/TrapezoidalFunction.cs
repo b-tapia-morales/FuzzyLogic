@@ -9,12 +9,8 @@ namespace FuzzyLogic.Function.Real;
 
 public class TrapezoidalFunction : BaseTrapezoidalFunction<double>, IFuzzyInference
 {
-    public TrapezoidalFunction(string name, double a, double b, double c, double d, double h) :
+    public TrapezoidalFunction(string name, double a, double b, double c, double d, double h = 1) :
         base(name, a, b, c, d, h)
-    {
-    }
-
-    public TrapezoidalFunction(string name, double a, double b, double c, double d) : base(name, a, b, c, d)
     {
     }
 

@@ -13,9 +13,9 @@ public class RightTrapezoidalFunction : BaseLeftTrapezoidalFunction<double>, IMe
     {
     }
 
-    public override double LeftSupportEndpoint() => A;
+    public override double SupportLeftEndpoint() => A;
 
-    public override double RightSupportEndpoint() => double.PositiveInfinity;
+    public override double SupportRightEndpoint() => double.PositiveInfinity;
 
     public override double MaxHeightLeftEndpoint() => A;
 

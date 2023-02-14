@@ -13,9 +13,9 @@ public class SigmoidFunction : BaseSigmoidFunction<double>, IMembershipFunction<
     {
     }
 
-    public override double LeftSupportEndpoint() => double.NegativeInfinity;
+    public override double SupportLeftEndpoint() => double.NegativeInfinity;
 
-    public override double RightSupportEndpoint() => double.PositiveInfinity;
+    public override double SupportRightEndpoint() => double.PositiveInfinity;
 
     public override double MaxHeightLeftEndpoint() => throw new NotImplementedException();
 

@@ -30,7 +30,7 @@ public interface ITrapezoidalFunction<T> : IMembershipFunction<T> where T : unma
     /// </summary>
     /// <returns>The interval, represented as a <see cref="ValueTuple"/>.</returns>
     (T X0, T X1)? LeftSupportInterval() =>
-        IsNormal() ? (LeftSupportEndpoint(), CoreInterval().GetValueOrDefault().X0) : null;
+        IsNormal() ? (SupportLeftEndpoint(), CoreInterval().GetValueOrDefault().X0) : null;
 
     /// <summary>
     /// Returns the minimum and maximum for <i>x</i> values that belong to right side of the support of the Membership
@@ -39,5 +39,5 @@ public interface ITrapezoidalFunction<T> : IMembershipFunction<T> where T : unma
     /// </summary>
     /// <returns>The interval, represented as a <see cref="ValueTuple"/>.</returns>
     (T X0, T X1)? RightSupportInterval() =>
-        IsNormal() ? (CoreInterval().GetValueOrDefault().X1, RightSupportEndpoint()) : null;
+        IsNormal() ? (CoreInterval().GetValueOrDefault().X1, SupportRightEndpoint()) : null;
 }
