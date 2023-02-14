@@ -3,7 +3,7 @@ using FuzzyLogic.Number;
 
 namespace FuzzyLogic.Proposition.Enums;
 
-public class Connective<T> : SmartEnum<Connective<T>> where T: IFuzzyNumber<T>
+public class Connective<T> : SmartEnum<Connective<T>> where T : IFuzzyNumber<T>
 {
     public static readonly Connective<T> None =
         new(nameof(None), string.Empty, null, (int) ConnectiveToken.None);
@@ -16,9 +16,9 @@ public class Connective<T> : SmartEnum<Connective<T>> where T: IFuzzyNumber<T>
 
     public static readonly Connective<T> Or =
         new(nameof(Or), "OR", (a, b) => a | b, (int) ConnectiveToken.Disjunction);
-    
+
     public static readonly Connective<T> Then =
-        new(nameof(Then), "THEN", T.Implication, (int) ConnectiveToken.Consequent);
+        new(nameof(Then), "THEN", T.Then, (int) ConnectiveToken.Consequent);
 
     private static readonly Dictionary<ConnectiveToken, Connective<T>> TokenDictionary = new()
     {

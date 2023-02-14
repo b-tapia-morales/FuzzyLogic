@@ -3,7 +3,7 @@ using FuzzyLogic.Number;
 
 namespace FuzzyLogic.Proposition.Enums;
 
-public class Literal<T> : SmartEnum<Literal<T>> where T: struct, IFuzzyNumber<T>
+public class Literal<T> : SmartEnum<Literal<T>> where T : IFuzzyNumber<T>
 {
     public static readonly Literal<T> None =
         new(nameof(None), string.Empty, null, (int) LiteralToken.None);

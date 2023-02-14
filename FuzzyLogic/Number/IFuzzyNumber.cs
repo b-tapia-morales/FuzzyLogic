@@ -1,4 +1,8 @@
 ﻿using System.Globalization;
+using FuzzyLogic.Number.Enums;
+using static System.Math;
+
+// ReSharper disable HeapView.PossibleBoxingAllocation
 
 namespace FuzzyLogic.Number;
 
@@ -12,8 +16,19 @@ namespace FuzzyLogic.Number;
 ///         which the aforementioned operators are applied.
 ///     </para>
 /// </summary>
-public interface IFuzzyNumber<T> : IComparable<T>, IComparer<T> where T : IFuzzyNumber<T>
+public interface IFuzzyNumber<T> : IComparable<T>, IComparer<T>, IEqualityComparer<T>, IEquatable<T>
+    where T : IFuzzyNumber<T>
 {
+    /// <summary>
+    ///     A constant field that represents a Fuzzy Number's smallest possible value.
+    /// </summary>
+    private static readonly T Min = T.Of(0);
+
+    /// <summary>
+    ///      A constant field that represents a Fuzzy Number's biggest possible value.
+    /// </summary>
+    private static readonly T Max = T.Of(1);
+
     /// <summary>
     ///     <para>
     ///         Represents the smallest possible difference for which x comparison between two Fuzzy Numbers yields
@@ -57,65 +72,81 @@ public interface IFuzzyNumber<T> : IComparable<T>, IComparer<T> where T : IFuzzy
     /// <param name="number">The <see cref="double" /> value.</param>
     /// <param name="fuzzyNumber">An instance of a Fuzzy Number</param>
     /// <returns><see langword="true" /> if the conversion is successful; <see langword="false" />, otherwise.</returns>
-    static abstract bool TryCreate(double number, out T fuzzyNumber);
+    public static virtual bool TryCreate(double number, out T fuzzyNumber)
+    {
+        try
+        {
+            fuzzyNumber = T.Of(number);
+            return true;
+        }
+        catch (ArgumentException)
+        {
+            fuzzyNumber = number < 0 ? Max(0, number) : Min(1, number);
+            return false;
+        }
+    }
 
     /// <summary>
     ///     Represents a Fuzzy Number's smallest possible value.
     /// </summary>
     /// <returns>A Fuzzy Number's smallest possible value.</returns>
-    static abstract T MinValue();
+    public static virtual T MinValue() => Min;
 
     /// <summary>
     ///     Represents a Fuzzy Number's biggest possible value.
     /// </summary>
     /// <returns>A Fuzzy Number's biggest possible value.</returns>
-    static abstract T MaxValue();
+    public static virtual T MaxValue() => Max;
 
     /// <summary>
-    ///     Represents the basic operation NOT: ¬A.
-    ///     <para>
-    ///         This operator isn't necessarily defined explicitly. If that's the case, the operation defaults to the
-    ///         standard negation: ¬A ≡ 1 - A.
-    ///     </para>
+    ///     Represents the negation operation NOT: ¬A.
     /// </summary>
     /// <param name="x">A fuzzy number</param>
     /// <returns>The resulting fuzzy number after applying the NOT operator.</returns>
-    static abstract T operator !(T x);
+    public static virtual T operator !(T x) => Complement<T>.FromToken(ComplementToken.Standard)(x);
 
     /// <summary>
-    ///     Represents the basic operation OR: A ∨ B.
+    ///     Represents the T-Conorm OR: A ∨ B.
     /// </summary>
     /// <param name="x">A fuzzy number</param>
     /// <param name="y">A fuzzy number</param>
     /// <returns>The resulting fuzzy number after applying the OR operator.</returns>
-    static abstract T operator &(T x, T y);
+    public static virtual T operator &(T x, T y) => TriangularNorm<T>.FromToken(NormToken.Minimum)(x, y);
 
     /// <summary>
-    ///     Represents the basic operation AND: A ∧ B.
+    ///     Represents the T-Norm AND: A ∧ B.
     /// </summary>
     /// <param name="x">A fuzzy number</param>
     /// <param name="y">A fuzzy number</param>
     /// <returns>The resulting fuzzy number after applying the AND operator.</returns>
-    static abstract T operator |(T x, T y);
+    public static virtual T operator |(T x, T y) => TriangularConorm<T>.FromToken(ConormToken.Maximum)(x, y);
 
     /// <summary>
-    ///     <para>Represents the operation of residuum THEN: A ⇒ B.</para>
-    ///     <para>
-    ///         This operator isn't necessarily defined explicitly. If that's the case, the operation defaults to the
-    ///         Zadeh implication: A ⇒ B ≡ max{1 − a, min{a, b}}
-    ///     </para>
+    ///     Represents the residuum operation THEN: A ⇒ B.
     /// </summary>
     /// <param name="x">A fuzzy number</param>
     /// <param name="y">A fuzzy number</param>
     /// <returns>The resulting fuzzy number after applying the THEN operator.</returns>
-    static abstract T Implication(T x, T y);
+    public static virtual T Then(T x, T y) => Residuum<T>.FromToken(ResiduumToken.Godel)(x, y);
+
+    static abstract bool operator ==(T x, T y);
+
+    static abstract bool operator !=(T x, T y);
+
+    public static virtual bool operator <(T x, T y) => x != y && x.Value < y.Value;
+
+    public static virtual bool operator <=(T x, T y) => x == y || x.Value < y.Value;
+
+    public static virtual bool operator >(T x, T y) => x != y && x.Value > y.Value;
+
+    public static virtual bool operator >=(T x, T y) => x == y || x.Value > y.Value;
 
     /// <summary>
     ///     Defines a implicit conversion from a <see cref="IFuzzyNumber{T}" /> to a <see cref="double" /> value.
     /// </summary>
     /// <param name="x">The <see cref="double" /> value.</param>
     /// <returns>The <see cref="T" /> value.</returns>
-    static abstract implicit operator double(T x);
+    public static virtual implicit operator double(T x) => x.Value;
 
     /// <summary>
     ///     Defines a implicit conversion from a <see cref="double" /> value to a <see cref="IFuzzyNumber{T}" />.
@@ -123,18 +154,21 @@ public interface IFuzzyNumber<T> : IComparable<T>, IComparer<T> where T : IFuzzy
     /// </summary>
     /// <param name="x">The <see cref="double" /> value.</param>
     /// <returns>The <see cref="IFuzzyNumber{T}" /> value.</returns>
-    static abstract implicit operator T(double x);
+    public static virtual implicit operator T(double x) => T.Of(x);
 
-    /// <summary>
-    ///     Defines a implicit conversion from a <see cref="IFuzzyNumber{T}" /> to its default type: a
-    ///     <see cref="FuzzyNumber" /> value.
-    /// </summary>
-    /// <param name="x">The <see cref="IFuzzyNumber{T}" /> value.</param>
-    /// <returns>The <see cref="FuzzyNumber" /> value.</returns>
-    static abstract implicit operator FuzzyNumber(T x);
+    bool IEqualityComparer<T>.Equals(T? x, T? y)
+    {
+        if (x == null && y == null)
+            return true;
+        if (x == null || y == null)
+            return false;
+        return x == y;
+    }
 
-    string ToString() => Value.ToString(CultureInfo.InvariantCulture);
-    
+    bool IEquatable<T>.Equals(T? other) => Equals(this, other);
+
+    int IEqualityComparer<T>.GetHashCode(T? obj) => (obj ?? 0.0).GetHashCode();
+
     int IComparer<T>.Compare(T? x, T? y)
     {
         if (x == null && y == null)
@@ -148,9 +182,11 @@ public interface IFuzzyNumber<T> : IComparable<T>, IComparer<T> where T : IFuzzy
 
     int IComparable<T>.CompareTo(T? other) => other == null ? 1 : Value.CompareTo(other.Value);
 
+    string ToString() => Value.ToString(CultureInfo.InvariantCulture);
+
     protected static void RangeCheck(double value)
     {
-        if (value is < 0.0 or > 1.0)
+        if (value is < 0 or > 1)
             throw new ArgumentException(
                 $"Value can't be lesser than 0 or greater than 1 (Value provided was: {value})");
     }

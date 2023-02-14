@@ -103,7 +103,7 @@ public class FuzzyRule<T> : IRule<T> where T : struct, IFuzzyNumber<T>
     {
         if (!IsApplicable(facts))
             throw new InvalidOperationException();
-        return T.Implication(EvaluatePremiseWeight(facts), EvaluateConclusionWeight(facts));
+        return T.Then(EvaluatePremiseWeight(facts), EvaluateConclusionWeight(facts));
     }
 
     public double? CalculateArea(IDictionary<string, double> facts,
