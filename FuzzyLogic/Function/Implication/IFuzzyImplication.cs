@@ -126,10 +126,10 @@ public interface IFuzzyImplication : IClosedShape
             throw new ArgumentException("Can't calculate the centroid coordinates of the zero-function");
         if (y >= function.H)
             return (function as IClosedShape).CentroidXCoordinate(errorMargin);
-        double Integral(double x) => x * function.LambdaCutFunction(y).Invoke(x);
         var (x1, x2) = function.ClosedInterval();
         var area = function.CalculateArea(y, errorMargin);
         return (1 / area) * Integrate(Integral, x1, x2, errorMargin);
+        double Integral(double x) => x * function.LambdaCutFunction(y).Invoke(x);
     }
 
     static double CentroidYCoordinate<T>(IFuzzyImplication function, T y, double errorMargin = DefaultErrorMargin)

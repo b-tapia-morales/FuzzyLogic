@@ -15,22 +15,6 @@ public interface ILinguisticBase
     public IDictionary<string, IVariable> LinguisticVariables { get; }
 
     /// <summary>
-    ///     Adds the linguistic variable to the base provided as a parameter.
-    /// </summary>
-    /// <param name="variable">A linguistic variable</param>
-    /// <returns>The linguistic base itself, reflecting the addition of a linguistic variable to it</returns>
-    ILinguisticBase Add(IVariable variable);
-    
-    ILinguisticBase AddAll(params IVariable[] variables);
-
-    /// <summary>
-    ///     Adds all the linguistic variables in the collection provided as a parameter.
-    /// </summary>
-    /// <param name="variables">A collection of linguistic variables</param>
-    /// <returns>The linguistic base itself, reflecting the addition of the linguistic variables to it</returns>
-    ILinguisticBase AddAll(ICollection<IVariable> variables);
-
-    /// <summary>
     ///     Determines whether the base contains a linguistic variable with the <see cref="IVariable.Name" /> provided as a
     ///     parameter.
     /// </summary>
@@ -90,6 +74,12 @@ public interface ILinguisticBase
     IMembershipFunction<double>? RetrieveLinguisticEntry(string variableName, string entryName) =>
         Retrieve(variableName)?.RetrieveLinguisticEntry(entryName);
 
+    void Add(IVariable variable);
+
+    void AddAll(ICollection<IVariable> variables);
+
+    void AddAll(params IEnumerable<IVariable> variables) => AddAll(variables.ToList());
+
     /// <summary>
     /// Creates a new instance of a <see cref="ILinguisticBase"/>.
     /// </summary>
@@ -97,12 +87,29 @@ public interface ILinguisticBase
     static abstract ILinguisticBase Create();
 
     /// <summary>
+    /// Creates a new instance of a
+    /// <see cref="ILinguisticBase"/> that contains the collection of linguistic variables
+    /// provided as a parameter.
+    /// </summary>
+    /// <param name="variables">A collection of linguistic variables</param>
+    /// <returns>The linguistic base itself containing the collection of linguistic variables</returns>
+    static abstract ILinguisticBase Create(ICollection<IVariable> variables);
+
+    /// <summary>
+    /// Creates a new instance of a
+    /// <see cref="ILinguisticBase"/> that contains all the linguistic variables provided as parameters.
+    /// </summary>
+    /// <param name="variables">A varying number of linguistic variables</param>
+    /// <returns>The linguistic base itself containing the linguistic variables</returns>
+    static abstract ILinguisticBase Create(params IEnumerable<IVariable> variables);
+
+    /// <summary>
     ///     <para>
     ///         This method is marked to indicate that, if the necessity of creating a new instance of a
     ///         <see cref="ILinguisticBase" /> with existing data arises, it must be performed with this very method.
     ///     </para>
     ///     <para>
-    ///         In order to do this, a new class must be declared, and it must extend a class that implements this very
+    ///         To do this, a new class must be declared, and it must extend a class that implements this very
     ///         interface, also implementing and hiding this very method by using the <see langword="new" /> keyword.
     ///     </para>
     ///     <para>
@@ -111,6 +118,6 @@ public interface ILinguisticBase
     ///     </para>
     /// </summary>
     /// <returns>A new instance of a <see cref="ILinguisticBase" /> with existing data.</returns>
-    /// <seealso cref="Create" />
+    /// <seealso cref="Create()" />
     static abstract ILinguisticBase Initialize();
 }

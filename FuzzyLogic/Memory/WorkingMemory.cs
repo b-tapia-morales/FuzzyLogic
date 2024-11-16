@@ -26,6 +26,12 @@ public class WorkingMemory : IWorkingMemory
     public static IWorkingMemory Create(IDictionary<string, double> facts, EntryResolutionMethod method = Replace) =>
         new WorkingMemory(facts, method);
 
+    public static IWorkingMemory Create(EntryResolutionMethod method, params IEnumerable<(string Key, double Value)> facts) =>
+        new WorkingMemory(facts.ToDictionary(t => t.Key, x => x.Value), method);
+
+    public static IWorkingMemory Create(params IEnumerable<(string Key, double Value)> facts) =>
+        new WorkingMemory(facts.ToDictionary(t => t.Key, x => x.Value), Replace);
+
     public static IWorkingMemory Initialize(EntryResolutionMethod method = Replace) => Create(method);
 
     public static IWorkingMemory InitializeFromFile(string folderPath, EntryResolutionMethod method = Replace) =>

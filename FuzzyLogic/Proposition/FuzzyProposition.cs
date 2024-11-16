@@ -29,10 +29,10 @@ public class FuzzyProposition<T> : IProposition<T> where T : struct, IFuzzyNumbe
 
     public T ApplyUnaryOperators(double crispNumber)
     {
-        var membershipFunction = Function.AsFunction();
-        var hedgeFunction = LinguisticHedge.Function;
-        var literalFunction = Literal.Function!;
-        return literalFunction(hedgeFunction(membershipFunction(crispNumber)));
+        var membership = Function.AsFunction();
+        var hedge = LinguisticHedge.Function;
+        var literal = Literal.Function!;
+        return literal(hedge(membership(crispNumber)));
     }
 
     public override string ToString()

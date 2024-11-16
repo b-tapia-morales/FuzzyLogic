@@ -23,7 +23,7 @@ public class FuzzyRule<T> : IRule<T> where T : struct, IFuzzyNumber<T>
     public RulePriority Priority { get; }
 
     public override string ToString() =>
-        $"{Antecedent} {(Connectives.Any() ? $"{string.Join(' ', Connectives)} " : string.Empty)}{Consequent}";
+        $"{Antecedent} {(Connectives.Count != 0 ? $"{string.Join(' ', Connectives)} " : string.Empty)}{Consequent}";
 
     public int Compare(IRule<T>? x, IRule<T>? y) => DefaultComparer.Compare(x, y);
 
@@ -65,10 +65,13 @@ public class FuzzyRule<T> : IRule<T> where T : struct, IFuzzyNumber<T>
     public T EvaluatePremiseWeight(IDictionary<string, double> facts)
     {
         var numbers = new Queue<T>(ApplyOperators(facts));
-        if (!numbers.Any())
-            throw new InvalidOperationException();
-        if (numbers.Count == 1)
-            return numbers.First();
+        switch (numbers.Count)
+        {
+            case 0:
+                throw new InvalidOperationException();
+            case 1:
+                return numbers.First();
+        }
 
         var connectives = new Queue<Connective<T>>(Connectives.Select(e => e.Connective));
         while (numbers.Count > 1)
@@ -93,9 +96,8 @@ public class FuzzyRule<T> : IRule<T> where T : struct, IFuzzyNumber<T>
 
     public T EvaluateConclusionWeight(IDictionary<string, double> facts)
     {
-        if (Consequent == null || !facts.ContainsKey(Consequent.LinguisticVariable.Name))
+        if (Consequent == null || !facts.TryGetValue(Consequent.LinguisticVariable.Name, out var crispNumber))
             throw new InvalidOperationException();
-        var crispNumber = facts[Consequent.LinguisticVariable.Name];
         return Consequent.ApplyUnaryOperators(crispNumber);
     }
 

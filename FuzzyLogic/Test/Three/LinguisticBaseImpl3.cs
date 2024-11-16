@@ -37,7 +37,7 @@ public class LinguisticBaseImpl3 : LinguisticBase
             .AddTrapezoidFunction("Baja", 90,90, 120, 160)
             .AddTriangularFunction("Media", 145, 175, 210)
             .AddTrapezoidFunction("Alta", 175, 220, 265, 265);
-        return Create().AddAll(grasa, azucar, hidratacion, peso, tiempo, temperatura);
+        return Create(grasa, azucar, hidratacion, peso, tiempo, temperatura);
 
     }
 }

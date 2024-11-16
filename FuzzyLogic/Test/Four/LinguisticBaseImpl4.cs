@@ -21,7 +21,7 @@ public class LinguisticBaseImpl4 : LinguisticBase
             .AddTriangularFunction("cheap", 0, 5, 10)
             .AddTriangularFunction("average", 10, 15, 20)
             .AddTriangularFunction("generous", 20, 25, 30);
-        return Create().AddAll(service, food, tip);
+        return Create(service, food, tip);
 
     }
 }

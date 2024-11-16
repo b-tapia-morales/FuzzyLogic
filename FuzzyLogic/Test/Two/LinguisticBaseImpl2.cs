@@ -34,6 +34,6 @@ public class LinguisticBaseImpl2 : LinguisticBase
             .AddTriangularFunction("Corto", 3, 5, 7)
             .AddTriangularFunction("Moderado", 6, 11, 16)
             .AddTriangularFunction("Largo", 13, 17, 20);
-        return Create().AddAll(horario, area, espesor, densidadDeCorriente, tiempoDeAplicación);
+        return Create(horario, area, espesor, densidadDeCorriente, tiempoDeAplicación);
     }
 }

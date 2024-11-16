@@ -7,7 +7,7 @@ public class TestLinguisticImpl : LinguisticBase
 {
     public new static ILinguisticBase Initialize()
     {
-        var retención = LinguisticVariable
+        var retencion = LinguisticVariable
             .Create("Ret")
             .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
             .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
@@ -32,7 +32,7 @@ public class TestLinguisticImpl : LinguisticBase
             .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
             .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
             .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
-        var reacción = LinguisticVariable
+        var reaccion = LinguisticVariable
             .Create("Rea")
             .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
             .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
@@ -57,7 +57,7 @@ public class TestLinguisticImpl : LinguisticBase
             .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
             .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
             .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
-        var visión = LinguisticVariable
+        var vision = LinguisticVariable
             .Create("Vs")
             .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
             .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
@@ -67,12 +67,12 @@ public class TestLinguisticImpl : LinguisticBase
             .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
             .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
             .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
-        var controlDelBalón = LinguisticVariable
+        var controlDelBalon = LinguisticVariable
             .Create("Cb")
             .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
             .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
             .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
-        var intercepción = LinguisticVariable
+        var intercepcion = LinguisticVariable
             .Create("Int")
             .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
             .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
@@ -92,7 +92,7 @@ public class TestLinguisticImpl : LinguisticBase
             .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
             .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
             .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
-        var precisiónTiroLibre = LinguisticVariable
+        var precisionTiroLibre = LinguisticVariable
             .Create("Tl")
             .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
             .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
@@ -107,7 +107,7 @@ public class TestLinguisticImpl : LinguisticBase
             .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
             .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
             .AddRightTrapezoidFunction("Alto", 0.64, 0.68);
-        var aceleración = LinguisticVariable
+        var aceleracion = LinguisticVariable
             .Create("Acel")
             .AddLeftTrapezoidFunction("Bajo", 0.31, 0.35)
             .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
@@ -137,9 +137,9 @@ public class TestLinguisticImpl : LinguisticBase
             .AddTrapezoidFunction("Bajo", 0.0, 0.0, 0.31, 0.35)
             .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
             .AddTrapezoidFunction("Alto", 0.64, 0.68, 1, 1);
-        return Create().AddAll(retención, paseCorto, estirada, fuerza, despeje, reacción, velocidadSprint, salto,
-            regates, entradaLimpia, visión, agresividad, controlDelBalón, intercepción, fuerzaDeTiro, compostura,
-            boleas, precisiónTiroLibre, marcaje, centro, aceleración, portero, defensa, mediocampista, delantero,
+        return Create(retencion, paseCorto, estirada, fuerza, despeje, reaccion, velocidadSprint, salto,
+            regates, entradaLimpia, vision, agresividad, controlDelBalon, intercepcion, fuerzaDeTiro, compostura,
+            boleas, precisionTiroLibre, marcaje, centro, aceleracion, portero, defensa, mediocampista, delantero,
             habilidad);
     }
 }

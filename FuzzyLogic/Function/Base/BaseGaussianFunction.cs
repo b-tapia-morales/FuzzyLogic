@@ -21,7 +21,7 @@ public abstract class BaseGaussianFunction<T> : BaseMembershipFunction<T>, IAsym
     protected T M { get; }
     protected T O { get; }
 
-    public static Func<T, double> AsFunction(double m, double o, double h = 1) => t =>
+    private static Func<T, double> AsFunction(double m, double o, double h = 1) => t =>
     {
         var x = t.ToDouble(null);
         return h * Exp(-(1 / 2.0) * Pow((x - m) / o, 2));
@@ -48,10 +48,10 @@ public abstract class BaseGaussianFunction<T> : BaseMembershipFunction<T>, IAsym
         M.ToDouble(null) + O.ToDouble(null) * Sqrt(2 * Log(1 / y.Value));
 
     public T ApproximateLowerBoundary() =>
-        _minCrispValue ??= (T) Convert.ChangeType(M.ToDouble(null) - 3 * O.ToDouble(null), typeof(T));
+        _minCrispValue ??= (T)Convert.ChangeType(M.ToDouble(null) - 3 * O.ToDouble(null), typeof(T));
 
     public T ApproximateUpperBoundary() =>
-        _maxCrispValue ??= (T) Convert.ChangeType(M.ToDouble(null) + 3 * O.ToDouble(null), typeof(T));
+        _maxCrispValue ??= (T)Convert.ChangeType(M.ToDouble(null) + 3 * O.ToDouble(null), typeof(T));
 
     private static void CheckOValue(T o)
     {

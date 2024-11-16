@@ -9,7 +9,7 @@ namespace FuzzyLogic.Number;
 /// <summary>
 ///     <para>
 ///         Embodies the core mathematical concepts that define a membership degree, such as: its truth value range
-///         μ(x) ∈ [0, 1]; its basic operations - A ∧ B ⇒ Min(A, B), A ∨ B ⇒ Max(A, B), ¬A ⇒ 1 - A, and others.
+///         μ(x) ∈ [0, 1]; its basic operations - A ∧ B, A ∨ B, ¬A ⇒ 1 - A, and others.
 ///     </para>
 ///     <para>
 ///         In terms of its actual implementation, it's merely a wrapper class of a <see cref="double" /> value, on
@@ -158,9 +158,9 @@ public interface IFuzzyNumber<T> : IComparable<T>, IComparer<T>, IEqualityCompar
 
     bool IEqualityComparer<T>.Equals(T? x, T? y)
     {
-        if (x == null && y == null)
+        if (object.Equals(x, default(T)) && object.Equals(y, default(T)))
             return true;
-        if (x == null || y == null)
+        if (object.Equals(x, default(T)) || object.Equals(y, default(T)))
             return false;
         return x == y;
     }
