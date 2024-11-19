@@ -1,33 +1,21 @@
-﻿using System.Numerics;
-using FuzzyLogic.Function.Interface;
+﻿using FuzzyLogic.Number;
 using static System.Math;
 
 namespace FuzzyLogic.Function.Base;
 
-public abstract class BaseLeftTrapezoidalFunction<T> : BaseMembershipFunction<T>, ITrapezoidalFunction<T>
-    where T : unmanaged, INumber<T>, IConvertible
+public class BaseLeftTrapezoidalFunction : BaseMembershipFunction
 {
-    protected BaseLeftTrapezoidalFunction(string name, T a, T b, double h = 1) : base(name, h)
+    protected BaseLeftTrapezoidalFunction(string name, double a, double b, double uMax = 1) : base(name, uMax)
     {
         CheckValues(a, b);
         A = a;
         B = b;
     }
 
-    protected T A { get; }
-    protected T B { get; }
+    protected double A { get; }
+    protected double B { get; }
 
-    public static Func<T, double> AsFunction(double a, double b, double h = 1) => t =>
-    {
-        var x = t.ToDouble(null);
-        if (x > a && x < b)
-            return h * ((b - x) / (b - a));
-        if (x <= a)
-            return h;
-        return 0;
-    };
-
-    public override bool IsOpenLeft() => true;
+    public override bool IsOpenLeft() => Abs(1 - UMax) <= FuzzyNumber.Epsilon;
 
     public override bool IsOpenRight() => false;
 
@@ -35,15 +23,39 @@ public abstract class BaseLeftTrapezoidalFunction<T> : BaseMembershipFunction<T>
 
     public override bool IsSingleton() => false;
 
-    public override Func<T, double> AsFunction() =>
-        AsFunction(A.ToDouble(null), B.ToDouble(null), H);
+    public override double SupportLeft() => double.NegativeInfinity;
 
-    public override Func<T, double> HeightFunction<TNumber>(TNumber y) =>
-        AsFunction(A.ToDouble(null), B.ToDouble(null), Min(H, y));
+    public override double SupportRight() => B;
 
-    public (T X0, T X1)? CoreInterval() => (SupportLeftEndpoint(), SupportRightEndpoint());
+    public override double? CoreLeft() =>
+        Abs(1 - UMax) <= FuzzyNumber.Epsilon ? double.NegativeInfinity : null;
 
-    private static void CheckValues(T a, T b)
+    public override double? CoreRight() =>
+        Abs(1 - UMax) <= FuzzyNumber.Epsilon ? A : null;
+
+    public override double? AlphaCutLeft(FuzzyNumber cut) =>
+        cut.Value > UMax ? null : double.NegativeInfinity;
+
+    public override double? AlphaCutRight(FuzzyNumber cut)
+    {
+        if (cut.Value > UMax)
+            return null;
+        if (Abs(UMax - cut.Value) <= FuzzyNumber.Epsilon)
+            return A;
+        return B - cut.Value * (B - A);
+    }
+
+    public override Func<double, double> LarsenProduct(FuzzyNumber lambda) =>
+        x =>
+        {
+            if (x > A && x < B)
+                return lambda.Value * ((B - x) / (B - A));
+            if (x <= A)
+                return lambda.Value;
+            return 0;
+        };
+
+    private static void CheckValues(double a, double b)
     {
         if (a >= b)
             throw new ArgumentException(

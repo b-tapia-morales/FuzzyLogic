@@ -1,31 +1,23 @@
-﻿using System.Numerics;
-using FuzzyLogic.Function.Interface;
+﻿using FuzzyLogic.Function.Interface;
 using FuzzyLogic.Number;
 using static System.Math;
+using static FuzzyLogic.Function.Interface.IMembershipFunction<double>;
 
 namespace FuzzyLogic.Function.Base;
 
-public abstract class BaseGaussianFunction<T> : BaseMembershipFunction<T>, IAsymptoteFunction<T>
-    where T : unmanaged, INumber<T>, IConvertible
+public class BaseGaussianFunction : BaseMembershipFunction, IAsymptoteFunction<double>
 {
-    private T? _minCrispValue;
-    private T? _maxCrispValue;
+    public double Inflection { get; }
 
-    protected BaseGaussianFunction(string name, T m, T o, double h = 1) : base(name, h)
+    protected BaseGaussianFunction(string name, double mu, double sigma, double uMax = 1) : base(name, uMax)
     {
-        CheckOValue(o);
-        M = m;
-        O = o;
+        CheckSigma(sigma);
+        Mu = mu;
+        Sigma = Inflection = sigma;
     }
 
-    protected T M { get; }
-    protected T O { get; }
-
-    private static Func<T, double> AsFunction(double m, double o, double h = 1) => t =>
-    {
-        var x = t.ToDouble(null);
-        return h * Exp(-(1 / 2.0) * Pow((x - m) / o, 2));
-    };
+    protected double Mu { get; }
+    protected double Sigma { get; }
 
     public override bool IsOpenLeft() => false;
 
@@ -35,27 +27,52 @@ public abstract class BaseGaussianFunction<T> : BaseMembershipFunction<T>, IAsym
 
     public override bool IsSingleton() => false;
 
-    public override Func<T, double> AsFunction() =>
-        AsFunction(M.ToDouble(null), O.ToDouble(null), H);
+    public override double SupportLeft() => double.NegativeInfinity;
 
-    public override Func<T, double> HeightFunction<TNumber>(TNumber y) =>
-        AsFunction(M.ToDouble(null), O.ToDouble(null), Min(H, y));
+    public override double SupportRight() => double.PositiveInfinity;
 
-    public double LambdaCutLeftEndpoint<TNumber>(TNumber y) where TNumber : struct, IFuzzyNumber<TNumber> =>
-        M.ToDouble(null) - O.ToDouble(null) * Sqrt(2 * Log(1 / y.Value));
+    public override double? CoreLeft() => Abs(1 - UMax) <= FuzzyNumber.Epsilon ? Mu : null;
 
-    public double LambdaCutRightEndpoint<TNumber>(TNumber y) where TNumber : struct, IFuzzyNumber<TNumber> =>
-        M.ToDouble(null) + O.ToDouble(null) * Sqrt(2 * Log(1 / y.Value));
+    public override double? CoreRight() => Abs(1 - UMax) <= FuzzyNumber.Epsilon ? Mu : null;
 
-    public T ApproximateLowerBoundary() =>
-        _minCrispValue ??= (T)Convert.ChangeType(M.ToDouble(null) - 3 * O.ToDouble(null), typeof(T));
-
-    public T ApproximateUpperBoundary() =>
-        _maxCrispValue ??= (T)Convert.ChangeType(M.ToDouble(null) + 3 * O.ToDouble(null), typeof(T));
-
-    private static void CheckOValue(T o)
+    public override double? AlphaCutLeft(FuzzyNumber cut)
     {
-        if (o == T.Zero)
+        if (cut.Value > UMax)
+            return null;
+        if (Abs(cut.Value - UMax) <= FuzzyNumber.Epsilon)
+            return Mu;
+        return Mu - Sigma * Sqrt(2 * Log(1 / cut.Value));
+    }
+
+    public override double? AlphaCutRight(FuzzyNumber cut)
+    {
+        if (cut.Value > UMax)
+            return null;
+        if (Abs(cut.Value - UMax) <= FuzzyNumber.Epsilon)
+            return Mu;
+        return Mu + Sigma * Sqrt(2 * Log(1 / cut.Value));
+    }
+
+    public override Func<double, double> LarsenProduct(FuzzyNumber lambda) =>
+        x => lambda.Value * Exp(-(1 / 2.0) * Pow((x - Mu) / Sigma, 2));
+
+    public bool IsMonotonicallyIncreasing() => false;
+
+    public bool IsMonotonicallyDecreasing() => false;
+
+    public bool IsUnimodal() => true;
+
+    public double ApproxSupportLeft() => Mu - 3 * Sigma;
+
+    public double ApproxSupportRight() => Mu + 3 * Sigma;
+
+    public double? ApproxCoreLeft() => CoreLeft();
+
+    public double? ApproxCoreRight() => CoreRight();
+
+    private static void CheckSigma(double sigma)
+    {
+        if (Abs(sigma) < DeltaX)
             throw new ArgumentException("The value for «o» cannot be equal to 0");
     }
 }

@@ -2,14 +2,27 @@
 
 namespace FuzzyLogic.Function.Interface;
 
-public interface IAsymptoteFunction<T>: IMembershipFunction<T> where T : unmanaged, INumber<T>, IConvertible
+public interface IAsymptoteFunction<T> : IMembershipFunction<T> where T : unmanaged, INumber<T>, IConvertible
 {
-    const double MinLambdaCut = 1e-2;
-    const double MaxLambdaCut = 1 - MinLambdaCut;
-    
-    T ApproximateLowerBoundary();
+    T Inflection { get; }
 
-    T ApproximateUpperBoundary();
+    bool IsMonotonicallyIncreasing();
 
-    (T x1, T x2) ApproximateBoundaryInterval() => (ApproximateLowerBoundary(), ApproximateUpperBoundary());
+    bool IsMonotonicallyDecreasing();
+
+    bool IsUnimodal();
+
+    T ApproxSupportLeft();
+
+    T ApproxSupportRight();
+
+    (T X0, T X1) ApproxSupportBoundary() => (ApproxSupportLeft(), ApproxSupportRight());
+
+    T? ApproxCoreLeft();
+
+    T? ApproxCoreRight();
+
+    (T? x1, T? x2) ApproxCoreBoundary() => (ApproxSupportLeft(), ApproxSupportRight());
+
+    (T X0, T X1) IMembershipFunction<T>.FiniteSupportBoundary() => ApproxSupportBoundary();
 }

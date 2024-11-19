@@ -1,20 +1,19 @@
-﻿using System.Numerics;
-using FuzzyLogic.Function.Interface;
+﻿using FuzzyLogic.Function.Interface;
 using FuzzyLogic.Number;
 
 namespace FuzzyLogic.Function.Base;
 
-public abstract class BaseMembershipFunction<T> : IMembershipFunction<T> where T : unmanaged, INumber<T>, IConvertible
+public abstract class BaseMembershipFunction : IMembershipFunction<double>
 {
     public string Name { get; }
-    public double H { get; }
+    public double UMax { get; }
 
-    protected BaseMembershipFunction(string name, double h)
+    protected BaseMembershipFunction(string name, double uMax)
     {
         CheckName(name);
-        CheckHeight(h);
-        Name = name.Trim();
-        H = h;
+        CheckHeight(uMax);
+        Name = name;
+        UMax = uMax;
     }
 
     public abstract bool IsOpenLeft();
@@ -25,23 +24,25 @@ public abstract class BaseMembershipFunction<T> : IMembershipFunction<T> where T
 
     public abstract bool IsSingleton();
 
-    public abstract T SupportLeftEndpoint();
+    public abstract double SupportLeft();
 
-    public abstract T SupportRightEndpoint();
+    public abstract double SupportRight();
 
-    public abstract T MaxHeightLeftEndpoint();
+    public abstract double? CoreLeft();
 
-    public abstract T MaxHeightRightEndpoint();
+    public abstract double? CoreRight();
 
-    public abstract Func<T, double> AsFunction();
+    public abstract double? AlphaCutLeft(FuzzyNumber cut);
 
-    public abstract Func<T, double> HeightFunction<TNumber>(TNumber y) where TNumber : struct, IFuzzyNumber<TNumber>;
+    public abstract double? AlphaCutRight(FuzzyNumber cut);
+
+    public abstract Func<double, double> LarsenProduct(FuzzyNumber lambda);
 
     private static void CheckHeight(double h)
     {
         if (h is <= 0 or > 1)
             throw new ArgumentException(
-                $"The height “h” of the function must be in the range [0, 1] (Provided value was: {h}");
+                $"The height “h” of the function must be in the range [0, 1] (Provided value was: {h})");
     }
 
     private static void CheckName(string name)

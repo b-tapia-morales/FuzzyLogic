@@ -1,83 +1,97 @@
-﻿using System.Numerics;
-using FuzzyLogic.Function.Interface;
+﻿using FuzzyLogic.Number;
 using FuzzyLogic.Utils;
 using static System.Math;
+using static FuzzyLogic.Function.Interface.IMembershipFunction<double>;
 
 namespace FuzzyLogic.Function.Base;
 
-public abstract class BaseTrapezoidalFunction<T> : BaseMembershipFunction<T>, ITrapezoidalFunction<T>
-    where T : unmanaged, INumber<T>, IConvertible
+public class BaseTrapezoidalFunction : BaseMembershipFunction
 {
-    private bool? _isSymmetric;
+    private readonly bool _isSymmetric;
 
-    protected BaseTrapezoidalFunction(string name, T a, T b, T c, T d, double h = 1) : base(name, h)
+    protected BaseTrapezoidalFunction(string name, double a, double b, double c, double d, double uMax = 1) : base(name, uMax)
     {
-        CheckEdges(a, b, c, d);
-        CheckSides(a, b, c, d);
+        CheckEdges(a, b, C, D);
+        CheckSides(a, b, C, D);
         A = a;
         B = b;
         C = c;
         D = d;
+        _isSymmetric = Abs(
+            TrigonometricUtils.Distance((A, 0), (B, UMax)) -
+            TrigonometricUtils.Distance((C, UMax), (D, 0))
+        ) < FuzzyNumber.Epsilon;
     }
 
-    protected T A { get; }
-    protected T B { get; }
-    protected T C { get; }
-    protected T D { get; }
-
-    public static Func<T, double> AsFunction(double a, double b, double c, double d, double h = 1) => t =>
-    {
-        var x = t.ToDouble(null);
-        if (x > a && x < b)
-            return h * ((x - a) / (b - a));
-        if (x >= b && x <= c)
-            return h;
-        if (x > c && x < d)
-            return h * ((d - x) / (d - c));
-        return 0;
-    };
+    protected double A { get; }
+    protected double B { get; }
+    protected double C { get; }
+    protected double D { get; }
 
     public override bool IsOpenLeft() => false;
 
-    public override bool IsOpenRight() => false;
+    public override bool IsOpenRight() => Abs(1 - UMax) <= FuzzyNumber.Epsilon;
 
-    public override bool IsSymmetric() => _isSymmetric ??=
-        Abs(
-            TrigonometricUtils.Distance((A.ToDouble(null), 0), (B.ToDouble(null), H)) -
-            TrigonometricUtils.Distance((C.ToDouble(null), H), (D.ToDouble(null), 0))
-        ) < ITrapezoidalFunction<T>.DistanceTolerance;
+    public override bool IsSymmetric() => _isSymmetric;
 
     public override bool IsSingleton() => false;
 
-    public override T SupportLeftEndpoint() => A;
+    public override double SupportLeft() => A;
 
-    public override T SupportRightEndpoint() => D;
+    public override double SupportRight() => D;
 
-    public (T X0, T X1)? CoreInterval() => (B, C);
+    public override double? CoreLeft() =>
+        Abs(1 - UMax) <= FuzzyNumber.Epsilon ? B : null;
 
-    public override Func<T, double> AsFunction() =>
-        AsFunction(A.ToDouble(null), B.ToDouble(null), C.ToDouble(null), D.ToDouble(null), H);
+    public override double? CoreRight() =>
+        Abs(1 - UMax) <= FuzzyNumber.Epsilon ? C : null;
 
-    public override Func<T, double> HeightFunction<TNumber>(TNumber y) =>
-        AsFunction(A.ToDouble(null), B.ToDouble(null), C.ToDouble(null), D.ToDouble(null), Min(H, y));
+    public override double? AlphaCutLeft(FuzzyNumber cut)
+    {
+        if (cut.Value > UMax)
+            return null;
+        if (Abs(cut.Value - UMax) <= FuzzyNumber.Epsilon)
+            return B;
+        return A + cut.Value * (B - A);
+    }
 
-    private static void CheckEdges(T a, T b, T c, T d)
+    public override double? AlphaCutRight(FuzzyNumber cut)
+    {
+        if (cut.Value > UMax)
+            return null;
+        if (Abs(cut.Value - UMax) <= FuzzyNumber.Epsilon)
+            return B;
+        return D - cut.Value * (D - C);
+    }
+
+    public override Func<double, double> LarsenProduct(FuzzyNumber lambda) => x =>
+    {
+        if (x > A && x < B)
+            return lambda.Value * ((x - A) / (B - A));
+        if (x >= B && x <= C)
+            return lambda.Value;
+        if (x > C && x < D)
+            return lambda.Value * ((D - x) / (D - C));
+        return 0;
+    };
+
+    private static void CheckEdges(double a, double b, double c, double d)
     {
         if (a > b || b >= c || c > d)
             throw new ArgumentException(
                 $"""
-                    The following condition has been violated: a ≤ b < c ≤ d (Values provides were: {a}, {b}, {c}, {d})
-                    The resulting shape is not a Trapezoid.
-                    """);
+                 The following condition has been violated: a ≤ b < C ≤ D (Values provides were: {a}, {b}, {c}, {d})
+                 The resulting shape is not a Trapezoid.
+                 """);
     }
 
-    private static void CheckSides(T a, T b, T c, T d)
+    private static void CheckSides(double a, double b, double c, double d)
     {
-        if (a == b && c == d)
+        if (Abs(a - b) < DeltaX && Abs(c - d) < DeltaX)
             throw new ArgumentException(
                 $"""
-                    The following condition has been violated: a ≠ b ∨ c ≠ d (Values provides were: {a}, {b}, {c}, {d})
-                    The resulting shape is either a Rectangle or a Square
-                    """);
+                 The following condition has been violated: a ≠ b ∨ C ≠ D (Values provides were: {a}, {b}, {c}, {d})
+                 The resulting shape is either a Rectangle or a Square
+                 """);
     }
 }
