@@ -1,52 +1,38 @@
 ﻿using Ardalis.SmartEnum;
+using FuzzyLogic.Enum;
 using FuzzyLogic.Number;
 using static System.Math;
 
 namespace FuzzyLogic.Proposition.Enums;
 
-public class LinguisticHedge<T> : SmartEnum<LinguisticHedge<T>> where T : IFuzzyNumber<T>
+public class LinguisticHedge : SmartEnum<LinguisticHedge>, IEnum<LinguisticHedge, HedgeToken>
 {
-    public static readonly LinguisticHedge<T> None =
+    public static readonly LinguisticHedge None =
         new(nameof(None), string.Empty, y => y, (int) HedgeToken.None);
 
-    public static readonly LinguisticHedge<T> Very =
+    public static readonly LinguisticHedge Very =
         new(nameof(Very), "Very", y => Pow(y.Value, 2), (int) HedgeToken.Very);
 
-    public static readonly LinguisticHedge<T> VeryVery =
+    public static readonly LinguisticHedge VeryVery =
         new(nameof(VeryVery), "Very, very", y => Pow(y.Value, 4), (int) HedgeToken.VeryVery);
 
-    public static readonly LinguisticHedge<T> Plus =
+    public static readonly LinguisticHedge Plus =
         new(nameof(Plus), "Plus", y => Pow(y.Value, 5 / 4.0), (int) HedgeToken.Plus);
 
-    public static readonly LinguisticHedge<T> Slightly =
+    public static readonly LinguisticHedge Slightly =
         new(nameof(Slightly), "Slightly", y => Sqrt(y.Value), (int) HedgeToken.Slightly);
 
-    public static readonly LinguisticHedge<T> Minus =
+    public static readonly LinguisticHedge Minus =
         new(nameof(Minus), "Minus", y => Pow(y.Value, 3 / 4.0), (int) HedgeToken.Minus);
 
-    public static readonly LinguisticHedge<T> Indeed = new(nameof(Indeed), "Indeed",
+    public static readonly LinguisticHedge Indeed = new(nameof(Indeed), "Indeed",
         y =>
         {
             if (y == 0.5) return y;
-            return y < 0.5 ? (2 * Pow(y.Value, 2)) : (1 - 2 * Pow(1 - y.Value, 2));
+            return y < 0.5 ? 2 * Pow(y.Value, 2) : 1 - 2 * Pow(1 - y.Value, 2);
         }, (int) HedgeToken.Indeed);
 
-    private static readonly Dictionary<HedgeToken, LinguisticHedge<T>> TokenDictionary = new()
-    {
-        {HedgeToken.None, None},
-        {HedgeToken.Very, Very},
-        {HedgeToken.VeryVery, VeryVery},
-        {HedgeToken.Plus, Plus},
-        {HedgeToken.Slightly, Slightly},
-        {HedgeToken.Minus, Minus},
-        {HedgeToken.Indeed, Indeed}
-    };
-
-    private static readonly Dictionary<string, LinguisticHedge<T>> ReadableNameDictionary =
-        TokenDictionary.ToDictionary(e => e.Value.ReadableName, e => e.Value,
-            StringComparer.InvariantCultureIgnoreCase);
-
-    public LinguisticHedge(string name, string readableName, Func<T, T> function, int value) :
+    private LinguisticHedge(string name, string readableName, Func<FuzzyNumber, FuzzyNumber> function, int value) :
         base(name, value)
     {
         ReadableName = readableName;
@@ -54,13 +40,7 @@ public class LinguisticHedge<T> : SmartEnum<LinguisticHedge<T>> where T : IFuzzy
     }
 
     public string ReadableName { get; }
-    public Func<T, T> Function { get; }
-
-    public static LinguisticHedge<T> FromToken(HedgeToken token) => TokenDictionary[token];
-
-    public static LinguisticHedge<T> FromReadableName(string readableName) => ReadableNameDictionary[readableName];
-
-    public override string ToString() => ReadableName;
+    public Func<FuzzyNumber, FuzzyNumber> Function { get; }
 }
 
 public enum HedgeToken
