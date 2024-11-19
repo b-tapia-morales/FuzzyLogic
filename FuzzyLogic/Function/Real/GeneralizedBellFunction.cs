@@ -3,16 +3,16 @@ using FuzzyLogic.Number;
 using static System.Math;
 using static FuzzyLogic.Function.Interface.IMembershipFunction<double>;
 
-namespace FuzzyLogic.Function.Base;
+namespace FuzzyLogic.Function.Real;
 
-public class BaseBellShapedFunction : BaseMembershipFunction, IAsymptoteFunction<double>
+public class GeneralizedBellFunction : MembershipFunction, IAsymptoteFunction<double>
 {
     private double? _leftMost;
     private double? _rightMost;
 
     public double Inflection { get; }
 
-    protected BaseBellShapedFunction(string name, double a, double b, double c, double uMax = 1) : base(name, uMax)
+    protected GeneralizedBellFunction(string name, double a, double b, double c, double uMax = 1) : base(name, uMax)
     {
         CheckAValue(a);
         A = a;

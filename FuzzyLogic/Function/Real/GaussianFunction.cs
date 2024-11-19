@@ -1,33 +1,78 @@
-﻿using FuzzyLogic.Function.Base;
-using FuzzyLogic.Function.Implication;
-using FuzzyLogic.Function.Interface;
+﻿using FuzzyLogic.Function.Interface;
+using FuzzyLogic.Number;
 using static System.Math;
+using static FuzzyLogic.Function.Interface.IMembershipFunction<double>;
 
 namespace FuzzyLogic.Function.Real;
 
-public class GaussianFunction : BaseGaussianFunction<double>, IFuzzyInference
+public class GaussianFunction : MembershipFunction, IAsymptoteFunction<double>
 {
-    public GaussianFunction(string name, double m, double o, double h = 1) : base(name, m, o, h)
+    public double Inflection { get; }
+
+    protected GaussianFunction(string name, double mu, double sigma, double uMax = 1) : base(name, uMax)
     {
+        CheckSigma(sigma);
+        Mu = mu;
+        Sigma = Inflection = sigma;
     }
 
-    public override double SupportLeftEndpoint() => double.NegativeInfinity;
+    protected double Mu { get; }
+    protected double Sigma { get; }
 
-    public override double SupportRightEndpoint() => double.PositiveInfinity;
+    public override bool IsOpenLeft() => false;
 
-    public override double MaxHeightLeftEndpoint() => M;
+    public override bool IsOpenRight() => false;
 
-    public override double MaxHeightRightEndpoint() => M;
+    public override bool IsSymmetric() => true;
 
-    double IClosedShape.CentroidXCoordinate(double errorMargin) => M;
+    public override bool IsSingleton() => false;
 
-    double? IMamdaniMinimum.MamdaniCutLeftEndpoint<T>(T y) =>
-        y > H ? null : M - O * Sqrt(2 * Log(Min(H, y) / y));
+    public override double SupportLeft() => double.NegativeInfinity;
 
-    double? IMamdaniMinimum.MamdaniCutRightEndpoint<TNumber>(TNumber y) =>
-        y > H ? null : M + O * Sqrt(2 * Log(Min(H, y) / y));
+    public override double SupportRight() => double.PositiveInfinity;
 
-    double IMamdaniMinimum.MamdaniCentroidXCoordinate<TNumber>(TNumber y, double errorMargin) => M;
+    public override double? CoreLeft() => Abs(1 - UMax) <= FuzzyNumber.Epsilon ? Mu : null;
 
-    double ILarsenProduct.LarsenCentroidXCoordinate<TNumber>(TNumber y, double errorMargin) => M;
+    public override double? CoreRight() => Abs(1 - UMax) <= FuzzyNumber.Epsilon ? Mu : null;
+
+    public override double? AlphaCutLeft(FuzzyNumber cut)
+    {
+        if (cut.Value > UMax)
+            return null;
+        if (Abs(cut.Value - UMax) <= FuzzyNumber.Epsilon)
+            return Mu;
+        return Mu - Sigma * Sqrt(2 * Log(1 / cut.Value));
+    }
+
+    public override double? AlphaCutRight(FuzzyNumber cut)
+    {
+        if (cut.Value > UMax)
+            return null;
+        if (Abs(cut.Value - UMax) <= FuzzyNumber.Epsilon)
+            return Mu;
+        return Mu + Sigma * Sqrt(2 * Log(1 / cut.Value));
+    }
+
+    public override Func<double, double> LarsenProduct(FuzzyNumber lambda) =>
+        x => lambda.Value * Exp(-(1 / 2.0) * Pow((x - Mu) / Sigma, 2));
+
+    public bool IsMonotonicallyIncreasing() => false;
+
+    public bool IsMonotonicallyDecreasing() => false;
+
+    public bool IsUnimodal() => true;
+
+    public double ApproxSupportLeft() => Mu - 3 * Sigma;
+
+    public double ApproxSupportRight() => Mu + 3 * Sigma;
+
+    public double? ApproxCoreLeft() => CoreLeft();
+
+    public double? ApproxCoreRight() => CoreRight();
+
+    private static void CheckSigma(double sigma)
+    {
+        if (Abs(sigma) < DeltaX)
+            throw new ArgumentException("The value for «o» cannot be equal to 0");
+    }
 }

@@ -1,5 +1,4 @@
 ﻿using FuzzyLogic.Function.Interface;
-using FuzzyLogic.Function.Real;
 
 namespace FuzzyLogic.Variable;
 
@@ -109,7 +108,7 @@ public class LinguisticVariable : IVariable
 
     private static IVariable AddCauchyFunction(IVariable variable, string name, double a, double b, double c,
         double h = 1) =>
-        variable.AddFunction(name, new BellShapedFunction(name, a, b, c, h));
+        variable.AddFunction(name, new BellFunction(name, a, b, c, h));
 
     private static IVariable AddSigmoidFunction(IVariable variable, string name, double a, double c, double h = 1) =>
         variable.AddFunction(name, new SigmoidFunction(name, a, c, h));
@@ -133,8 +132,8 @@ public class LinguisticVariable : IVariable
     public static void CheckRange(IVariable variable, IMembershipFunction<double> function)
     {
         var (lower, upper) = function is IAsymptoteFunction<double> asymptote
-            ? asymptote.ApproximateBoundaryInterval()
-            : function.SupportInterval();
+            ? asymptote.ApproxSupportBoundary()
+            : function.SupportBoundary();
         if (upper <= variable.LowerBoundary)
             throw new VariableRangeException(variable.Name,
                 (variable.LowerBoundary, variable.UpperBoundary), function.Name, (lower, upper), function.GetType());

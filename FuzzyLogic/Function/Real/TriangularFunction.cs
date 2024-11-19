@@ -1,65 +1,100 @@
-﻿using FuzzyLogic.Function.Base;
-using FuzzyLogic.Function.Implication;
-using FuzzyLogic.Function.Interface;
-using FuzzyLogic.Number;
+﻿using FuzzyLogic.Number;
 using FuzzyLogic.Utils;
 using static System.Math;
+using static FuzzyLogic.Function.Interface.IMembershipFunction<double>;
 
 namespace FuzzyLogic.Function.Real;
 
-public class TriangularFunction : BaseTriangularFunction<double>, IFuzzyInference
+public class TriangularFunction : MembershipFunction
 {
-    public TriangularFunction(string name, double a, double b, double c, double h = 1) : base(name, a, b, c, h)
+    private readonly bool _isSymmetric;
+
+    protected TriangularFunction(string name, double a, double b, double c, double uMax = 1) : base(name, uMax)
     {
+        CheckEdges(a, b, c);
+        CheckSides(a, b, c);
+        A = a;
+        B = b;
+        C = c;
+        _isSymmetric = Abs(
+            TrigonometricUtils.Distance((A, 0), (B, UMax)) -
+            TrigonometricUtils.Distance((B, UMax), (C, 0))
+        ) < DeltaX;
     }
 
-    public override double MaxHeightLeftEndpoint() => B;
+    protected double A { get; }
+    protected double B { get; }
+    protected double C { get; }
 
-    public override double MaxHeightRightEndpoint() => B;
+    public override bool IsOpenLeft() => false;
 
-    public double CalculateArea(double errorMargin = IClosedShape.DefaultErrorMargin) =>
-        TrigonometricUtils.TriangleArea(Abs(A - C), H);
+    public override bool IsOpenRight() => false;
 
-    public double CentroidXCoordinate(double errorMargin = IClosedShape.DefaultErrorMargin) =>
-        CalculateCentroid(errorMargin).X;
+    public override bool IsSymmetric() => _isSymmetric;
 
-    public double CentroidYCoordinate(double errorMargin = IClosedShape.DefaultErrorMargin) =>
-        CalculateCentroid(errorMargin).Y;
+    public override bool IsSingleton() => Abs(1 - UMax) <= FuzzyNumber.Epsilon;
 
-    public (double X, double Y) CalculateCentroid(double errorMargin = IClosedShape.DefaultErrorMargin) =>
-        TrigonometricUtils.TriangleCentroid(A, B, C, H);
+    public override double SupportLeft() => A;
 
-    public double? MamdaniCutLeftEndpoint<T>(T y) where T : struct, IFuzzyNumber<T> =>
-        A + (y / H) * (B - A);
+    public override double SupportRight() => C;
 
-    public double? MamdaniCutRightEndpoint<T>(T y) where T : struct, IFuzzyNumber<T> =>
-        C - (y / H) * (C - B);
+    public override double? CoreLeft() =>
+        Abs(1 - UMax) <= FuzzyNumber.Epsilon ? B : null;
 
-    public double MamdaniCutArea<T>(T y, double errorMargin = IClosedShape.DefaultErrorMargin)
-        where T : struct, IFuzzyNumber<T>
+    public override double? CoreRight() =>
+        Abs(1 - UMax) <= FuzzyNumber.Epsilon ? B : null;
+
+    public override double? AlphaCutLeft(FuzzyNumber cut)
     {
-        if (y == 0)
-            throw new ArgumentException("Can't calculate the area of the zero-function");
-        if (y >= H)
-            return (this as IClosedShape).CalculateArea(errorMargin);
-        var (x1, x2) = (this as IMamdaniMinimum).LambdaCutInterval(y).GetValueOrDefault();
-        return TrigonometricUtils.TrapezoidArea(Abs(x1 - x2), Abs(A - C), y);
+        if (Abs(cut.Value - UMax) > FuzzyNumber.Epsilon)
+        {
+            return null;
+        }
+
+        if (Abs(cut.Value - UMax) <= FuzzyNumber.Epsilon)
+        {
+            return C;
+        }
+
+        return A + cut.Value * (B - A);
     }
 
-    public double MamdaniCentroidXCoordinate<T>(T y, double errorMargin = IClosedShape.DefaultErrorMargin)
-        where T : struct, IFuzzyNumber<T> => MamdaniCutCentroid(y, errorMargin).X;
+    public override double? AlphaCutRight(FuzzyNumber cut) =>
+        Abs(cut.Value - UMax) switch
+        {
+            > FuzzyNumber.Epsilon => null,
+            <= FuzzyNumber.Epsilon => B,
+            _ => C - cut.Value * (C - B)
+        };
 
-    public double MamdaniCentroidYCoordinate<T>(T y, double errorMargin = IClosedShape.DefaultErrorMargin)
-        where T : struct, IFuzzyNumber<T> => MamdaniCutCentroid(y, errorMargin).Y;
-
-    public (double X, double Y) MamdaniCutCentroid<T>(T y, double errorMargin = IClosedShape.DefaultErrorMargin)
-        where T : struct, IFuzzyNumber<T>
+    public override Func<double, double> LarsenProduct(FuzzyNumber lambda) => x =>
     {
-        if (y == 0)
-            throw new ArgumentException("Can't calculate the area of the zero-function");
-        if (Abs(y - 1) < IFuzzyNumber<T>.Tolerance)
-            return CalculateCentroid(errorMargin);
-        var (x1, x2) = (this as IMamdaniMinimum).LambdaCutInterval(y).GetValueOrDefault();
-        return TrigonometricUtils.TrapezoidCentroid(A, x1, x2, C, Min(H, y));
+        if (x > A && x < B)
+            return lambda.Value * ((x - A) / (B - A));
+        if (Abs(x - B) < DeltaX)
+            return lambda.Value;
+        if (x > B && x < C)
+            return lambda.Value * ((C - x) / (C - B));
+        return 0;
+    };
+
+    private static void CheckEdges(double a, double b, double c)
+    {
+        if (a > b || b > c)
+            throw new ArgumentException(
+                $"""
+                 The following condition has been violated: a ≤ b ≤ c (Values provides were: {a}, {b}, {c})
+                 The resulting shape is not a Triangle.
+                 """);
+    }
+
+    private static void CheckSides(double a, double b, double c)
+    {
+        if (Abs(a - b) < DeltaX && Abs(b - c) < DeltaX)
+            throw new ArgumentException(
+                $"""
+                 The following condition has been violated: a ≠ b ∨ b ≠ c (Values provides were: {a}, {b}, {c})
+                 The resulting membership function is the Singleton function.
+                 """);
     }
 }

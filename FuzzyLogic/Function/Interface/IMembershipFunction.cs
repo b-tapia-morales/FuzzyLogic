@@ -1,5 +1,5 @@
 ﻿using System.Numerics;
-using FuzzyLogic.Function.Base;
+using FuzzyLogic.Function.Real;
 using FuzzyLogic.Number;
 using static System.Math;
 
@@ -12,7 +12,7 @@ namespace FuzzyLogic.Function.Interface;
 /// </para>
 /// <para>
 /// Note that Membership Functions must not implement this class directly.
-/// They must inherit from <see cref="BaseMembershipFunction" /> instead.
+/// They must inherit from <see cref="MembershipFunction" /> instead.
 /// </para>
 /// </summary>
 /// <typeparam name="T">

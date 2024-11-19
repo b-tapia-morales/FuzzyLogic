@@ -1,14 +1,14 @@
 ﻿using FuzzyLogic.Function.Interface;
 using FuzzyLogic.Number;
 
-namespace FuzzyLogic.Function.Base;
+namespace FuzzyLogic.Function.Real;
 
-public abstract class BaseMembershipFunction : IMembershipFunction<double>
+public abstract class MembershipFunction : IMembershipFunction<double>
 {
     public string Name { get; }
     public double UMax { get; }
 
-    protected BaseMembershipFunction(string name, double uMax)
+    protected MembershipFunction(string name, double uMax)
     {
         CheckName(name);
         CheckHeight(uMax);

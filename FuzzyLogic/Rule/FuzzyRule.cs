@@ -110,7 +110,7 @@ public class FuzzyRule<T> : IRule<T> where T : struct, IFuzzyNumber<T>
 
     public double? CalculateArea(IDictionary<string, double> facts,
         InferenceMethod method = Mamdani,
-        double errorMargin = IClosedShape.DefaultErrorMargin)
+        double errorMargin = IClosedShape.ErrorMargin)
     {
         if (!IsApplicable(facts))
             throw new InvalidOperationException();
@@ -123,7 +123,7 @@ public class FuzzyRule<T> : IRule<T> where T : struct, IFuzzyNumber<T>
 
     public (double X, double Y)? CalculateCentroid(IDictionary<string, double> facts,
         InferenceMethod method = Mamdani,
-        double errorMargin = IClosedShape.DefaultErrorMargin)
+        double errorMargin = IClosedShape.ErrorMargin)
     {
         if (!IsApplicable(facts))
             throw new InvalidOperationException();
