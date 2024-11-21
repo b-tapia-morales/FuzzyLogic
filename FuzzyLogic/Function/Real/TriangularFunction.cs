@@ -1,7 +1,7 @@
-﻿using FuzzyLogic.Number;
+﻿using FuzzyLogic.Function.Interface;
+using FuzzyLogic.Number;
 using FuzzyLogic.Utils;
 using static System.Math;
-using static FuzzyLogic.Function.Interface.IMembershipFunction<double>;
 
 namespace FuzzyLogic.Function.Real;
 
@@ -9,7 +9,7 @@ public class TriangularFunction : MembershipFunction
 {
     private readonly bool _isSymmetric;
 
-    protected TriangularFunction(string name, double a, double b, double c, double uMax = 1) : base(name, uMax)
+    internal protected TriangularFunction(string name, double a, double b, double c, double uMax = 1) : base(name, uMax)
     {
         CheckEdges(a, b, c);
         CheckSides(a, b, c);
@@ -19,7 +19,7 @@ public class TriangularFunction : MembershipFunction
         _isSymmetric = Abs(
             TrigonometricUtils.Distance((A, 0), (B, UMax)) -
             TrigonometricUtils.Distance((B, UMax), (C, 0))
-        ) < DeltaX;
+        ) < IMembershipFunction.DeltaX;
     }
 
     protected double A { get; }
@@ -46,32 +46,27 @@ public class TriangularFunction : MembershipFunction
 
     public override double? AlphaCutLeft(FuzzyNumber cut)
     {
-        if (Abs(cut.Value - UMax) > FuzzyNumber.Epsilon)
-        {
+        if (cut.Value > UMax)
             return null;
-        }
-
         if (Abs(cut.Value - UMax) <= FuzzyNumber.Epsilon)
-        {
             return C;
-        }
-
         return A + cut.Value * (B - A);
     }
 
-    public override double? AlphaCutRight(FuzzyNumber cut) =>
-        Abs(cut.Value - UMax) switch
-        {
-            > FuzzyNumber.Epsilon => null,
-            <= FuzzyNumber.Epsilon => B,
-            _ => C - cut.Value * (C - B)
-        };
+    public override double? AlphaCutRight(FuzzyNumber cut)
+    {
+        if (cut.Value > UMax)
+            return null;
+        if (Abs(cut.Value - UMax) <= FuzzyNumber.Epsilon)
+            return C;
+        return C - cut.Value * (C - B);
+    }
 
     public override Func<double, double> LarsenProduct(FuzzyNumber lambda) => x =>
     {
         if (x > A && x < B)
             return lambda.Value * ((x - A) / (B - A));
-        if (Abs(x - B) < DeltaX)
+        if (Abs(x - B) < IMembershipFunction.DeltaX)
             return lambda.Value;
         if (x > B && x < C)
             return lambda.Value * ((C - x) / (C - B));
@@ -90,7 +85,7 @@ public class TriangularFunction : MembershipFunction
 
     private static void CheckSides(double a, double b, double c)
     {
-        if (Abs(a - b) < DeltaX && Abs(b - c) < DeltaX)
+        if (Abs(a - b) < IMembershipFunction.DeltaX && Abs(b - c) < IMembershipFunction.DeltaX)
             throw new ArgumentException(
                 $"""
                  The following condition has been violated: a ≠ b ∨ b ≠ c (Values provides were: {a}, {b}, {c})

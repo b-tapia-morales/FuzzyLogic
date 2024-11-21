@@ -5,7 +5,7 @@ namespace FuzzyLogic.Function.Real;
 
 public class LeftTrapezoidalFunction : MembershipFunction
 {
-    protected LeftTrapezoidalFunction(string name, double a, double b, double uMax = 1) : base(name, uMax)
+    internal protected LeftTrapezoidalFunction(string name, double a, double b, double uMax = 1) : base(name, uMax)
     {
         CheckValues(a, b);
         A = a;

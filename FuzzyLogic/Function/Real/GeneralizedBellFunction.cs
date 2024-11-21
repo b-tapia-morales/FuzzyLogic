@@ -1,18 +1,17 @@
 ﻿using FuzzyLogic.Function.Interface;
 using FuzzyLogic.Number;
 using static System.Math;
-using static FuzzyLogic.Function.Interface.IMembershipFunction<double>;
 
 namespace FuzzyLogic.Function.Real;
 
-public class GeneralizedBellFunction : MembershipFunction, IAsymptoteFunction<double>
+public class GeneralizedBellFunction : AsymptoteFunction
 {
     private double? _leftMost;
     private double? _rightMost;
 
-    public double Inflection { get; }
+    public override double Inflection { get; }
 
-    protected GeneralizedBellFunction(string name, double a, double b, double c, double uMax = 1) : base(name, uMax)
+    internal protected GeneralizedBellFunction(string name, double a, double b, double c, double uMax = 1) : base(name, uMax)
     {
         CheckAValue(a);
         A = a;
@@ -32,9 +31,9 @@ public class GeneralizedBellFunction : MembershipFunction, IAsymptoteFunction<do
 
     public override bool IsSingleton() => false;
 
-    public override double SupportLeft() => double.NegativeInfinity;
+    public override double SupportLeft() => (this as AsymptoteFunction).SupportLeft();
 
-    public override double SupportRight() => double.PositiveInfinity;
+    public override double SupportRight() => (this as AsymptoteFunction).SupportRight();
 
     public override double? CoreLeft() => Abs(1 - UMax) <= FuzzyNumber.Epsilon ? C : null;
 
@@ -61,23 +60,23 @@ public class GeneralizedBellFunction : MembershipFunction, IAsymptoteFunction<do
     public override Func<double, double> LarsenProduct(FuzzyNumber lambda) =>
         x => lambda.Value * (1 / (1 + Pow(Abs((x - C) / A), 2 * B)));
 
-    public bool IsMonotonicallyIncreasing() => false;
+    public override bool IsMonotonicallyIncreasing() => false;
 
-    public bool IsMonotonicallyDecreasing() => false;
+    public override bool IsMonotonicallyDecreasing() => false;
 
-    public bool IsUnimodal() => true;
+    public override bool IsUnimodal() => true;
 
-    public double ApproxSupportLeft() => _leftMost ??= AlphaCutLeft(FuzzyNumber.Epsilon)!.Value;
+    public override double ApproxSupportLeft() => _leftMost ??= AlphaCutLeft(FuzzyNumber.Epsilon)!.Value;
 
-    public double ApproxSupportRight() => _rightMost ??= AlphaCutRight(FuzzyNumber.Epsilon)!.Value;
+    public override double ApproxSupportRight() => _rightMost ??= AlphaCutRight(FuzzyNumber.Epsilon)!.Value;
 
-    public double? ApproxCoreLeft() => CoreLeft();
+    public override double? ApproxCoreLeft() => CoreLeft();
 
-    public double? ApproxCoreRight() => CoreRight();
+    public override double? ApproxCoreRight() => CoreRight();
 
     private static void CheckAValue(double a)
     {
-        if (Abs(a) < DeltaX)
+        if (Abs(a) < IMembershipFunction.DeltaX)
             throw new ArgumentException("The value for «a» cannot be equal to 0");
     }
 }

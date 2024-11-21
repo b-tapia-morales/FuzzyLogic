@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using FuzzyLogic.Function.Real;
+﻿using FuzzyLogic.Function.Real;
 using FuzzyLogic.Number;
 using static System.Math;
 
@@ -15,12 +14,7 @@ namespace FuzzyLogic.Function.Interface;
 /// They must inherit from <see cref="MembershipFunction" /> instead.
 /// </para>
 /// </summary>
-/// <typeparam name="T">
-/// The type must be either <see cref="int" /> or <see cref="double" />
-/// (the reason behind it being defined as <see langword="unmanaged" />).
-/// Support for other types other than the strictly aforementioned is not allowed.
-/// </typeparam>
-public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConvertible
+public interface IMembershipFunction
 {
     /// <summary>
     /// Represents the smallest possible difference for which two <i>x</i> values are considered to represent
@@ -101,7 +95,7 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// <returns>
     /// The minimum value allowed for an <i>x</i> value that belongs to the Membership Function's support boundary.
     /// </returns>
-    T SupportLeft();
+    double SupportLeft();
 
     /// <summary>
     /// <para>
@@ -118,17 +112,16 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// <returns>
     /// The maximum value allowed for an <i>x</i> value that belongs to the Membership Function's support boundary.
     /// </returns>
-    T SupportRight();
+    double SupportRight();
 
     /// <summary>
     /// Returns the leftmost and rightmost values of the support boundary as an interval,
     /// represented by a <see cref="ValueTuple" />.
     /// </summary>
     /// <returns>The interval, represented as a <see cref="ValueTuple" />.</returns>
-    (T X0, T X1) SupportBoundary() => (SupportLeft(), SupportRight());
+    (double X0, double X1) SupportBoundary() => (SupportLeft(), SupportRight());
 
-    (T X0, T X1) FiniteSupportBoundary() => SupportBoundary();
-
+    (double X0, double X1) FiniteSupportBoundary();
 
     /// <summary>
     /// <para>
@@ -143,7 +136,7 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// <returns>
     /// The minimum value allowed for an <i>x</i> value that belongs to the Membership Function's core boundary.
     /// </returns>
-    T? CoreLeft();
+    double? CoreLeft();
 
     /// <summary>
     /// <para>
@@ -158,32 +151,32 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// <returns>
     /// The minimum value allowed for an <i>x</i> value that belongs to the Membership Function's core boundary.
     /// </returns>
-    T? CoreRight();
+    double? CoreRight();
 
     /// <summary>
     /// Returns the leftmost and rightmost values of the core boundary as an interval,
     /// represented by a <see cref="ValueTuple" />.
     /// </summary>
     /// <returns>The interval, represented as a <see cref="ValueTuple" />.</returns>
-    (T? X0, T? X1) CoreBoundary() => (CoreLeft(), CoreRight());
+    (double? X0, double? X1) CoreBoundary() => (CoreLeft(), CoreRight());
 
-    T? AlphaCutLeft(FuzzyNumber cut);
+    double? AlphaCutLeft(FuzzyNumber cut);
 
-    T? AlphaCutRight(FuzzyNumber cut);
+    double? AlphaCutRight(FuzzyNumber cut);
 
-    (T? X0, T? X1) AlphaCutBoundary(FuzzyNumber cut) => (AlphaCutLeft(cut), AlphaCutRight(cut));
+    (double? X0, double? X1) AlphaCutBoundary(FuzzyNumber cut) => (AlphaCutLeft(cut), AlphaCutRight(cut));
 
-    T? LeftBandwidth() => AlphaCutLeft(0.5);
+    double? LeftBandwidth() => AlphaCutLeft(0.5);
 
-    T? RightBandwidth() => AlphaCutRight(0.5);
+    double? RightBandwidth() => AlphaCutRight(0.5);
 
-    (T? X0, T? X1) BandwidthBoundary => (LeftBandwidth(), RightBandwidth());
+    (double? X0, double? X1) BandwidthBoundary => (LeftBandwidth(), RightBandwidth());
 
     /// <summary>
     /// Returns the membership function itself, represented as a <see cref="Func{T,TResult}" /> delegate.
     /// </summary>
     /// <returns>The membership function, represented as a <see cref="Func{T,TResult}" /> delegate.</returns>
-    Func<T, double> PureFunction() => LarsenProduct(UMax);
+    Func<double, double> PureFunction() => LarsenProduct(UMax);
 
     /// <summary>
     /// <para>
@@ -214,8 +207,8 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// A new membership function represented as a <see cref="Func{T,TResult}" /> delegate,
     /// which performs a horizontal cut over the original membership function at the given cut value <i>λ</i>.
     /// </returns>
-    /// <seealso cref="IMembershipFunction{T}.PureFunction" />
-    Func<T, double> LarsenProduct(FuzzyNumber lambda);
+    /// <seealso cref="IMembershipFunction.PureFunction" />
+    Func<double, double> LarsenProduct(FuzzyNumber lambda);
 
     /// <summary>
     /// <para>
@@ -247,8 +240,8 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// A new membership function represented as a <see cref="Func{T,TResult}" /> delegate,
     /// which performs a horizontal cut over the original membership function at the given cut value <i>α</i>.
     /// </returns>
-    /// <seealso cref="IMembershipFunction{T}.PureFunction" />
-    Func<T, double> MamdaniMinimum(FuzzyNumber alpha) => PrecomputedMamdaniMinimum(this, alpha);
+    /// <seealso cref="IMembershipFunction.PureFunction" />
+    Func<double, double> MamdaniMinimum(FuzzyNumber alpha) => PrecomputedMamdaniMinimum(this, alpha);
 
     /// <summary>
     /// <para>
@@ -263,7 +256,7 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// <param name="x">The <i>x</i> value</param>
     /// <returns>The membership degree, represented as a <see cref="FuzzyNumber" /></returns>
     /// <seealso cref="PureFunction" />
-    FuzzyNumber MembershipDegree(T x) => PureFunction()(x);
+    FuzzyNumber MembershipDegree(double x) => PureFunction()(x);
 
     /// <summary>
     /// Returns the <i>x</i> value provided as a parameter and its membership degree <i>y</i> value as a two-dimensional
@@ -274,9 +267,9 @@ public interface IMembershipFunction<T> where T : unmanaged, INumber<T>, IConver
     /// The <i>x</i> value and its membership degree <i>y</i> value as a two-dimensional point, represented by
     /// a <see cref="ValueTuple" />.
     /// </returns>
-    (T x, FuzzyNumber Y) ToPoint(T x) => (x, MembershipDegree(x));
+    (double x, FuzzyNumber Y) ToPoint(double x) => (x, MembershipDegree(x));
 
-    private static Func<T, double> PrecomputedMamdaniMinimum(IMembershipFunction<T> function, FuzzyNumber alpha)
+    private static Func<double, double> PrecomputedMamdaniMinimum(IMembershipFunction function, FuzzyNumber alpha)
     {
         if (Abs(alpha.Value) <= FuzzyNumber.Epsilon)
             return _ => 0;

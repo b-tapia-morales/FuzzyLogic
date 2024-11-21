@@ -1,7 +1,7 @@
-﻿using FuzzyLogic.Number;
+﻿using FuzzyLogic.Function.Interface;
+using FuzzyLogic.Number;
 using FuzzyLogic.Utils;
 using static System.Math;
-using static FuzzyLogic.Function.Interface.IMembershipFunction<double>;
 
 namespace FuzzyLogic.Function.Real;
 
@@ -9,7 +9,7 @@ public class TrapezoidalFunction : MembershipFunction
 {
     private readonly bool _isSymmetric;
 
-    protected TrapezoidalFunction(string name, double a, double b, double c, double d, double uMax = 1) : base(name, uMax)
+    internal protected TrapezoidalFunction(string name, double a, double b, double c, double d, double uMax = 1) : base(name, uMax)
     {
         CheckEdges(a, b, C, D);
         CheckSides(a, b, C, D);
@@ -87,7 +87,7 @@ public class TrapezoidalFunction : MembershipFunction
 
     private static void CheckSides(double a, double b, double c, double d)
     {
-        if (Abs(a - b) < DeltaX && Abs(c - d) < DeltaX)
+        if (Abs(a - b) < IMembershipFunction.DeltaX && Abs(c - d) < IMembershipFunction.DeltaX)
             throw new ArgumentException(
                 $"""
                  The following condition has been violated: a ≠ b ∨ C ≠ D (Values provides were: {a}, {b}, {c}, {d})

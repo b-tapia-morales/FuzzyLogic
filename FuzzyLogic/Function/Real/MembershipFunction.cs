@@ -3,7 +3,7 @@ using FuzzyLogic.Number;
 
 namespace FuzzyLogic.Function.Real;
 
-public abstract class MembershipFunction : IMembershipFunction<double>
+public abstract class MembershipFunction : IMembershipFunction
 {
     public string Name { get; }
     public double UMax { get; }
@@ -37,6 +37,8 @@ public abstract class MembershipFunction : IMembershipFunction<double>
     public abstract double? AlphaCutRight(FuzzyNumber cut);
 
     public abstract Func<double, double> LarsenProduct(FuzzyNumber lambda);
+
+    public virtual (double X0, double X1) FiniteSupportBoundary() => (SupportLeft(), SupportRight());
 
     private static void CheckHeight(double h)
     {

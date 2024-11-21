@@ -1,15 +1,14 @@
 ﻿using FuzzyLogic.Function.Interface;
 using FuzzyLogic.Number;
 using static System.Math;
-using static FuzzyLogic.Function.Interface.IMembershipFunction<double>;
 
 namespace FuzzyLogic.Function.Real;
 
-public class GaussianFunction : MembershipFunction, IAsymptoteFunction<double>
+public class GaussianFunction : AsymptoteFunction
 {
-    public double Inflection { get; }
+    public override double Inflection { get; }
 
-    protected GaussianFunction(string name, double mu, double sigma, double uMax = 1) : base(name, uMax)
+    internal protected GaussianFunction(string name, double mu, double sigma, double uMax = 1) : base(name, uMax)
     {
         CheckSigma(sigma);
         Mu = mu;
@@ -26,10 +25,6 @@ public class GaussianFunction : MembershipFunction, IAsymptoteFunction<double>
     public override bool IsSymmetric() => true;
 
     public override bool IsSingleton() => false;
-
-    public override double SupportLeft() => double.NegativeInfinity;
-
-    public override double SupportRight() => double.PositiveInfinity;
 
     public override double? CoreLeft() => Abs(1 - UMax) <= FuzzyNumber.Epsilon ? Mu : null;
 
@@ -56,23 +51,23 @@ public class GaussianFunction : MembershipFunction, IAsymptoteFunction<double>
     public override Func<double, double> LarsenProduct(FuzzyNumber lambda) =>
         x => lambda.Value * Exp(-(1 / 2.0) * Pow((x - Mu) / Sigma, 2));
 
-    public bool IsMonotonicallyIncreasing() => false;
+    public override bool IsMonotonicallyIncreasing() => false;
 
-    public bool IsMonotonicallyDecreasing() => false;
+    public override bool IsMonotonicallyDecreasing() => false;
 
-    public bool IsUnimodal() => true;
+    public override bool IsUnimodal() => true;
 
-    public double ApproxSupportLeft() => Mu - 3 * Sigma;
+    public override double ApproxSupportLeft() => Mu - 3 * Sigma;
 
-    public double ApproxSupportRight() => Mu + 3 * Sigma;
+    public override double ApproxSupportRight() => Mu + 3 * Sigma;
 
-    public double? ApproxCoreLeft() => CoreLeft();
+    public override double? ApproxCoreLeft() => CoreLeft();
 
-    public double? ApproxCoreRight() => CoreRight();
+    public override double? ApproxCoreRight() => CoreRight();
 
     private static void CheckSigma(double sigma)
     {
-        if (Abs(sigma) < DeltaX)
+        if (Abs(sigma) <= IMembershipFunction.DeltaX)
             throw new ArgumentException("The value for «o» cannot be equal to 0");
     }
 }

@@ -2,7 +2,7 @@
 
 namespace FuzzyLogic.Function.Interface;
 
-public interface IClosedShape : IMembershipFunction<double>
+public interface IClosedShape : IMembershipFunction
 {
     const double ErrorMargin = 1e-4;
 
