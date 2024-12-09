@@ -24,6 +24,10 @@ public abstract class MembershipFunction : IMembershipFunction
 
     public abstract bool IsSingleton();
 
+    public abstract double? PeakLeft();
+
+    public abstract double? PeakRight();
+
     public abstract double SupportLeft();
 
     public abstract double SupportRight();
@@ -38,11 +42,13 @@ public abstract class MembershipFunction : IMembershipFunction
 
     public abstract Func<double, double> LarsenProduct(FuzzyNumber lambda);
 
-    public virtual (double X0, double X1) FiniteSupportBoundary() => (SupportLeft(), SupportRight());
+    public virtual double FiniteSupportLeft() => SupportLeft();
+
+    public virtual double FiniteSupportRight() => SupportRight();
 
     private static void CheckHeight(double h)
     {
-        if (h is <= 0 or > 1)
+        if (Math.Abs(h) <= FuzzyNumber.Epsilon || h > 1)
             throw new ArgumentException(
                 $"The height “h” of the function must be in the range [0, 1] (Provided value was: {h})");
     }

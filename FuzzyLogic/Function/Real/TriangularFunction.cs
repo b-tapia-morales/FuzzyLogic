@@ -3,13 +3,15 @@ using FuzzyLogic.Number;
 using FuzzyLogic.Utils;
 using static System.Math;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace FuzzyLogic.Function.Real;
 
 public class TriangularFunction : MembershipFunction
 {
     private readonly bool _isSymmetric;
 
-    internal protected TriangularFunction(string name, double a, double b, double c, double uMax = 1) : base(name, uMax)
+    public TriangularFunction(string name, double a, double b, double c, double uMax = 1) : base(name, uMax)
     {
         CheckEdges(a, b, c);
         CheckSides(a, b, c);
@@ -22,9 +24,9 @@ public class TriangularFunction : MembershipFunction
         ) < IMembershipFunction.DeltaX;
     }
 
-    protected double A { get; }
-    protected double B { get; }
-    protected double C { get; }
+    public double A { get; }
+    public double B { get; }
+    public double C { get; }
 
     public override bool IsOpenLeft() => false;
 
@@ -33,6 +35,10 @@ public class TriangularFunction : MembershipFunction
     public override bool IsSymmetric() => _isSymmetric;
 
     public override bool IsSingleton() => Abs(1 - UMax) <= FuzzyNumber.Epsilon;
+
+    public override double? PeakLeft() => C;
+
+    public override double? PeakRight() => C;
 
     public override double SupportLeft() => A;
 
@@ -72,6 +78,8 @@ public class TriangularFunction : MembershipFunction
             return lambda.Value * ((C - x) / (C - B));
         return 0;
     };
+
+    public override string ToString() => $"Linguistic term: {Name} - Membership Function: Triangular - Sides: (a: {A}, b: {B}, c: {C}) - μMax: {UMax}";
 
     private static void CheckEdges(double a, double b, double c)
     {

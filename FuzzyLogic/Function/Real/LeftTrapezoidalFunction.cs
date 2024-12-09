@@ -1,6 +1,8 @@
 ﻿using FuzzyLogic.Number;
 using static System.Math;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace FuzzyLogic.Function.Real;
 
 public class LeftTrapezoidalFunction : MembershipFunction
@@ -12,8 +14,8 @@ public class LeftTrapezoidalFunction : MembershipFunction
         B = b;
     }
 
-    protected double A { get; }
-    protected double B { get; }
+    public double A { get; }
+    public double B { get; }
 
     public override bool IsOpenLeft() => Abs(1 - UMax) <= FuzzyNumber.Epsilon;
 
@@ -22,6 +24,10 @@ public class LeftTrapezoidalFunction : MembershipFunction
     public override bool IsSymmetric() => false;
 
     public override bool IsSingleton() => false;
+
+    public override double? PeakLeft() => double.NegativeInfinity;
+
+    public override double? PeakRight() => A;
 
     public override double SupportLeft() => double.NegativeInfinity;
 
@@ -54,6 +60,8 @@ public class LeftTrapezoidalFunction : MembershipFunction
                 return lambda.Value;
             return 0;
         };
+
+    public override string ToString() => $"Linguistic term: {Name} - Membership Function: Open Left Trapezoidal - Sides: (a: {A}, b: {B}) - μMax: {UMax}";
 
     private static void CheckValues(double a, double b)
     {

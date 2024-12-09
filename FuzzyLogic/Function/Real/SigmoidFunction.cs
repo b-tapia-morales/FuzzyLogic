@@ -2,6 +2,8 @@
 using FuzzyLogic.Number;
 using static System.Math;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace FuzzyLogic.Function.Real;
 
 public class SigmoidFunction : AsymptoteFunction
@@ -13,15 +15,15 @@ public class SigmoidFunction : AsymptoteFunction
 
     public override double Inflection { get; }
 
-    internal protected SigmoidFunction(string name, double a, double c, double uMax = 1) : base(name, uMax)
+    public SigmoidFunction(string name, double a, double c, double uMax = 1) : base(name, uMax)
     {
         CheckAValue(A);
         A = a;
         C = Inflection = c;
     }
 
-    protected double A { get; }
-    protected double C { get; }
+    public double A { get; }
+    public double C { get; }
 
     public override bool IsOpenLeft() => A < 0;
 
@@ -30,6 +32,10 @@ public class SigmoidFunction : AsymptoteFunction
     public override bool IsSymmetric() => false;
 
     public override bool IsSingleton() => false;
+
+    public override double? PeakLeft() => null;
+
+    public override double? PeakRight() => null;
 
     public override double? CoreLeft() => null;
 
@@ -69,6 +75,8 @@ public class SigmoidFunction : AsymptoteFunction
 
     public override double? ApproxCoreRight() =>
         _coreRight ??= AlphaCutRight(IsMonotonicallyIncreasing() ? FuzzyNumber.Epsilon : Abs(UMax - FuzzyNumber.Epsilon))!.Value;
+
+    public override string ToString() => $"Linguistic term: {Name} - Membership Function: Sigmoidal - Sides: (A: {A}, C: {C}) - μMax: {UMax}";
 
     private static void CheckAValue(double a)
     {

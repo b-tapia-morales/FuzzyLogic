@@ -16,17 +16,19 @@ public abstract class AsymptoteFunction(string name, double uMax) : MembershipFu
 
     public abstract double ApproxSupportRight();
 
-    public (double X0, double X1) ApproxSupportBoundary() => (ApproxSupportLeft(), ApproxSupportRight());
+    public (double X0, double X1) ApproxSupportInterval() => (ApproxSupportLeft(), ApproxSupportRight());
 
     public abstract double? ApproxCoreLeft();
 
     public abstract double? ApproxCoreRight();
 
-    public (double? x1, double? x2) ApproxCoreBoundary() => (ApproxCoreLeft(), ApproxCoreRight());
+    public (double? x1, double? x2) ApproxCoreInterval() => (ApproxCoreLeft(), ApproxCoreRight());
 
     public override double SupportLeft() => double.NegativeInfinity;
 
     public override double SupportRight() => double.PositiveInfinity;
 
-    public override (double X0, double X1) FiniteSupportBoundary() => ApproxSupportBoundary();
+    public override double FiniteSupportLeft() => ApproxSupportLeft();
+
+    public override double FiniteSupportRight() => ApproxSupportRight();
 }

@@ -3,16 +3,19 @@ using FuzzyLogic.Number;
 using FuzzyLogic.Utils;
 using static System.Math;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace FuzzyLogic.Function.Real;
 
 public class TrapezoidalFunction : MembershipFunction
 {
     private readonly bool _isSymmetric;
 
-    internal protected TrapezoidalFunction(string name, double a, double b, double c, double d, double uMax = 1) : base(name, uMax)
+    public TrapezoidalFunction(string name, double a, double b, double c, double d, double uMax = 1) : base(name, uMax)
     {
-        CheckEdges(a, b, C, D);
-        CheckSides(a, b, C, D);
+        CheckIfTriangle(b, c);
+        CheckIfRectangular(a, b, c, d);
+        CheckEdges(a, b, c, d);
         A = a;
         B = b;
         C = c;
@@ -23,10 +26,10 @@ public class TrapezoidalFunction : MembershipFunction
         ) < FuzzyNumber.Epsilon;
     }
 
-    protected double A { get; }
-    protected double B { get; }
-    protected double C { get; }
-    protected double D { get; }
+    public double A { get; }
+    public double B { get; }
+    public double C { get; }
+    public double D { get; }
 
     public override bool IsOpenLeft() => false;
 
@@ -35,6 +38,10 @@ public class TrapezoidalFunction : MembershipFunction
     public override bool IsSymmetric() => _isSymmetric;
 
     public override bool IsSingleton() => false;
+
+    public override double? PeakLeft() => B;
+
+    public override double? PeakRight() => C;
 
     public override double SupportLeft() => A;
 
@@ -75,23 +82,38 @@ public class TrapezoidalFunction : MembershipFunction
         return 0;
     };
 
-    private static void CheckEdges(double a, double b, double c, double d)
+    public override string ToString() => $"Linguistic term: {Name} - Membership Function: Trapezoidal - Sides: (a: {A}, b: {B}, c: {C}, d: {D}) - μMax: {UMax}";
+
+    private static void CheckIfTriangle(double b, double c)
     {
-        if (a > b || b >= c || c > d)
+        if (Abs(b - c) <= IMembershipFunction.DeltaX)
             throw new ArgumentException(
                 $"""
-                 The following condition has been violated: a ≤ b < C ≤ D (Values provides were: {a}, {b}, {c}, {d})
-                 The resulting shape is not a Trapezoid.
+                 The following condition has been violated: B ≠ C (Values provides were: {b}, {c}).
+                 The resulting shape is a Triangle, not a Trapezoidal.
+                 If you wish to use a triangular function, create an instance of the {nameof(TriangularFunction)} class instead."");
                  """);
     }
 
-    private static void CheckSides(double a, double b, double c, double d)
+    private static void CheckIfRectangular(double a, double b, double c, double d)
     {
-        if (Abs(a - b) < IMembershipFunction.DeltaX && Abs(c - d) < IMembershipFunction.DeltaX)
+        if (Abs(b - a) < IMembershipFunction.DeltaX && Abs(d - c) < IMembershipFunction.DeltaX)
             throw new ArgumentException(
                 $"""
-                 The following condition has been violated: a ≠ b ∨ C ≠ D (Values provides were: {a}, {b}, {c}, {d})
-                 The resulting shape is either a Rectangle or a Square
+                 The following condition has been violated: A ≠ B ∨ C ≠ D (Values provides were: {a}, {b}, {c}, {d})
+                 The resulting shape is either a Rectangle or a Square, not a Trapezoidal.
                  """);
+    }
+
+    private static void CheckEdges(double a, double b, double c, double d)
+    {
+
+        if (a > b || b > c || c > d)
+            throw new ArgumentException(
+                $"""
+                 The following condition has been violated: A <= B < C <= D (Values provides were: {a}, {b}, {c}, {d})
+                 The resulting shape is not a Trapezoid.
+                 """);
+
     }
 }

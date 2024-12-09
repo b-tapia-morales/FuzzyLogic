@@ -80,6 +80,12 @@ public interface IMembershipFunction
 
     bool IsSingleton();
 
+    double? PeakLeft();
+
+    double? PeakRight();
+
+    (double? X0, double? X1) PeakInterval() => (PeakLeft(), PeakRight());
+
     /// <summary>
     /// <para>
     /// Returns the leftmost <i>x</i> value of the Membership Function's support boundary
@@ -119,9 +125,13 @@ public interface IMembershipFunction
     /// represented by a <see cref="ValueTuple" />.
     /// </summary>
     /// <returns>The interval, represented as a <see cref="ValueTuple" />.</returns>
-    (double X0, double X1) SupportBoundary() => (SupportLeft(), SupportRight());
+    (double X0, double X1) SupportInterval() => (SupportLeft(), SupportRight());
 
-    (double X0, double X1) FiniteSupportBoundary();
+    double FiniteSupportLeft();
+
+    double FiniteSupportRight();
+
+    (double X0, double X1) FiniteSupportInterval() => (FiniteSupportLeft(), FiniteSupportRight());
 
     /// <summary>
     /// <para>
@@ -158,19 +168,19 @@ public interface IMembershipFunction
     /// represented by a <see cref="ValueTuple" />.
     /// </summary>
     /// <returns>The interval, represented as a <see cref="ValueTuple" />.</returns>
-    (double? X0, double? X1) CoreBoundary() => (CoreLeft(), CoreRight());
+    (double? X0, double? X1) CoreInterval() => (CoreLeft(), CoreRight());
 
     double? AlphaCutLeft(FuzzyNumber cut);
 
     double? AlphaCutRight(FuzzyNumber cut);
 
-    (double? X0, double? X1) AlphaCutBoundary(FuzzyNumber cut) => (AlphaCutLeft(cut), AlphaCutRight(cut));
+    (double? X0, double? X1) AlphaCutInterval(FuzzyNumber cut) => (AlphaCutLeft(cut), AlphaCutRight(cut));
 
     double? LeftBandwidth() => AlphaCutLeft(0.5);
 
     double? RightBandwidth() => AlphaCutRight(0.5);
 
-    (double? X0, double? X1) BandwidthBoundary => (LeftBandwidth(), RightBandwidth());
+    (double? X0, double? X1) BandwidthInterval => (LeftBandwidth(), RightBandwidth());
 
     /// <summary>
     /// Returns the membership function itself, represented as a <see cref="Func{T,TResult}" /> delegate.

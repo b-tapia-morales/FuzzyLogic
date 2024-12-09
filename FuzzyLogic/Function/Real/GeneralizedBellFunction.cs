@@ -2,6 +2,8 @@
 using FuzzyLogic.Number;
 using static System.Math;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace FuzzyLogic.Function.Real;
 
 public class GeneralizedBellFunction : AsymptoteFunction
@@ -11,17 +13,18 @@ public class GeneralizedBellFunction : AsymptoteFunction
 
     public override double Inflection { get; }
 
-    internal protected GeneralizedBellFunction(string name, double a, double b, double c, double uMax = 1) : base(name, uMax)
+    public GeneralizedBellFunction(string name, double a, double b, double c, double uMax = 1) : base(name, uMax)
     {
         CheckAValue(a);
+        CheckValues(a, b, c);
         A = a;
         B = b;
         C = Inflection = c;
     }
 
-    protected double A { get; }
-    protected double B { get; }
-    protected double C { get; }
+    public double A { get; }
+    public double B { get; }
+    public double C { get; }
 
     public override bool IsOpenLeft() => false;
 
@@ -31,9 +34,9 @@ public class GeneralizedBellFunction : AsymptoteFunction
 
     public override bool IsSingleton() => false;
 
-    public override double SupportLeft() => (this as AsymptoteFunction).SupportLeft();
+    public override double? PeakLeft() => C;
 
-    public override double SupportRight() => (this as AsymptoteFunction).SupportRight();
+    public override double? PeakRight() => C;
 
     public override double? CoreLeft() => Abs(1 - UMax) <= FuzzyNumber.Epsilon ? C : null;
 
@@ -74,9 +77,17 @@ public class GeneralizedBellFunction : AsymptoteFunction
 
     public override double? ApproxCoreRight() => CoreRight();
 
+    public override string ToString() => $"Linguistic term: {Name} - Membership Function: Generalized Bell - Sides: (a: {A}, b: {B}, c: {C}) - μMax: {UMax}";
+
     private static void CheckAValue(double a)
     {
         if (Abs(a) < IMembershipFunction.DeltaX)
             throw new ArgumentException("The value for «a» cannot be equal to 0");
+    }
+
+    private static void CheckValues(double a, double b, double c)
+    {
+        if (b < a || Abs(b - a) <= IMembershipFunction.DeltaX || c < b || Abs(c - b) <= IMembershipFunction.DeltaX)
+            throw new ArgumentException("a < b < c");
     }
 }
