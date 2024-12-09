@@ -1,5 +1,8 @@
 ﻿using System.Globalization;
-using FuzzyLogic.Number.Enums;
+using FuzzyLogic.Enum.Negation;
+using FuzzyLogic.Enum.Residuum;
+using FuzzyLogic.Enum.TConorm;
+using FuzzyLogic.Enum.TNorm;
 using static System.Math;
 
 // ReSharper disable ArrangeThisQualifier
@@ -101,42 +104,49 @@ public readonly struct FuzzyNumber : IComparable<FuzzyNumber>, IComparable, IEqu
     /// <exception cref="ArgumentException">Thrown if the value is not in the range μ(X) ∈ [0, 1].</exception>
     public static FuzzyNumber Of(double value)
     {
-        if (Abs(1 - value) < Epsilon) value = 1;
-        if (Abs(value) < Epsilon) value = 0;
-        if (value is < 0 or > 1)
-            throw new ArgumentException(
-                $"Value can't be lesser than 0 or greater than 1 (Value provided was: {value})");
+        switch (value)
+        {
+            case < 0 when Abs(value) > Epsilon:
+                throw new ArgumentException(
+                    $"Value can't be lesser than 0 by a margin greater than ϵ = {Epsilon} (Value provided was: {value}, margin was: {Abs(value)}.)");
+            case > 1 when Abs(1 - value) > Epsilon:
+                throw new ArgumentException(
+                    $"Value can't be greater than 1 by a margin greater than ϵ = {Epsilon} (Value provided was: {value}, margin was: {Abs(1 - value)})");
+        }
+
+        if (Abs(value) <= Epsilon) value = 0;
+        if (Abs(1 - value) <= Epsilon) value = 1;
         return new FuzzyNumber(value);
     }
 
     /// <summary>
     /// Represents the negation operation NOT.
-    /// The operation defaults to the <see cref="Complement.Standard"/> operator: <i>¬A = 1 - A</i>.
+    /// The operation defaults to the <see cref="Negation.Standard"/> operator: <i>∼(x) = 1 - x</i>.
     /// </summary>
-    /// <param name="a">A fuzzy number</param>
+    /// <param name="x">A fuzzy number</param>
     /// <returns>The resulting fuzzy number after applying the NOT operator.</returns>
-    /// <seealso cref="Complement"/>
-    public static FuzzyNumber operator !(FuzzyNumber a) => Complement.Standard.Negation(a);
+    /// <seealso cref="Negation"/>
+    public static FuzzyNumber operator !(FuzzyNumber x) => Negation.Standard.Function(x);
 
     /// <summary>
     /// Represents the disjunction operation AND.
-    /// The operation defaults to the <see cref="TriangularNorm.Minimum"/> operator: <i>A ∧ B = Min(A, B)</i>.
+    /// The operation defaults to the <see cref="Norm.Minimum"/> operator: <i>T(x, y) = Min(x, y)</i>.
     /// </summary>
-    /// <param name="a">A fuzzy number</param>
-    /// <param name="b">A fuzzy number</param>
+    /// <param name="x">A fuzzy number</param>
+    /// <param name="y">A fuzzy number</param>
     /// <returns>The resulting fuzzy number after applying the NOT operator.</returns>
-    /// <seealso cref="TriangularNorm"/>
-    public static FuzzyNumber operator &(FuzzyNumber a, FuzzyNumber b) => TriangularNorm.Minimum.Disjunction(a, b);
+    /// <seealso cref="Norm"/>
+    public static FuzzyNumber operator &(FuzzyNumber x, FuzzyNumber y) => Norm.Minimum.Function(x, y);
 
     /// <summary>
     /// Represents the conjunction operation OR.
-    /// The operation defaults to the <see cref="TriangularConorm.Maximum"/> operator: <i>A ∨ B = Max(A, B)</i>.
+    /// The operation defaults to the <see cref="Conorm.Maximum"/> operator: <i>⊥(x, y) = Max(x, y)</i>.
     /// </summary>
-    /// <param name="a">A fuzzy number</param>
-    /// <param name="b">A fuzzy number</param>
+    /// <param name="x">A fuzzy number</param>
+    /// <param name="y">A fuzzy number</param>
     /// <returns>The resulting fuzzy number after applying the NOT operator.</returns>
-    /// <seealso cref="TriangularNorm"/>
-    public static FuzzyNumber operator |(FuzzyNumber a, FuzzyNumber b) => TriangularConorm.Maximum.Conjunction(a, b);
+    /// <seealso cref="Norm"/>
+    public static FuzzyNumber operator |(FuzzyNumber x, FuzzyNumber y) => Conorm.Maximum.Function(x, y);
 
     /// <summary>
     /// Represents the implication operation THEN.
@@ -146,7 +156,7 @@ public readonly struct FuzzyNumber : IComparable<FuzzyNumber>, IComparable, IEqu
     /// <param name="b">A fuzzy number</param>
     /// <returns>The resulting fuzzy number after applying the NOT operator.</returns>
     /// <seealso cref="Residuum"/>
-    public static FuzzyNumber operator >> (FuzzyNumber a, FuzzyNumber b) => Residuum.Godel.Implication(a, b);
+    public static FuzzyNumber operator >> (FuzzyNumber a, FuzzyNumber b) => Residuum.Godel.Function(a, b);
 
     /// <summary>
     /// Defines an implicit conversion from a <see cref="FuzzyNumber" /> to a <see cref="double" /> value.
