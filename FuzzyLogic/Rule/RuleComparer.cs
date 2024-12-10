@@ -1,10 +1,8 @@
-﻿using FuzzyLogic.Number;
+﻿namespace FuzzyLogic.Rule;
 
-namespace FuzzyLogic.Rule;
-
-public class HighestPriority<T> : IComparer<IRule<T>> where T : struct, IFuzzyNumber<T>
+public class HighestPriority : IComparer<IRule>
 {
-    public int Compare(IRule<T>? x, IRule<T>? y)
+    public int Compare(IRule? x, IRule? y)
     {
         if (x == null || y == null)
             throw new ArgumentException("Rule references cannot be null");
@@ -16,9 +14,9 @@ public class HighestPriority<T> : IComparer<IRule<T>> where T : struct, IFuzzyNu
     }
 }
 
-public class ShortestPremise<T> : IComparer<IRule<T>> where T : struct, IFuzzyNumber<T>
+public class ShortestPremise : IComparer<IRule>
 {
-    public int Compare(IRule<T>? x, IRule<T>? y)
+    public int Compare(IRule? x, IRule? y)
     {
         if (x == null || y == null)
             throw new ArgumentException("Rule references cannot be null");
@@ -30,9 +28,9 @@ public class ShortestPremise<T> : IComparer<IRule<T>> where T : struct, IFuzzyNu
     }
 }
 
-public class LargestPremise<T> : IComparer<IRule<T>> where T : struct, IFuzzyNumber<T>
+public class LargestPremise : IComparer<IRule>
 {
-    public int Compare(IRule<T>? x, IRule<T>? y)
+    public int Compare(IRule? x, IRule? y)
     {
         if (x == null || y == null)
             throw new ArgumentException("Rule references cannot be null");
@@ -44,17 +42,10 @@ public class LargestPremise<T> : IComparer<IRule<T>> where T : struct, IFuzzyNum
     }
 }
 
-public class MostKnownFacts<T> : IComparer<IRule<T>> where T : struct, IFuzzyNumber<T>
+public class MostKnownFacts(IDictionary<string, double> facts) : IComparer<IRule>
 {
-    private readonly IDictionary<string, double> _facts;
-
-    public MostKnownFacts(IDictionary<string, double> facts) => _facts = facts;
-
-    public int Compare(IRule<T>? x, IRule<T>? y)
+    public int Compare(IRule? x, IRule? y)
     {
-        int KnownFactsCount(IRule<T> rule) =>
-            (rule.Antecedent != null && rule.Antecedent.IsApplicable(_facts) ? 1 : 0) +
-            rule.Connectives.Count(e => e.IsApplicable(_facts));
 
         if (x == null || y == null)
             throw new ArgumentException("Rule references cannot be null");
@@ -63,13 +54,17 @@ public class MostKnownFacts<T> : IComparer<IRule<T>> where T : struct, IFuzzyNum
         var a = KnownFactsCount(x);
         var b = KnownFactsCount(y);
         return a.CompareTo(b);
+
+        int KnownFactsCount(IRule rule) =>
+            (rule.Conditional != null && rule.Conditional.IsApplicable(facts) ? 1 : 0) +
+            rule.Connectives.Count(e => e.IsApplicable(facts));
     }
 }
 
 public enum ComparingMethod
 {
-    HighestPriority = 1,
-    ShortestPremise = 2,
-    LargestPremise = 3,
-    MostKnownFacts = 4
+    HighestPriority,
+    ShortestPremise,
+    LargestPremise,
+    MostKnownFacts
 }

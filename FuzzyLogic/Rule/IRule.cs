@@ -1,9 +1,13 @@
-﻿using FuzzyLogic.Function.Implication;
+﻿using FuzzyLogic.Enum.Family;
+using FuzzyLogic.Enum.Negation;
+using FuzzyLogic.Enum.Residuum;
+using FuzzyLogic.Enum.TConorm;
+using FuzzyLogic.Enum.TNorm;
 using FuzzyLogic.Function.Interface;
+using FuzzyLogic.Knowledge.Linguistic;
 using FuzzyLogic.Number;
 using FuzzyLogic.Proposition;
 using FuzzyLogic.Proposition.Enums;
-using static FuzzyLogic.Function.Implication.InferenceMethod;
 
 namespace FuzzyLogic.Rule;
 
@@ -14,7 +18,7 @@ namespace FuzzyLogic.Rule;
 /// </para>
 /// <para>
 /// According to propositional logic, to be considered valid, a rule must have both an
-/// <see cref="Antecedent" /> and a <see cref="Consequent" />.
+/// <see cref="Conditional" /> and a <see cref="Consequent" />.
 /// <see cref="IProposition">Propositions</see> using the <see cref="Connective.And">Disjunctive</see> and <see cref="Connective.Or">Conjunctive</see>
 /// operators in between are considered optional.
 /// </para>
@@ -53,83 +57,66 @@ namespace FuzzyLogic.Rule;
 /// <seealso cref="DuplicatedAntecedentException" />
 /// <seealso cref="NegatedConsequentException"/>
 /// <seealso cref="FinalizedRuleException" />
-public interface IRule : IComparable<IRule>, IComparer<IRule>
+public interface IRule : IComparable<IRule>, IComparer<IRule>, IEquatable<IRule>
 {
-    public IProposition? Antecedent { get; set; }
+    public ILinguisticBase LinguisticBase { get; }
+    public IProposition? Conditional { get; set; }
     public ICollection<IProposition> Connectives { get; }
     public IProposition? Consequent { get; set; }
     public bool IsFinalized { get; set; }
     public RulePriority Priority { get; }
 
-    /// <summary>
-    /// Appends a <see cref="IProposition">Proposition</see> with the <see cref="Proposition.Enums.Connective.If" />
-    /// connective to the rule.
-    /// </summary>
-    /// <param name="proposition">The proposition</param>
-    /// <returns>The rule itself with the <see cref="Proposition.Enums.Connective.If" /> part of the rule appended.</returns>
-    /// <exception cref="DuplicatedAntecedentException">
-    /// A proposition with the <see cref="Proposition.Enums.Connective.If" /> connective already exists.
-    /// </exception>
-    /// <exception cref="FinalizedRuleException">
-    /// The rule has already been <see cref="IsFinalized">Finalized</see>.
-    /// </exception>
-    IRule If(IProposition proposition);
+    static virtual IRule Create(ILinguisticBase linguisticBase, RulePriority priority = RulePriority.Normal) => throw new NotImplementedException();
 
-    /// <summary>
-    /// Appends a <see cref="IProposition">Proposition</see> with the <see cref="Proposition.Enums.Connective.And" />
-    /// connective to the rule.
-    /// </summary>
-    /// <param name="proposition">The proposition</param>
-    /// <returns>The rule itself with the <see cref="Proposition.Enums.Connective.If" /> part of the rule appended.</returns>
-    /// <exception cref="MissingAntecedentException">
-    /// There is no existing proposition with the <see cref="Proposition.Enums.Connective.If" /> connective.
-    /// </exception>
-    /// <exception cref="FinalizedRuleException">
-    /// The rule has already been <see cref="IsFinalized">Finalized</see>.
-    /// </exception>
-    IRule And(IProposition proposition);
+    IRule If(string variableName, LinguisticHedge linguisticHedge, string termName);
 
-    /// <summary>
-    /// Appends a <see cref="IProposition">Proposition</see> with the <see cref="Connective.Or" /> connective to the rule.
-    /// </summary>
-    /// <param name="proposition">The proposition</param>
-    /// <returns>The rule itself with the <see cref="Connective.If" /> part of the rule appended.</returns>
-    /// <exception cref="MissingAntecedentException">
-    /// There is no existing proposition with the <see cref="Connective.If" /> connective.
-    /// </exception>
-    /// <exception cref="FinalizedRuleException">
-    /// The rule has already been <see cref="IsFinalized">Finalized</see>.
-    /// </exception>
-    IRule Or(IProposition proposition);
+    IRule If(string variableName, string termName) =>
+        If(variableName, LinguisticHedge.None, termName);
 
-    /// <summary>
-    /// Appends a <see cref="IProposition">Proposition</see> with the <see cref="Proposition.Enums.Connective.Then" />
-    /// connective to the rule.
-    /// </summary>
-    /// <param name="proposition">The proposition</param>
-    /// <returns>The rule itself with the <see cref="Connective.If" /> part of the rule appended.</returns>
-    /// <exception cref="MissingAntecedentException">
-    /// There is no existing proposition with the <see cref="Connective.If" /> connective.
-    /// </exception>
-    /// <exception cref="NegatedConsequentException">
-    /// The proposition is in negated form.
-    /// </exception>
-    /// <exception cref="FinalizedRuleException">
-    /// The rule has already been <see cref="IsFinalized">Finalized</see>.
-    /// </exception>
-    IRule Then(IProposition proposition);
+    IRule IfNot(string variableName, LinguisticHedge linguisticHedge, string termName);
+
+    IRule IfNot(string variableName, string termName) =>
+        IfNot(variableName, LinguisticHedge.None, termName);
+
+
+    IRule And(string variableName, LinguisticHedge linguisticHedge, string termName);
+
+    IRule And(string variableName, string termName) =>
+        And(variableName, LinguisticHedge.None, termName);
+
+    IRule AndNot(string variableName, LinguisticHedge linguisticHedge, string termName);
+
+    IRule AndNot(string variableName, string termName) =>
+        AndNot(variableName, LinguisticHedge.None, termName);
+
+    public IRule Or(string variableName, LinguisticHedge linguisticHedge, string termName);
+
+    public IRule Or(string variableName, string termName) =>
+        Or(variableName, LinguisticHedge.None, termName);
+
+    public IRule OrNot(string variableName, LinguisticHedge linguisticHedge, string termName);
+
+    public IRule OrNot(string variableName, string termName) =>
+        OrNot(variableName, LinguisticHedge.None, termName);
+
+    public IRule Then(string variableName, LinguisticHedge linguisticHedge, string termName);
+
+    public IRule Then(string variableName, string termName) =>
+        Then(variableName, LinguisticHedge.None, termName);
 
     /// <summary>
     /// Determines whether the rule is valid or not according to propositional logic; that is,
-    /// it must have both an <see cref="Antecedent" /> and a <see cref="Consequent" />.
+    /// it must have both an <see cref="Conditional" /> and a <see cref="Consequent" />.
     /// </summary>
     /// <returns><see langword="true" />, if the rule is valid; otherwise, <see langword="false"/>.</returns>
     bool IsValid();
 
     /// <summary>
+    /// <para>
     /// Determines whether the rule is applicable.
-    /// To be determined as such, the following two conditions must be met:
+    /// </para>
     /// <list type="number">
+    /// <listheader>To be determined as such, the following two conditions must be met:</listheader>
     /// <item>
     /// <description>
     /// The rule is valid, according to propositional logic.
@@ -156,16 +143,16 @@ public interface IRule : IComparable<IRule>, IComparer<IRule>
     /// <param name="variableName">The name of the Linguistic Variable</param>
     /// <returns><see langword="true" /> if the rule uses the Linguistic Variable as a part of its premise;
     /// otherwise, <see langword="false" />.</returns>
-    bool PremiseContainsVariable(string variableName);
+    bool PremiseContains(string variableName);
 
     /// <summary>
-    /// Determines whether the rule uses the Linguistic Variable, which is uniquely identifiable by the name provided as
-    /// a parameter, as a part of its conclusion.
+    /// Determines whether the rule uses the referenced <see cref="Variable.IVariable">Linguistic Variable</see>
+    /// as a part of its conclusion.
     /// </summary>
     /// <param name="variableName">The name of the Linguistic Variable</param>
     /// <returns><see langword="true" /> if the rule uses the Linguistic Variable as a part of its conclusion;
     /// otherwise, <see langword="false" />.</returns>
-    bool ConclusionContainsVariable(string variableName);
+    bool ConsequentContains(string variableName);
 
     /// <summary>
     /// Gets the number of propositions contained in the premise part of the rule.
@@ -175,97 +162,68 @@ public interface IRule : IComparable<IRule>, IComparer<IRule>
 
     /// <summary>
     /// <para>
-    /// Applies all the unary operators to each proposition in the premise part of the rule.
-    /// A unary operator only needs of an atomic term to be applied.
-    /// In this context, examples of a unary operator are the
-    /// <see cref="Literal.Is">Affirmation</see> and the <see cref="Literal.IsNot">Negation</see> of a proposition.
+    /// Applies all unary operators to each proposition in the premise part of the rule.
+    /// In this context, unary operators are the <see cref="Literal.Is">Affirmation</see>
+    /// and the <see cref="Literal.IsNot">Negation</see> of a proposition.
     /// </para>
     /// <list type="number">
-    /// <listheader>The process applies the following order of precedence:</listheader>
+    /// <listheader>The method processes the unary operations in the following order of precedence:</listheader>
     /// <item>
     /// <description>
-    /// The <see cref="Double">Crisp number</see> (given as a fact from the dictionary provided as a parameter)
-    /// is transformed to a <see cref="FuzzyNumber">Fuzzy number</see> by evaluating its
-    /// <see cref="IMembershipFunction{T}.MembershipDegree">Membership Degree.</see>
+    /// A <see cref="double"/> crisp value is transformed into a <see cref="FuzzyNumber">Fuzzy Number</see>
+    /// by evaluating its <see cref="IMembershipFunction.MembershipDegree">Membership Degree</see>.
     /// </description>
     /// </item>
     /// <item>
     /// <description>
-    /// The <see cref="LinguisticHedge">Hedge function</see> is applied over it.
+    /// The <see cref="LinguisticHedge">Linguistic Hedge function</see> is applied over the resulting Fuzzy Number.
     /// </description>
     /// </item>
     /// <item>
     /// <description>
-    /// The <see cref="Literal">Literal function</see> is applied over it.
+    /// The <see cref="Literal">Literal function</see> is applied to finalize the operation.
     /// </description>
     /// </item>
     /// </list>
-    /// To be able to operate, it must be proven first that the rule <see cref="IsApplicable">Is Applicable</see>;
-    /// otherwise, returns an empty collection.
+    /// The rule must satisfy the <see cref="IsApplicable"/> condition for the method to operate;
+    /// otherwise, it returns an empty collection.
     /// </summary>
-    /// <param name="facts">A <see cref="IDictionary{TKey,TValue}">Dictionary</see> of facts</param>
+    /// <param name="facts">
+    ///     A dictionary where each <see cref="string"/> key represents the name of a
+    ///     <see cref="Variable.IVariable">Linguistic Variable</see>, and each associated
+    ///     <see cref="double"/> value is its crisp value.
+    /// </param>
+    /// <param name="negation">Specifies the negation operator to be used.</param>
     /// <returns>
-    /// A collection of fuzzy numbers if the rule <see cref="IsApplicable">Is Applicable</see>;
+    /// A collection of <see cref="FuzzyNumber">Fuzzy Numbers</see> after applying all unary operators
+    /// if the rule <see cref="IsApplicable">Is Applicable</see>;
     /// otherwise, an empty collection.
     /// </returns>
     /// <seealso cref="IsApplicable">IsApplicable</seealso>
-    IEnumerable<FuzzyNumber> ApplyOperators(IDictionary<string, double> facts);
+    IEnumerable<FuzzyNumber> ApplyUnaryOperators(IDictionary<string, double> facts, INegation negation);
 
-    /// <summary>
-    /// <para>
-    /// Applies all the unary operators to each <see cref="FuzzyNumber">Fuzzy number</see> in the premise
-    /// part of the rule and aggregates them into a single Fuzzy number,
-    /// which can be understood as the weight of the premise itself.
-    /// This process succeeds the application of unary operators in the <see cref="ApplyOperators">ApplyOperators</see> method,
-    /// which is why it operates directly over fuzzy numbers instead of propositions.
-    /// </para>
-    /// <para>
-    /// A unary operator needs of two atomic terms and a <see cref="Connective" /> between them to be applied.
-    /// In this context, examples of a unary operator are the <see cref="Connective.Or">Conjunction</see>
-    /// and the <see cref="Connective.And">Disjunction</see> operators.
-    /// </para>
-    /// <para>
-    /// To be able to operate, it must be proven first that the rule is <see cref="IsApplicable">Applicable</see>;
-    /// otherwise, returns null.
-    /// </para>
-    /// </summary>
-    /// <param name="facts">A <see cref="IDictionary{TKey,TValue}">Dictionary</see> of facts</param>
-    /// <returns>
-    /// A <see cref="FuzzyNumber" /> if the rule is <see cref="IsApplicable">Applicable</see>;
-    /// otherwise, null.
-    /// </returns>
-    /// <seealso cref="IsApplicable">IsApplicable</seealso>
-    /// <seealso cref="ApplyOperators">ApplyOperators</seealso>
-    FuzzyNumber? EvaluatePremiseWeight(IDictionary<string, double> facts);
+    IEnumerable<FuzzyNumber> ApplyUnaryOperators(IDictionary<string, double> facts) =>
+        ApplyUnaryOperators(facts, Negation.Standard);
 
-    /// <summary>
-    /// <para>
-    /// Returns a new membership function, represented as a <see cref="Func{T,TResult}" /> delegate,
-    /// originating from applying the implication method, which uses the premise weight determined in the
-    /// <see cref="EvaluatePremiseWeight">EvaluatePremiseWeight</see> method,
-    /// as the height point to apply a Lambda Cut over the original membership function in the consequent part of the rule.
-    ///     </para>
-    ///     <para>
-    ///         To be able to operate, it must be proven first that the rule is <see cref="IsApplicable">Applicable</see>;
-    ///         otherwise, returns null.
-    ///     </para>
-    /// </summary>
-    /// <param name="facts">A <see cref="IDictionary{TKey,TValue}">Dictionary</see> of facts</param>
-    /// <param name="method"></param>
-    /// <returns>The new membership function, represented as a <see cref="Func{T,TResult}" /> delegate.</returns>
-    /// <seealso cref="IsApplicable">IsApplicable</seealso>
-    /// <seealso cref="ApplyOperators">ApplyOperators</seealso>
-    /// <seealso cref="EvaluatePremiseWeight">EvaluatePremiseWeight</seealso>
-    /// <seealso cref="IFuzzyImplication.AlphaCut">LambdaCutFunction</seealso>
-    Func<double, double>? ApplyImplication(IDictionary<string, double> facts, InferenceMethod method = Mamdani);
+    public FuzzyNumber EvaluatePremiseWeight(IDictionary<string, double> facts, INegation negation, INorm tNorm, IConorm tConorm);
 
-    FuzzyNumber EvaluateConclusionWeight(IDictionary<string, double> facts);
+    public FuzzyNumber EvaluatePremiseWeight(IDictionary<string, double> facts, INegation negation, IOperatorFamily operatorFamily) =>
+        EvaluatePremiseWeight(facts, negation, operatorFamily.Norm, operatorFamily.Conorm);
 
-    FuzzyNumber EvaluateRuleWeight(IDictionary<string, double> facts);
+    public FuzzyNumber EvaluatePremiseWeight(IDictionary<string, double> facts, IOperatorFamily operatorFamily) =>
+        EvaluatePremiseWeight(facts, operatorFamily.Negation, operatorFamily.Norm, operatorFamily.Conorm);
 
-    double? CalculateArea(IDictionary<string, double> facts,
-        InferenceMethod method = Mamdani, double errorMargin = IClosedShape.ErrorMargin);
+    FuzzyNumber EvaluateConclusionWeight(IDictionary<string, double> facts, INegation negation);
 
-    (double X, double Y)? CalculateCentroid(IDictionary<string, double> facts,
-        InferenceMethod method = Mamdani, double errorMargin = IClosedShape.ErrorMargin);
+    FuzzyNumber EvaluateConclusionWeight(IDictionary<string, double> facts) =>
+        EvaluateConclusionWeight(facts, Negation.Standard);
+
+    FuzzyNumber EvaluateRuleWeight(IDictionary<string, double> facts, INegation negation,
+        INorm tNorm, IConorm tConorm, IResiduum residuum);
+
+    FuzzyNumber EvaluateRuleWeight(IDictionary<string, double> facts, INegation negation, IOperatorFamily operatorFamily) =>
+        EvaluatePremiseWeight(facts, negation, operatorFamily.Norm, operatorFamily.Conorm);
+
+    FuzzyNumber EvaluateRuleWeight(IDictionary<string, double> facts, IOperatorFamily operatorFamily) =>
+        EvaluatePremiseWeight(facts, Negation.Standard, operatorFamily.Norm, operatorFamily.Conorm);
 }

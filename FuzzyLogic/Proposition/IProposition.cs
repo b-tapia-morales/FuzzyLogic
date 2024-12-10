@@ -1,19 +1,21 @@
-﻿using FuzzyLogic.Function.Interface;
+﻿using FuzzyLogic.Enum.Negation;
+using FuzzyLogic.Function.Interface;
 using FuzzyLogic.Number;
 using FuzzyLogic.Proposition.Enums;
-using FuzzyLogic.Variable;
 
 namespace FuzzyLogic.Proposition;
 
-public interface IProposition<T> where T : struct, IFuzzyNumber<T>
+public interface IProposition: IEquatable<IProposition>, IEqualityComparer<IProposition>
 {
-    Connective<T> Connective { get; set; }
-    IVariable LinguisticVariable { get; }
-    Literal<T> Literal { get; }
-    LinguisticHedge<T> LinguisticHedge { get; }
-    IMembershipFunction<double> Function { get; }
+    string VariableName { get; }
+    Connective Connective { get; }
+    Literal Literal { get; }
+    LinguisticHedge LinguisticHedge { get; }
+    IMembershipFunction Function { get; }
 
     bool IsApplicable(IDictionary<string, double> facts);
 
-    T ApplyUnaryOperators(double crispNumber);
+    FuzzyNumber ApplyUnaryOperators(double crispNumber, INegation negation);
+
+    FuzzyNumber ApplyUnaryOperators(double crispNumber) => ApplyUnaryOperators(crispNumber, Negation.Standard);
 }
