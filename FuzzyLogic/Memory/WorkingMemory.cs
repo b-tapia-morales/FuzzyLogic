@@ -1,17 +1,19 @@
 ﻿using FuzzyLogic.Utils.Csv;
 using static FuzzyLogic.Memory.EntryResolutionMethod;
 
+// ReSharper disable RedundantExplicitTupleComponentName
+
 namespace FuzzyLogic.Memory;
 
 public class WorkingMemory : IWorkingMemory
 {
-    protected WorkingMemory(EntryResolutionMethod method = Replace)
+    private WorkingMemory(EntryResolutionMethod method = Replace)
     {
         Facts = new Dictionary<string, double>();
         Method = method;
     }
 
-    protected WorkingMemory(IDictionary<string, double> facts, EntryResolutionMethod method = Replace)
+    private WorkingMemory(IDictionary<string, double> facts, EntryResolutionMethod method = Replace)
     {
         Facts = facts;
         Method = method;
@@ -27,19 +29,19 @@ public class WorkingMemory : IWorkingMemory
         new WorkingMemory(facts, method);
 
     public static IWorkingMemory Create(EntryResolutionMethod method, params IEnumerable<(string Key, double Value)> facts) =>
-        new WorkingMemory(facts.ToDictionary(t => t.Key, x => x.Value), method);
+        new WorkingMemory(facts
+            .GroupBy(tuple => tuple.Key)
+            .Select(group => (Key: group.Key, List: group.Select(e => e.Value)))
+            .ToDictionary(tuple => tuple.Key, tuple => method == Replace ? tuple.List.Last() : tuple.List.First()));
 
     public static IWorkingMemory Create(params IEnumerable<(string Key, double Value)> facts) =>
-        new WorkingMemory(facts.ToDictionary(t => t.Key, x => x.Value), Replace);
+        Create(Replace, facts);
 
-    public static IWorkingMemory Initialize(EntryResolutionMethod method = Replace) => Create(method);
-
-    public static IWorkingMemory InitializeFromFile(string folderPath, EntryResolutionMethod method = Replace) =>
-        new WorkingMemory(
-            RowRetrieval.RetrieveRows<FactRow, FactMapping>(folderPath).ToDictionary(e => e.Key, e => e.Value),
-            method);
-
-    public IWorkingMemory Clone() => (WorkingMemory) MemberwiseClone();
+    public static IWorkingMemory CreateFromFile(string folderPath, bool hasHeader = false, DelimiterType delimiter = DelimiterType.Comma, EntryResolutionMethod method = Replace) =>
+        new WorkingMemory(RowRetrieval.RetrieveRows<FactRow, FactMapping>(folderPath, hasHeader, delimiter)
+            .GroupBy(tuple => tuple.Key)
+            .Select(group => (Key: group.Key, List: group.Select(e => e.Value)))
+            .ToDictionary(tuple => tuple.Key, tuple => method == Replace ? tuple.List.Last() : tuple.List.First()));
 
     public bool ContainsFact(string key) => Facts.ContainsKey(key);
 
