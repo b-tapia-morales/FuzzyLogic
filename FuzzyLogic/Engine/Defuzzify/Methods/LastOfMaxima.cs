@@ -1,22 +1,25 @@
-﻿using FuzzyLogic.Function.Implication;
-using FuzzyLogic.Number;
+﻿using FuzzyLogic.Enum.Negation;
+using FuzzyLogic.Enum.TConorm;
+using FuzzyLogic.Enum.TNorm;
 using FuzzyLogic.Rule;
-using static FuzzyLogic.Function.Implication.InferenceMethod;
+using static FuzzyLogic.Engine.Defuzzify.ImplicationMethod;
+
+// ReSharper disable RedundantExplicitTupleComponentName
 
 namespace FuzzyLogic.Engine.Defuzzify.Methods;
 
-public class LastOfMaxima<T> : IDefuzzifier<T> where T : struct, IFuzzyNumber<T>
+public class LastOfMaxima : IDefuzzifier
 {
-    public double? Defuzzify(ICollection<IRule<T>> rules, IDictionary<string, double> facts,
-        InferenceMethod method = Mamdani)
+    public double? Defuzzify(ICollection<IRule> rules, IDictionary<string, double> facts, INegation negation,
+        INorm tNorm, IConorm tConorm, ImplicationMethod method = Mamdani)
     {
-        IDefuzzifier<T>.RulesCheck(rules, facts);
+        IDefuzzifier.RulesCheck(rules, facts);
         var tuple = rules
-            .Select(e => (e.Consequent!.Function, Weight: e.EvaluatePremiseWeight(facts)))
-            .MaxBy(e => e.Weight);
+            .Select(rule => (Function: rule.Consequent!.Function, Weight: rule.EvaluatePremiseWeight(facts, negation, tNorm, tConorm)))
+            .MaxBy(tuple => tuple.Weight);
         if (tuple.Weight == 0)
             return null;
         var (function, weight) = tuple;
-        return (function as IFuzzyInference)?.LambdaCutInterval(weight, method).GetValueOrDefault().X2;
+        return method == Mamdani ? function.AlphaCutRight(weight) : function.PeakRight();
     }
 }
