@@ -1,13 +1,12 @@
 ﻿using FuzzyLogic.Memory;
-using static FuzzyLogic.Memory.EntryResolutionMethod;
 
-namespace FuzzyLogic.Test.One;
+namespace FuzzyLogic.Examples.One;
 
-public class TestWorkingMemoryImpl : WorkingMemory
+public static class TestWorkingMemoryImpl
 {
-    public new static IWorkingMemory Initialize(EntryResolutionMethod method = Preserve)
+    public static IWorkingMemory Initialize(EntryResolutionMethod method = EntryResolutionMethod.Replace)
     {
-        var workingMemory = Create(method);
+        var workingMemory = WorkingMemory.Create(method);
         workingMemory.AddFact("Ret", 0.65);
         workingMemory.AddFact("Reg", 0.34);
         workingMemory.AddFact("Cnt", 0.34);

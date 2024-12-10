@@ -1,11 +1,11 @@
 ﻿using FuzzyLogic.Knowledge.Linguistic;
 using FuzzyLogic.Variable;
 
-namespace FuzzyLogic.Test.One;
+namespace FuzzyLogic.Examples.One;
 
-public class TestLinguisticImpl : LinguisticBase
+public static class TestLinguisticImpl
 {
-    public new static ILinguisticBase Initialize()
+    public static ILinguisticBase Initialize()
     {
         var retencion = LinguisticVariable
             .Create("Ret")
@@ -137,7 +137,7 @@ public class TestLinguisticImpl : LinguisticBase
             .AddTrapezoidFunction("Bajo", 0.0, 0.0, 0.31, 0.35)
             .AddTrapezoidFunction("Medio", 0.31, 0.35, 0.64, 0.68)
             .AddTrapezoidFunction("Alto", 0.64, 0.68, 1, 1);
-        return Create(retencion, paseCorto, estirada, fuerza, despeje, reaccion, velocidadSprint, salto,
+        return LinguisticBase.Create(retencion, paseCorto, estirada, fuerza, despeje, reaccion, velocidadSprint, salto,
             regates, entradaLimpia, vision, agresividad, controlDelBalon, intercepcion, fuerzaDeTiro, compostura,
             boleas, precisionTiroLibre, marcaje, centro, aceleracion, portero, defensa, mediocampista, delantero,
             habilidad);

@@ -1,11 +1,11 @@
 ﻿using FuzzyLogic.Knowledge.Linguistic;
 using FuzzyLogic.Variable;
 
-namespace FuzzyLogic.Test.Two;
+namespace FuzzyLogic.Examples.Two;
 
-public class LinguisticBaseImpl2 : LinguisticBase
+public static class LinguisticBaseImpl2
 {
-    public new static ILinguisticBase Initialize()
+    public static ILinguisticBase Initialize()
     {
         var horario = LinguisticVariable
             .Create("Horario")
@@ -34,6 +34,6 @@ public class LinguisticBaseImpl2 : LinguisticBase
             .AddTriangularFunction("Corto", 3, 5, 7)
             .AddTriangularFunction("Moderado", 6, 11, 16)
             .AddTriangularFunction("Largo", 13, 17, 20);
-        return Create(horario, area, espesor, densidadDeCorriente, tiempoDeAplicación);
+        return LinguisticBase.Create(horario, area, espesor, densidadDeCorriente, tiempoDeAplicación);
     }
 }

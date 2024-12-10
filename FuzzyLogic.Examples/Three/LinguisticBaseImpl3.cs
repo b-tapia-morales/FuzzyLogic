@@ -1,11 +1,11 @@
 ﻿using FuzzyLogic.Knowledge.Linguistic;
 using FuzzyLogic.Variable;
 
-namespace FuzzyLogic.Test.Three;
+namespace FuzzyLogic.Examples.Three;
 
-public class LinguisticBaseImpl3 : LinguisticBase
+public static class LinguisticBaseImpl3
 {
-    public new static ILinguisticBase Initialize()
+    public static ILinguisticBase Initialize()
     {
         var grasa = LinguisticVariable
             .Create("Grasa")
@@ -37,7 +37,7 @@ public class LinguisticBaseImpl3 : LinguisticBase
             .AddTrapezoidFunction("Baja", 90,90, 120, 160)
             .AddTriangularFunction("Media", 145, 175, 210)
             .AddTrapezoidFunction("Alta", 175, 220, 265, 265);
-        return Create(grasa, azucar, hidratacion, peso, tiempo, temperatura);
+        return LinguisticBase.Create(grasa, azucar, hidratacion, peso, tiempo, temperatura);
 
     }
 }
