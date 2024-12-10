@@ -1,30 +1,45 @@
-﻿using FuzzyLogic.Knowledge.Linguistic;
-using FuzzyLogic.Number;
-using FuzzyLogic.Rule;
+﻿using FuzzyLogic.Rule;
 
 namespace FuzzyLogic.Knowledge.Rule;
 
-public interface IRuleBase<T> where T : struct, IFuzzyNumber<T>
+public interface IRuleBase
 {
-    ICollection<IRule<T>> ProductionRules { get; }
-    IComparer<IRule<T>> RuleComparer { get; }
+    ICollection<IRule> ProductionRules { get; }
+    IComparer<IRule> RuleComparer { get; }
 
-    static abstract IRuleBase<T> Create(ComparingMethod method = ComparingMethod.HighestPriority);
+    static abstract IRuleBase Create(ComparingMethod method = ComparingMethod.HighestPriority);
 
-    static abstract IRuleBase<T> Initialize(ILinguisticBase linguisticBase,
-        ComparingMethod method = ComparingMethod.HighestPriority);
+    static abstract IRuleBase Create(ComparingMethod method, params IEnumerable<IRule> rules);
 
-    IRuleBase<T> Add(IRule<T> rule);
+    static abstract IRuleBase Create(params IEnumerable<IRule> rules);
 
-    IRuleBase<T> AddAll(ICollection<IRule<T>> rules);
+    void Add(IRule rule);
 
-    IRuleBase<T> AddAll(params IRule<T>[] rules);
+    void AddAll(ICollection<IRule> rules);
 
-    ICollection<IRule<T>> FindApplicableRules(IDictionary<string, double> facts);
+    void AddAll(params IEnumerable<IRule> rules);
 
-    ICollection<IRule<T>> FindRulesWithPremise(string variableName);
+    bool Remove(IRule rule);
 
-    ICollection<IRule<T>> FindRulesWithConclusion(string variableName);
+    void RemoveAll(params IEnumerable<IRule> rules);
 
-    ICollection<IRule<T>> FilterByResolutionMethod(string variableName);
+    void RemoveByDependencies(string premiseVariable, string consequentVariable);
+
+    void RemoveCircularDependencies();
+
+    void RemoveFacts(ICollection<string> variables);
+
+    ICollection<IRule> FindApplicableRules(IDictionary<string, double> facts);
+
+    ICollection<IRule> FindRulesWithPremise(string variableName);
+
+    ICollection<IRule> FindRulesWithConclusion(string variableName);
+
+    ICollection<IRule> FilterByResolutionMethod(string variableName);
+
+    ISet<string> FindVariables();
+
+    ISet<string> FindPremiseDependencies(string variableName);
+
+    IDictionary<string, IList<string>> GetDependencyGraph();
 }

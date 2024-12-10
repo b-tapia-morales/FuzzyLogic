@@ -1,71 +1,123 @@
-﻿using FuzzyLogic.Knowledge.Linguistic;
-using FuzzyLogic.Number;
+﻿using System.Collections.Immutable;
 using FuzzyLogic.Rule;
+using FuzzyLogic.Utils;
 using static System.StringComparison;
-using static FuzzyLogic.Rule.ComparingMethod;
 
 namespace FuzzyLogic.Knowledge.Rule;
 
-public class RuleBase<T> : IRuleBase<T> where T : struct, IFuzzyNumber<T>
+public class RuleBase : IRuleBase
 {
-    protected RuleBase(ComparingMethod method = HighestPriority) =>
-        RuleComparer = RuleComparerFactory<T>.CreateInstance(method);
+    private RuleBase(ComparingMethod method = ComparingMethod.HighestPriority) =>
+        RuleComparer = RuleComparerFactory.CreateInstance(method);
 
-    public ICollection<IRule<T>> ProductionRules { get; } = new List<IRule<T>>();
-    public IComparer<IRule<T>> RuleComparer { get; }
+    private RuleBase(ComparingMethod method, params IEnumerable<IRule> rules)
+    {
+        RuleComparer = RuleComparerFactory.CreateInstance(method);
+        foreach (var rule in rules)
+            ProductionRules.Add(rule);
+    }
 
-    public static IRuleBase<T> Create(ComparingMethod method = HighestPriority) => new RuleBase<T>(method);
+    public ICollection<IRule> ProductionRules { get; } = new List<IRule>();
+    public IComparer<IRule> RuleComparer { get; }
 
-    public static IRuleBase<T> Initialize(ILinguisticBase linguisticBase, ComparingMethod method = HighestPriority) =>
-        Create(method);
+    public static IRuleBase Create(ComparingMethod method = ComparingMethod.HighestPriority) =>
+        new RuleBase(method);
 
-    public IRuleBase<T> Add(IRule<T> rule) => Add(this, rule);
+    public static IRuleBase Create(ComparingMethod method, params IEnumerable<IRule> rules) =>
+        new RuleBase(method, rules);
 
-    public IRuleBase<T> AddAll(ICollection<IRule<T>> rules) => AddAll(this, rules);
+    public static IRuleBase Create(params IEnumerable<IRule> rules) =>
+        new RuleBase(ComparingMethod.HighestPriority, rules);
 
-    public IRuleBase<T> AddAll(params IRule<T>[] rules) => AddAll(this, rules);
-
-    public ICollection<IRule<T>> FindApplicableRules(IDictionary<string, double> facts) =>
-        ProductionRules.Where(e => e.IsApplicable(facts)).ToList();
-
-    public ICollection<IRule<T>> FindRulesWithPremise(string variableName) =>
-        ProductionRules.Where(e => e.PremiseContainsVariable(variableName)).ToList();
-
-    public ICollection<IRule<T>> FindRulesWithConclusion(string variableName) =>
-        ProductionRules.Where(e => e.ConclusionContainsVariable(variableName)).ToList();
-
-    public ICollection<IRule<T>> FilterByResolutionMethod(string variableName) =>
-        FilterByResolutionMethod(variableName, ProductionRules, RuleComparer);
-
-    private static IRuleBase<T> Add(IRuleBase<T> ruleBase, IRule<T> rule)
+    public void Add(IRule rule)
     {
         if (!rule.IsValid())
             throw new InvalidRuleException();
-        ruleBase.ProductionRules.Add(rule);
-        return ruleBase;
+        ProductionRules.Add(rule);
     }
 
-    private static IRuleBase<T> AddAll(IRuleBase<T> ruleBase, ICollection<IRule<T>> rules)
+    public void AddAll(ICollection<IRule> rules)
     {
         if (rules.Any(e => !e.IsValid()))
             throw new InvalidRuleException();
         foreach (var rule in rules)
-            ruleBase.ProductionRules.Add(rule);
-        return ruleBase;
+            ProductionRules.Add(rule);
     }
 
-    public static ICollection<IRule<T>> FilterByResolutionMethod(string variableName, IEnumerable<IRule<T>> rules,
-        IComparer<IRule<T>> ruleComparer)
+    public void AddAll(params IEnumerable<IRule> rules) => AddAll(rules.ToList());
+
+    public bool Remove(IRule rule) => ProductionRules.Remove(rule);
+
+    public void RemoveAll(params IEnumerable<IRule> rules)
+    {
+        foreach (var rule in rules)
+            ProductionRules.Remove(rule);
+    }
+
+    public void RemoveByDependencies(string premiseVariable, string consequentVariable)
+    {
+        var rules = ProductionRules.Where(rule => rule.PremiseContains(premiseVariable) && rule.ConsequentContains(consequentVariable));
+        RemoveAll(rules);
+    }
+
+    public void RemoveCircularDependencies()
+    {
+        var adjacencyList = GetDependencyGraph();
+        var backEdges = GraphUtils.FindBackEdges(adjacencyList);
+        foreach (var (consequentVariable, premiseVariable) in backEdges)
+            RemoveByDependencies(premiseVariable, consequentVariable);
+    }
+
+    public void RemoveFacts(ICollection<string> variables)
+    {
+        foreach (var variable in variables)
+        {
+            var rules = ProductionRules.Where(rule => rule.ConsequentContains(variable));
+            RemoveAll(rules);
+        }
+    }
+
+    public ICollection<IRule> FindApplicableRules(IDictionary<string, double> facts) =>
+        ProductionRules.Where(e => e.IsApplicable(facts)).ToList();
+
+    public ICollection<IRule> FindRulesWithPremise(string variableName) =>
+        ProductionRules.Where(e => e.PremiseContains(variableName)).ToList();
+
+    public ICollection<IRule> FindRulesWithConclusion(string variableName) =>
+        ProductionRules.Where(e => e.ConsequentContains(variableName)).ToList();
+
+    public ICollection<IRule> FilterByResolutionMethod(string variableName) =>
+        FilterByResolutionMethod(ProductionRules, variableName, RuleComparer);
+
+    public ISet<string> FindVariables()
+    {
+        var antecedents = ProductionRules.Select(rule => rule.Conditional!.VariableName);
+        var consequents = ProductionRules.Select(rule => rule.Consequent!.VariableName);
+        var connectives = ProductionRules.Where(e => e.Connectives.Count > 0).SelectMany(e => e.Connectives).Select(rule => rule.VariableName);
+        return new HashSet<string>(antecedents.Union(connectives).Union(consequents));
+    }
+
+    public ISet<string> FindPremiseDependencies(string variableName)
+    {
+        var rules = FindRulesWithConclusion(variableName);
+        if (rules.Count == 0)
+            return new HashSet<string>();
+        var antecedents = rules.Select(rule => rule.Conditional!.VariableName);
+        var connectives = rules.Where(e => e.Connectives.Count > 0).SelectMany(e => e.Connectives).Select(rule => rule.VariableName);
+        return new HashSet<string>(antecedents.Union(connectives));
+    }
+
+    public IDictionary<string, IList<string>> GetDependencyGraph() =>
+        FindVariables().ToDictionary(variable => variable, IList<string> (variable) => FindPremiseDependencies(variable).ToList());
+
+    public static ICollection<IRule> FilterByResolutionMethod(IEnumerable<IRule> rules, string variableName,
+        IComparer<IRule> ruleComparer)
     {
         return rules
-            .Where(e => string.Equals(e.Consequent!.LinguisticVariable.Name, variableName, InvariantCultureIgnoreCase))
-            .GroupBy(e => e.Consequent!.Function.Name)
-            .Select(e => new
-            {
-                FunctionName = e.Key,
-                Rule = e.MaxBy(g => g, ruleComparer)!
-            })
-            .Select(e => e.Rule)
+            .Where(rule => string.Equals(rule.Consequent!.VariableName, variableName, InvariantCultureIgnoreCase))
+            .GroupBy(rule => rule.Consequent!.Function.Name)
+            .Select(tuple => (Function: tuple.Key, Rule: tuple.MaxBy(g => g, ruleComparer)!))
+            .Select(tuple => tuple.Rule)
             .ToList();
     }
 }
