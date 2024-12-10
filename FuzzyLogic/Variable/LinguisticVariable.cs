@@ -1,28 +1,24 @@
 ﻿using FuzzyLogic.Function.Interface;
+using FuzzyLogic.Function.Real;
 
 namespace FuzzyLogic.Variable;
 
-public class LinguisticVariable : IVariable
+public readonly struct LinguisticVariable : IVariable
 {
     public double LowerBoundary { get; }
     public double UpperBoundary { get; }
     public bool IsClosed { get; }
     public string Name { get; }
 
-    public IDictionary<string, IMembershipFunction<double>> LinguisticEntries { get; } =
-        new Dictionary<string, IMembershipFunction<double>>(StringComparer.InvariantCultureIgnoreCase);
+    public IDictionary<string, IMembershipFunction> SemanticalMappings { get; } =
+        new Dictionary<string, IMembershipFunction>(StringComparer.InvariantCultureIgnoreCase);
 
-    private LinguisticVariable(string name, double lowerBoundary, double upperBoundary)
+    private LinguisticVariable(string name, double lowerBoundary = double.MinValue, double upperBoundary = double.MaxValue)
     {
         Name = name;
         LowerBoundary = double.IsNegativeInfinity(lowerBoundary) ? double.MinValue : lowerBoundary;
         UpperBoundary = double.IsPositiveInfinity(upperBoundary) ? double.MinValue : upperBoundary;
         IsClosed = lowerBoundary > double.MinValue && upperBoundary < double.MaxValue;
-    }
-
-    // ReSharper disable once IntroduceOptionalParameters.Local
-    private LinguisticVariable(string name) : this(name, double.MinValue, double.MaxValue)
-    {
     }
 
     public static IVariable Create(string name)
@@ -39,8 +35,8 @@ public class LinguisticVariable : IVariable
         return new LinguisticVariable(name, lowerBoundary, upperBoundary);
     }
 
-    public IVariable AddAll(IDictionary<string, IMembershipFunction<double>> linguisticEntries) =>
-        AddAll(this, linguisticEntries);
+    public IVariable AddAll(IDictionary<string, IMembershipFunction> semanticalMappings) =>
+        AddAll(this, semanticalMappings);
 
     public IVariable AddTrapezoidFunction(string name, double a, double b, double c, double d, double h = 1) =>
         AddTrapezoidFunction(this, name, a, b, c, d, h);
@@ -63,26 +59,30 @@ public class LinguisticVariable : IVariable
     public IVariable AddSigmoidFunction(string name, double a, double c, double h = 1) =>
         AddSigmoidFunction(this, name, a, c, h);
 
-    public IVariable AddFunction(string name, IMembershipFunction<double> function) => AddFunction(this, name, function);
+    public IVariable AddFunction(string name, IMembershipFunction function) => AddFunction(this, name, function);
 
-    public bool ContainsLinguisticEntry(string name) => LinguisticEntries.ContainsKey(name);
+    public bool ContainsTerm(string name) => SemanticalMappings.ContainsKey(name);
 
-    public IMembershipFunction<double>? RetrieveLinguisticEntry(string name) =>
-        LinguisticEntries.TryGetValue(name, out var function) ? function : null;
+    public IMembershipFunction? RetrieveFunction(string name) =>
+        SemanticalMappings.TryGetValue(name, out var function) ? function : null;
+
+    public override string ToString() => $"""
+                                          Linguistic Variable: {Name}
+                                          {string.Join(Environment.NewLine, SemanticalMappings.Values)}
+                                          """;
 
     private static IVariable AddAll(IVariable variable,
-        IDictionary<string, IMembershipFunction<double>> linguisticEntries)
+        IDictionary<string, IMembershipFunction> linguisticEntries)
     {
-        if (linguisticEntries == null)
-            throw new ArgumentNullException(nameof(linguisticEntries));
+        ArgumentNullException.ThrowIfNull(linguisticEntries);
         if (linguisticEntries.Keys.Any(string.IsNullOrWhiteSpace))
             throw new EmptyEntryException();
-        var duplicatedEntry = linguisticEntries.Keys.FirstOrDefault(variable.ContainsLinguisticEntry);
+        var duplicatedEntry = linguisticEntries.Keys.FirstOrDefault(variable.ContainsTerm);
         if (duplicatedEntry != null)
             throw new DuplicatedEntryException(variable.Name, duplicatedEntry);
 
         foreach (var entry in linguisticEntries)
-            variable.LinguisticEntries.Add(entry.Key, entry.Value);
+            variable.SemanticalMappings.Add(entry.Key, entry.Value);
 
         return variable;
     }
@@ -108,16 +108,16 @@ public class LinguisticVariable : IVariable
 
     private static IVariable AddCauchyFunction(IVariable variable, string name, double a, double b, double c,
         double h = 1) =>
-        variable.AddFunction(name, new BellFunction(name, a, b, c, h));
+        variable.AddFunction(name, new GeneralizedBellFunction(name, a, b, c, h));
 
     private static IVariable AddSigmoidFunction(IVariable variable, string name, double a, double c, double h = 1) =>
         variable.AddFunction(name, new SigmoidFunction(name, a, c, h));
 
-    private static IVariable AddFunction(IVariable variable, string name, IMembershipFunction<double> function)
+    private static IVariable AddFunction(IVariable variable, string name, IMembershipFunction function)
     {
         CheckLinguisticEntry(variable, name);
         CheckRange(variable, function);
-        variable.LinguisticEntries[name] = function;
+        variable.SemanticalMappings[name] = function;
         return variable;
     }
 
@@ -125,19 +125,17 @@ public class LinguisticVariable : IVariable
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new EmptyEntryException();
-        if (variable.ContainsLinguisticEntry(name))
+        if (variable.ContainsTerm(name))
             throw new DuplicatedEntryException(variable.Name, name);
     }
 
-    public static void CheckRange(IVariable variable, IMembershipFunction<double> function)
+    private static void CheckRange(IVariable variable, IMembershipFunction function)
     {
-        var (lower, upper) = function is IAsymptoteFunction<double> asymptote
-            ? asymptote.ApproxSupportBoundary()
-            : function.SupportBoundary();
+        var (lower, upper) = function is AsymptoteFunction asymptote
+            ? asymptote.ApproxSupportInterval()
+            : function.SupportInterval();
         if (upper <= variable.LowerBoundary)
             throw new VariableRangeException(variable.Name,
                 (variable.LowerBoundary, variable.UpperBoundary), function.Name, (lower, upper), function.GetType());
     }
-
-    public override string ToString() => Name;
 }
