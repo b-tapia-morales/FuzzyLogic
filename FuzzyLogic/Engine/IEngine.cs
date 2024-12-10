@@ -1,19 +1,44 @@
 ﻿using FuzzyLogic.Engine.Defuzzify;
+using FuzzyLogic.Enum.Family;
+using FuzzyLogic.Enum.Negation;
+using FuzzyLogic.Enum.Residuum;
+using FuzzyLogic.Enum.TConorm;
+using FuzzyLogic.Enum.TNorm;
 using FuzzyLogic.Knowledge;
+using FuzzyLogic.Knowledge.Rule;
 using FuzzyLogic.Memory;
-using FuzzyLogic.Number;
-using static FuzzyLogic.Engine.Defuzzify.DefuzzificationMethod;
 
 namespace FuzzyLogic.Engine;
 
-public interface IEngine<T> where T : struct, IFuzzyNumber<T>
+public interface IEngine
 {
-    IKnowledgeBase<T> KnowledgeBase { get; }
+    IRuleBase RuleBase { get; }
     IWorkingMemory WorkingMemory { get; }
-    IDefuzzifier<T> Defuzzifier { get; }
+    IOperatorFamily OperatorFamily { get; set; }
+    ImplicationMethod ImplicationMethod { get; set; }
+    IDefuzzifier Defuzzifier { get; set; }
 
-    static abstract IEngine<T> Create(IKnowledgeBase<T> knowledgeBase, IWorkingMemory workingMemory,
-        DefuzzificationMethod method = MeanOfMaxima);
+    static abstract IEngine Create(IRuleBase ruleBase, IWorkingMemory workingMemory);
+
+    IEngine UseImplicationMethod(ImplicationMethod method);
+
+    IEngine UseDefuzzificationMethod(DefuzzificationMethod method);
+
+    IEngine UseNegator(INegation negation);
+
+    IEngine UseDisjunction(INorm norm);
+
+    IEngine UseConjunction(IConorm conorm);
+
+    IEngine UseResiduum(IResiduum residuum);
+
+    IEngine UseOperators(INegation negation, INorm norm, IConorm conorm, IResiduum residuum);
+
+    IEngine UseOperatorFamily(IOperatorFamily operatorFamily);
+
+    IEngine UseCanonicalFamily(CanonicalType type);
+
+    IEngine UseParameterizedFamily(ParameterizedType type, double gamma, double alpha, double beta, double omega);
 
     double? Defuzzify(string variableName, bool provideExplanation = true);
 }
