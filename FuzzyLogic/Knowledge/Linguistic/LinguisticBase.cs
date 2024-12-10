@@ -1,12 +1,12 @@
-﻿using FuzzyLogic.Variable;
+﻿using FuzzyLogic.Function.Interface;
+using FuzzyLogic.Variable;
 using static System.StringComparer;
 
 namespace FuzzyLogic.Knowledge.Linguistic;
 
 public class LinguisticBase : ILinguisticBase
 {
-    public IDictionary<string, IVariable> LinguisticVariables { get; } =
-        new Dictionary<string, IVariable>(InvariantCultureIgnoreCase);
+    public IDictionary<string, IVariable> LinguisticVariables { get; } = new Dictionary<string, IVariable>(InvariantCultureIgnoreCase);
 
     public static ILinguisticBase Create() => new LinguisticBase();
 
@@ -22,13 +22,15 @@ public class LinguisticBase : ILinguisticBase
         return @base;
     }
 
-    public static ILinguisticBase Initialize() => Create();
-
-    public bool Contains(string name) =>
+    public bool ContainsVariable(string name) =>
         LinguisticVariables.ContainsKey(name);
 
-    public IVariable? Retrieve(string name) =>
-        LinguisticVariables.TryGetValue(name, out var variable) ? variable : null;
+    public IVariable? RetrieveVariable(string name) => LinguisticVariables.TryGetValue(name, out var variable) ? variable : null;
+
+    public bool ContainsTerm(string variable, string term) => RetrieveTerm(variable, term) != null;
+
+    public IMembershipFunction? RetrieveTerm(string variable, string term) =>
+        RetrieveVariable(variable)?.RetrieveFunction(term);
 
     public void Add(IVariable variable)
     {
@@ -36,31 +38,24 @@ public class LinguisticBase : ILinguisticBase
             throw new InvalidOperationException();
     }
 
-    public void AddAll(params IEnumerable<IVariable> variables) => AddAll(variables.ToList());
+    public void AddAll(params IEnumerable<IVariable> variables) => this.AddMultiple(variables);
 
-    public void AddAll(ICollection<IVariable> variables)
-    {
-        if (variables.Any(e => Contains(e.Name)))
-            throw new InvalidOperationException();
+    public void AddAll(ICollection<IVariable> variables) => this.AddRange(variables);
 
-        foreach (var variable in variables)
-            LinguisticVariables.Add(variable.Name, variable);
-    }
+    public override string ToString() => $"{string.Join(Environment.NewLine, LinguisticVariables.Values)}";
 }
 
-file static class LinguisticBaseExt
+file static class BaseExtensions
 {
-    public static ILinguisticBase AddAll(this ILinguisticBase @base,
-        ICollection<IVariable> variables)
+    public static void AddMultiple(this LinguisticBase @base, params IEnumerable<IVariable> variables) =>
+        AddRange(@base, variables.ToList());
+
+    public static void AddRange(this LinguisticBase @base, ICollection<IVariable> variables)
     {
-        if (variables.Any(e => @base.Contains(e.Name)))
+        if (variables.Any(e => @base.ContainsVariable(e.Name)))
             throw new InvalidOperationException();
 
         foreach (var variable in variables)
             @base.LinguisticVariables.Add(variable.Name, variable);
-
-        return @base;
     }
-
-    public static ILinguisticBase AddAll(this ILinguisticBase @base, params IVariable[] variables) => AddAll(@base, variables.ToList());
 }

@@ -4,75 +4,84 @@ using FuzzyLogic.Variable;
 namespace FuzzyLogic.Knowledge.Linguistic;
 
 /// <summary>
-///     A class representation for a data-storage base in which all linguistic variables and their corresponding
-///     linguistic entries and membership functions are stored.
+/// A class representation for a data-storage base in which all linguistic variables and their corresponding
+/// linguistic entries and membership functions are stored.
 /// </summary>
 public interface ILinguisticBase
 {
     /// <summary>
-    ///     The collection where the linguistic variables will be stored.
+    /// The collection where the linguistic variables will be stored.
     /// </summary>
-    public IDictionary<string, IVariable> LinguisticVariables { get; }
+    IDictionary<string, IVariable> LinguisticVariables { get; }
 
     /// <summary>
-    ///     Determines whether the base contains a linguistic variable with the <see cref="IVariable.Name" /> provided as a
-    ///     parameter.
+    /// Determines whether the base contains a linguistic variable with the <see cref="IVariable.Name" /> provided as a
+    /// parameter.
     /// </summary>
     /// <param name="name">The name of the linguistic variable</param>
     /// <returns>true if the base contains a linguistic variable with the given name; otherwise, false.</returns>
     /// <seealso cref="IVariable.Name" />
-    bool Contains(string name);
+    bool ContainsVariable(string name);
 
     /// <summary>
-    ///     Retrieves the linguistic variable with the <see cref="IVariable.Name" /> provided as a parameter.
+    /// Retrieves the linguistic variable with the <see cref="IVariable.Name" /> provided as a parameter.
     /// </summary>
     /// <param name="name">The name of the linguistic variable</param>
     /// <returns>The linguistic variable itself if the base contains linguistic variable with the given name; otherwise, null.</returns>
     /// <seealso cref="IVariable.Name" />
-    IVariable? Retrieve(string name);
+    IVariable? RetrieveVariable(string name);
 
     /// <summary>
-    ///     Determines whether the base contains a linguistic variable with the name provided as the first parameter;
-    ///     <b>IF</b> it does, determines whether said linguistic variable contains a linguistic entry with the name
-    ///     provided as the second parameter.
+    /// Verifies whether both of the following conditions are satisfied:
+    /// <list type="number">
+    /// <item>
+    /// <description>
+    /// A linguistic variable with the name provided as the first parameter exists in the linguistic base.
+    /// </description>
+    /// </item>
+    /// <item>
+    /// <description>
+    /// The specified linguistic variable contains a linguistic term with the name provided as the second parameter.
+    /// </description>
+    /// </item>
+    /// </list>
     /// </summary>
-    /// <param name="variableName">The name of the linguistic variable</param>
-    /// <param name="entryName">The name of the linguistic entry contained in the linguistic variable</param>
+    /// <param name="variable">The name of the linguistic variable</param>
+    /// <param name="term">The name of the linguistic term contained in the linguistic variable</param>
     /// <returns>
-    ///     true if the base contains a linguistic variable <b>AND</b> if said linguistic variable contains a linguistic
-    ///     entry with the given names; otherwise, false.
+    /// <see langword="true" /> if the linguistic base contains the specified variable,
+    /// and the variable contains the specified term;
+    /// otherwise, <see langword="false" />.
     /// </returns>
     /// <seealso cref="LinguisticVariables" />
-    /// <seealso cref="IVariable.LinguisticEntries" />
-    bool ContainsLinguisticEntry(string variableName, string entryName) =>
-        RetrieveLinguisticEntry(variableName, entryName) != null;
+    /// <seealso cref="IVariable.SemanticalMappings" />
+    bool ContainsTerm(string variable, string term);
 
     /// <summary>
-    ///     Retrieves a linguistic entry contained if the following two conditions are met:
-    ///     <list type="number">
-    ///         <item>
-    ///             <description>
-    ///                 There is a linguistic variable contained in the base with the name provided as the first parameter.
-    ///             </description>
-    ///         </item>
-    ///         <item>
-    ///             <description>
-    ///                 There is a linguistic entry contained in said linguistic variable with the name provided as the second
-    ///                 parameter.
-    ///             </description>
-    ///         </item>
-    ///     </list>
-    ///     Otherwise; returns null.
+    /// Retrieves the membership function associated with the specified linguistic term
+    /// only if both of the following conditions are satisfied:
+    /// <list type="number">
+    /// <item>
+    /// <description>
+    /// A linguistic variable with the name provided as the first parameter exists in the linguistic base.
+    /// </description>
+    /// </item>
+    /// <item>
+    /// <description>
+    /// The specified linguistic variable contains a linguistic term with the name provided as the second parameter.
+    /// </description>
+    /// </item>
+    /// </list>
+    /// Otherwise; returns null.
     /// </summary>
-    /// <param name="variableName">The name of the variable contained in the linguistic base</param>
-    /// <param name="entryName">The name of the entry contained in the linguistic variable</param>
+    /// <param name="variable">The name of the linguistic variable</param>
+    /// <param name="term">The name of the linguistic term contained in the linguistic variable</param>
     /// <returns>
-    ///     The linguistic entry if the conditions described above are met; otherwise, null.
+    /// The linguistic term if the conditions described above are met; otherwise, <see langword="null" />.
     /// </returns>
     /// <seealso cref="LinguisticVariables" />
-    /// <seealso cref="IVariable.LinguisticEntries" />
-    IMembershipFunction<double>? RetrieveLinguisticEntry(string variableName, string entryName) =>
-        Retrieve(variableName)?.RetrieveLinguisticEntry(entryName);
+    /// <seealso cref="IVariable.SemanticalMappings" />
+    IMembershipFunction? RetrieveTerm(string variable, string term);
 
     void Add(IVariable variable);
 
@@ -88,15 +97,6 @@ public interface ILinguisticBase
 
     /// <summary>
     /// Creates a new instance of a
-    /// <see cref="ILinguisticBase"/> that contains the collection of linguistic variables
-    /// provided as a parameter.
-    /// </summary>
-    /// <param name="variables">A collection of linguistic variables</param>
-    /// <returns>The linguistic base itself containing the collection of linguistic variables</returns>
-    static abstract ILinguisticBase Create(ICollection<IVariable> variables);
-
-    /// <summary>
-    /// Creates a new instance of a
     /// <see cref="ILinguisticBase"/> that contains all the linguistic variables provided as parameters.
     /// </summary>
     /// <param name="variables">A varying number of linguistic variables</param>
@@ -104,20 +104,11 @@ public interface ILinguisticBase
     static abstract ILinguisticBase Create(params IEnumerable<IVariable> variables);
 
     /// <summary>
-    ///     <para>
-    ///         This method is marked to indicate that, if the necessity of creating a new instance of a
-    ///         <see cref="ILinguisticBase" /> with existing data arises, it must be performed with this very method.
-    ///     </para>
-    ///     <para>
-    ///         To do this, a new class must be declared, and it must extend a class that implements this very
-    ///         interface, also implementing and hiding this very method by using the <see langword="new" /> keyword.
-    ///     </para>
-    ///     <para>
-    ///         Note that this method, as it is currently implemented, does nothing by itself other than creating a new
-    ///         instance of a <see cref="ILinguisticBase" />.
-    ///     </para>
+    /// Creates a new instance of a
+    /// <see cref="ILinguisticBase"/> that contains the collection of linguistic variables
+    /// provided as a parameter.
     /// </summary>
-    /// <returns>A new instance of a <see cref="ILinguisticBase" /> with existing data.</returns>
-    /// <seealso cref="Create()" />
-    static abstract ILinguisticBase Initialize();
+    /// <param name="variables">A collection of linguistic variables</param>
+    /// <returns>The linguistic base itself containing the collection of linguistic variables</returns>
+    static abstract ILinguisticBase Create(ICollection<IVariable> variables);
 }

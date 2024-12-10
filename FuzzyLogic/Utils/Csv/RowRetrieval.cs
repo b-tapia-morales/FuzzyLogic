@@ -3,19 +3,20 @@ using System.Text;
 using Ardalis.SmartEnum;
 using CsvHelper;
 using CsvHelper.Configuration;
-using static FuzzyLogic.Utils.Csv.DelimiterToken;
+using FuzzyLogic.Enum;
+using static FuzzyLogic.Utils.Csv.DelimiterType;
 
 namespace FuzzyLogic.Utils.Csv;
 
 public static class RowRetrieval
 {
-    public static IEnumerable<T> RetrieveRows<T, TMap>(string filePath, DelimiterToken token = Semicolon,
-        bool hasHeader = false) where TMap : ClassMap
+    public static IEnumerable<T> RetrieveRows<T, TMap>(string filePath,
+        bool hasHeader = false, DelimiterType type = Semicolon) where TMap : ClassMap
     {
         var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
             Encoding = Encoding.UTF8,
-            Delimiter = Delimiter.FromToken(token).Character,
+            Delimiter = IEnum<Delimiter, DelimiterType>.ToValue(type).Character,
             HasHeaderRecord = hasHeader
         };
 
@@ -26,44 +27,27 @@ public static class RowRetrieval
     }
 }
 
-public enum DelimiterToken
+public enum DelimiterType
 {
-    Comma = 1,
-    Semicolon = 2,
-    Pipe = 3,
-    Tab = 4
+    Comma,
+    Semicolon,
+    Pipe,
+    Tab
 }
 
-public sealed class Delimiter : SmartEnum<Delimiter>
+public sealed class Delimiter : SmartEnum<Delimiter>, IEnum<Delimiter, DelimiterType>
 {
-    public static readonly Delimiter Comma = new(nameof(Comma), ",", DelimiterToken.Comma,
-        (int) DelimiterToken.Comma);
+    public static readonly Delimiter Comma = new(nameof(Comma), ",", (int) DelimiterType.Comma);
 
-    public static readonly Delimiter Semicolon = new(nameof(Semicolon), ";", DelimiterToken.Semicolon,
-        (int) DelimiterToken.Semicolon);
+    public static readonly Delimiter Semicolon = new(nameof(Semicolon), ";", (int) DelimiterType.Semicolon);
 
-    public static readonly Delimiter Pipe = new(nameof(Pipe), "|", DelimiterToken.Pipe,
-        (int) DelimiterToken.Pipe);
+    public static readonly Delimiter Pipe = new(nameof(Pipe), "|", (int) DelimiterType.Pipe);
 
-    public static readonly Delimiter Tab = new(nameof(Tab), "\t", DelimiterToken.Tab,
-        (int) DelimiterToken.Tab);
+    public static readonly Delimiter Tab = new(nameof(Tab), "\t", (int) DelimiterType.Tab);
 
-    private static readonly Dictionary<DelimiterToken, Delimiter> Dictionary = new()
-    {
-        {DelimiterToken.Comma, Comma},
-        {DelimiterToken.Semicolon, Semicolon},
-        {DelimiterToken.Pipe, Pipe},
-        {DelimiterToken.Tab, Tab}
-    };
-
-    public Delimiter(string name, string character, DelimiterToken token, int value) : base(name, value)
-    {
-        Character = character;
-        Token = token;
-    }
+    private Delimiter(string name, string character, int value) : base(name, value) => Character = character;
 
     public string Character { get; }
-    public DelimiterToken Token { get; }
 
-    public static Delimiter FromToken(DelimiterToken token) => Dictionary[token];
+    public string ReadableName => Name;
 }
