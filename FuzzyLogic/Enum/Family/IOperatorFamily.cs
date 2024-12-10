@@ -8,12 +8,12 @@ namespace FuzzyLogic.Enum.Family;
 
 public interface IOperatorFamily : INegation, INorm, IConorm, IResiduum
 {
-    INegation INegation { get; set; }
+    INegation Negation { get; set; }
     INorm Norm { get; set; }
     IConorm Conorm { get; set; }
     IResiduum Residuum { get; set; }
 
-    FuzzyNumber INegation.Complement(FuzzyNumber x) => INegation.Complement(x);
+    FuzzyNumber INegation.Complement(FuzzyNumber x) => Negation.Complement(x);
 
     FuzzyNumber INorm.Intersection(FuzzyNumber x, FuzzyNumber y) => Norm.Intersection(x, y);
 

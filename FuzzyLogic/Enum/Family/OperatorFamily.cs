@@ -7,7 +7,7 @@ namespace FuzzyLogic.Enum.Family;
 
 public class OperatorFamily(INegation negation, INorm norm, IConorm conorm, IResiduum residuum) : IOperatorFamily
 {
-    public INegation INegation { get; set; } = negation;
+    public INegation Negation { get; set; } = negation;
     public INorm Norm { get; set; } = norm;
     public IConorm Conorm { get; set; } = conorm;
     public IResiduum Residuum { get; set; } = residuum;
