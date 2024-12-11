@@ -7,6 +7,7 @@ public interface IEnum<out T, TEnum>
     where T : SmartEnum<T>, IEnum<T, TEnum>
     where TEnum : struct, System.Enum, IConvertible
 {
+    static IReadOnlyList<T> Values { get; } = SmartEnum<T>.List.OrderBy(e => e.Value).ToImmutableList();
     string ReadableName { get; }
 
     static T ToValue(TEnum @enum) =>
@@ -32,8 +33,6 @@ public interface IEnum<out T, TEnum>
 
     private static readonly ImmutableList<TEnum> Enums =
         System.Enum.GetValues<TEnum>().OrderBy(e => e.ToInt32(null)).ToImmutableList();
-
-    private static IReadOnlyList<T> Values { get; } = SmartEnum<T>.List.OrderBy(e => e.Value).ToImmutableList();
 
     private static IReadOnlyDictionary<TEnum, T> EnumDict { get; } =
         Enums.Zip(Values, (k, v) => new {Key = k, Value = v}).ToImmutableSortedDictionary(e => e.Key, e => e.Value);
