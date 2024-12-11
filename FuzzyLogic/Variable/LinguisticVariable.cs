@@ -12,11 +12,11 @@ public readonly struct LinguisticVariable : IVariable
     public IDictionary<string, IMembershipFunction> SemanticalMappings { get; } =
         new Dictionary<string, IMembershipFunction>(StringComparer.InvariantCultureIgnoreCase);
 
-    private LinguisticVariable(string name, double lowerBoundary = double.MinValue, double upperBoundary = double.MaxValue)
+    private LinguisticVariable(string name, double lowerBound = double.NegativeInfinity, double upperBound = double.PositiveInfinity)
     {
         Name = name;
-        LowerBound = double.IsNegativeInfinity(lowerBoundary) ? double.MinValue : lowerBoundary;
-        UpperBound = double.IsPositiveInfinity(upperBoundary) ? double.MinValue : upperBoundary;
+        LowerBound = lowerBound;
+        UpperBound = upperBound;
     }
 
     public static IVariable Create(string name)
@@ -52,13 +52,13 @@ public readonly struct LinguisticVariable : IVariable
         VariableExtensions.Create(name, double.NegativeInfinity, double.PositiveInfinity, functions.ToList());
 
     public IVariable AddTrapezoidFunction(string name, double a, double b, double c, double d, double h = 1) =>
-        VariableExtensions.AddTrapezoidalFunction(this, name, a, b, c, d, h);
+        this.AddTrapezoidalFunction(name, a, b, c, d, h);
 
     public IVariable AddLeftTrapezoidFunction(string name, double a, double b, double h = 1) =>
-        VariableExtensions.AddLeftTrapezoidalFunction(this, name, a, b, h);
+        this.AddLeftTrapezoidalFunction(name, a, b, h);
 
     public IVariable AddRightTrapezoidFunction(string name, double a, double b, double h = 1) =>
-        VariableExtensions.AddRightTrapezoidalFunction(this, name, a, b, h);
+        this.AddRightTrapezoidalFunction(name, a, b, h);
 
     public IVariable AddTriangularFunction(string name, double a, double b, double c, double h = 1) =>
         VariableExtensions.AddTriangularFunction(this, name, a, b, c, h);
@@ -67,7 +67,7 @@ public readonly struct LinguisticVariable : IVariable
         VariableExtensions.AddGaussianFunction(this, name, m, o, h);
 
     public IVariable AddCauchyFunction(string name, double a, double b, double c, double h = 1) =>
-        VariableExtensions.AddGeneralizedBellFunction(this, name, a, b, c, h);
+        this.AddGeneralizedBellFunction(name, a, b, c, h);
 
     public IVariable AddSigmoidFunction(string name, double a, double c, double h = 1) =>
         VariableExtensions.AddSigmoidFunction(this, name, a, c, h);

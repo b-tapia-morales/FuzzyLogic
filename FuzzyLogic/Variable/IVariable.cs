@@ -63,22 +63,6 @@ public interface IVariable
     /// </summary>
     public IDictionary<string, IMembershipFunction> SemanticalMappings { get; }
 
-    static abstract IVariable Create(string name, double lowerBound, double upperBound);
-
-    static abstract IVariable Create(string name);
-
-    static abstract IVariable Create(string name, double lowerBound, double upperBound, IDictionary<string, IMembershipFunction> semanticalMappings);
-
-    static abstract IVariable Create(string name, IDictionary<string, IMembershipFunction> semanticalMappings);
-
-    static abstract IVariable Create(string name, double lowerBound, double upperBound, params IEnumerable<IMembershipFunction> functions);
-
-    static abstract IVariable Create(string name, params IEnumerable<IMembershipFunction> functions);
-
-    static abstract IVariable Create(string name, double lowerBound, double upperBound, ICollection<IMembershipFunction> functions);
-
-    static abstract IVariable Create(string name, ICollection<IMembershipFunction> functions);
-
     IVariable AddTrapezoidFunction(string name, double a, double b, double c, double d, double h = 1);
 
     IVariable AddLeftTrapezoidFunction(string name, double a, double b, double h = 1);
