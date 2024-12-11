@@ -21,12 +21,7 @@ public class Conorm : SmartEnum<Conorm>, IEnum<Conorm, ConormType>, IConorm
             (int) ConormType.NilpotentMaximum);
 
     public static readonly Conorm Drastic =
-        new(nameof(Drastic), "Drastic", (a, b) =>
-        {
-            if (Abs(a.Value) <= FuzzyNumber.Epsilon)
-                return b;
-            return Abs(b.Value) <= FuzzyNumber.Epsilon ? a : 0;
-        }, (int) ConormType.Drastic);
+        new(nameof(Drastic), "Drastic", (a, b) => (a & b) == FuzzyNumber.Min ? (a | b) : FuzzyNumber.Max, (int) ConormType.Drastic);
 
     private Conorm(string name, string readableName, Func<FuzzyNumber, FuzzyNumber, FuzzyNumber> function, int value) : base(name, value)
     {

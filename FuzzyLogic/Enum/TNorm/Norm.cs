@@ -20,12 +20,7 @@ public class Norm : SmartEnum<Norm>, IEnum<Norm, NormType>, INorm
             (int) NormType.NilpotentMinimum);
 
     public static readonly Norm Drastic =
-        new(nameof(Drastic), "Drastic", (a, b) =>
-            {
-                if (Abs(1 - a.Value) <= FuzzyNumber.Epsilon)
-                    return b;
-                return Abs(1 - b.Value) <= FuzzyNumber.Epsilon ? a : 0;
-            }, (int) NormType.Drastic);
+        new(nameof(Drastic), "Drastic", (a, b) => (a | b) == FuzzyNumber.Max ? (a & b) : FuzzyNumber.Min, (int) NormType.Drastic);
 
     private Norm(string name, string readableName, Func<FuzzyNumber, FuzzyNumber, FuzzyNumber> function, int value) : base(name, value)
     {
