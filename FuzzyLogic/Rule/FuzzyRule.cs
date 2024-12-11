@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using FuzzyLogic.Enum;
 using FuzzyLogic.Enum.Negation;
 using FuzzyLogic.Enum.Residuum;
 using FuzzyLogic.Enum.TConorm;
@@ -126,26 +127,26 @@ public sealed class FuzzyRule : IRule
         return residuum.Implication(EvaluatePremiseWeight(facts, negation, tNorm, tConorm), EvaluateConclusionWeight(facts, negation));
     }
 
-    public IRule If(string variableName, LinguisticHedge linguisticHedge, string termName) =>
-        this.AddAntecedent(variableName, Literal.Is, linguisticHedge, termName);
+    public IRule If(string variableName, string termName, HedgeType hedgeType = HedgeType.None) =>
+        this.AddAntecedent(variableName, Literal.Is, IEnum<LinguisticHedge, HedgeType>.ToValue(hedgeType), termName);
 
-    public IRule IfNot(string variableName, LinguisticHedge linguisticHedge, string termName) =>
-        this.AddAntecedent(variableName, Literal.IsNot, linguisticHedge, termName);
+    public IRule IfNot(string variableName, string termName, HedgeType hedgeType = HedgeType.None) =>
+        this.AddAntecedent(variableName, Literal.IsNot, IEnum<LinguisticHedge, HedgeType>.ToValue(hedgeType), termName);
 
-    public IRule And(string variableName, LinguisticHedge linguisticHedge, string termName) =>
-        this.AddConnective(Connective.And, variableName, Literal.Is, linguisticHedge, termName);
+    public IRule And(string variableName, string termName, HedgeType hedgeType = HedgeType.None) =>
+        this.AddConnective(Connective.And, variableName, Literal.Is, IEnum<LinguisticHedge, HedgeType>.ToValue(hedgeType), termName);
 
-    public IRule AndNot(string variableName, LinguisticHedge linguisticHedge, string termName) =>
-        this.AddConnective(Connective.And, variableName, Literal.IsNot, linguisticHedge, termName);
+    public IRule AndNot(string variableName, string termName, HedgeType hedgeType = HedgeType.None) =>
+        this.AddConnective(Connective.And, variableName, Literal.IsNot, IEnum<LinguisticHedge, HedgeType>.ToValue(hedgeType), termName);
 
-    public IRule Or(string variableName, LinguisticHedge linguisticHedge, string termName) =>
-        this.AddConnective(Connective.Or, variableName, Literal.Is, linguisticHedge, termName);
+    public IRule Or(string variableName, string termName, HedgeType hedgeType = HedgeType.None) =>
+        this.AddConnective(Connective.Or, variableName, Literal.Is, IEnum<LinguisticHedge, HedgeType>.ToValue(hedgeType), termName);
 
-    public IRule OrNot(string variableName, LinguisticHedge linguisticHedge, string termName) =>
-        this.AddConnective(Connective.Or, variableName, Literal.IsNot, linguisticHedge, termName);
+    public IRule OrNot(string variableName, string termName, HedgeType hedgeType = HedgeType.None) =>
+        this.AddConnective(Connective.Or, variableName, Literal.IsNot, IEnum<LinguisticHedge, HedgeType>.ToValue(hedgeType), termName);
 
-    public IRule Then(string variableName, LinguisticHedge linguisticHedge, string termName) =>
-        this.AddConsequent(variableName, Literal.Is, linguisticHedge, termName);
+    public IRule Then(string variableName, string termName, HedgeType hedgeType = HedgeType.None) =>
+        this.AddConsequent(variableName, Literal.Is, IEnum<LinguisticHedge, HedgeType>.ToValue(hedgeType), termName);
 }
 
 file static class FuzzyRuleExtensions

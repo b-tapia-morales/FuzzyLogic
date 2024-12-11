@@ -66,43 +66,19 @@ public interface IRule : IComparable<IRule>, IComparer<IRule>, IEquatable<IRule>
     public bool IsFinalized { get; set; }
     public RulePriority Priority { get; }
 
-    static virtual IRule Create(ILinguisticBase linguisticBase, RulePriority priority = RulePriority.Normal) => throw new NotImplementedException();
+    IRule If(string variableName, string termName, HedgeType hedgeType = HedgeType.None);
 
-    IRule If(string variableName, LinguisticHedge linguisticHedge, string termName);
+    IRule IfNot(string variableName, string termName, HedgeType hedgeType = HedgeType.None);
 
-    IRule If(string variableName, string termName) =>
-        If(variableName, LinguisticHedge.None, termName);
+    IRule And(string variableName, string termName, HedgeType hedgeType = HedgeType.None);
 
-    IRule IfNot(string variableName, LinguisticHedge linguisticHedge, string termName);
+    IRule AndNot(string variableName, string termName, HedgeType hedgeType = HedgeType.None);
 
-    IRule IfNot(string variableName, string termName) =>
-        IfNot(variableName, LinguisticHedge.None, termName);
+    public IRule Or(string variableName, string termName, HedgeType hedgeType = HedgeType.None);
 
+    public IRule OrNot(string variableName, string termName, HedgeType hedgeType = HedgeType.None);
 
-    IRule And(string variableName, LinguisticHedge linguisticHedge, string termName);
-
-    IRule And(string variableName, string termName) =>
-        And(variableName, LinguisticHedge.None, termName);
-
-    IRule AndNot(string variableName, LinguisticHedge linguisticHedge, string termName);
-
-    IRule AndNot(string variableName, string termName) =>
-        AndNot(variableName, LinguisticHedge.None, termName);
-
-    public IRule Or(string variableName, LinguisticHedge linguisticHedge, string termName);
-
-    public IRule Or(string variableName, string termName) =>
-        Or(variableName, LinguisticHedge.None, termName);
-
-    public IRule OrNot(string variableName, LinguisticHedge linguisticHedge, string termName);
-
-    public IRule OrNot(string variableName, string termName) =>
-        OrNot(variableName, LinguisticHedge.None, termName);
-
-    public IRule Then(string variableName, LinguisticHedge linguisticHedge, string termName);
-
-    public IRule Then(string variableName, string termName) =>
-        Then(variableName, LinguisticHedge.None, termName);
+    public IRule Then(string variableName, string termName, HedgeType hedgeType = HedgeType.None);
 
     /// <summary>
     /// Determines whether the rule is valid or not according to propositional logic; that is,
