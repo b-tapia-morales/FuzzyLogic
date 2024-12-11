@@ -1,7 +1,7 @@
 ﻿using FuzzyLogic.Function.Real;
 using Xunit;
 
-namespace FuzzyLogic.Tests.MembershipFunction;
+namespace FuzzyLogic.Tests.MembershipFunctionTests;
 
 public class MembershipFunctionInstantiation
 {
