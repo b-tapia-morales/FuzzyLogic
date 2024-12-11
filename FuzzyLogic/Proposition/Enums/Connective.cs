@@ -3,19 +3,19 @@ using FuzzyLogic.Enum;
 
 namespace FuzzyLogic.Proposition.Enums;
 
-public class Connective : SmartEnum<Connective>, IEnum<Connective, ConnectiveToken>
+public class Connective : SmartEnum<Connective>, IEnum<Connective, ConnectiveType>
 {
     public static readonly Connective If =
-        new(nameof(If), "IF", (int) ConnectiveToken.Antecedent);
+        new(nameof(If), "IF", (int) ConnectiveType.Antecedent);
 
     public static readonly Connective And =
-        new(nameof(And), "AND", (int) ConnectiveToken.Conjunction);
+        new(nameof(And), "AND", (int) ConnectiveType.Conjunction);
 
     public static readonly Connective Or =
-        new(nameof(Or), "OR", (int) ConnectiveToken.Disjunction);
+        new(nameof(Or), "OR", (int) ConnectiveType.Disjunction);
 
     public static readonly Connective Then =
-        new(nameof(Then), "THEN", (int) ConnectiveToken.Consequent);
+        new(nameof(Then), "THEN", (int) ConnectiveType.Consequent);
 
     private Connective(string name, string readableName, int value) : base(name, value) =>
         ReadableName = readableName;
@@ -23,10 +23,10 @@ public class Connective : SmartEnum<Connective>, IEnum<Connective, ConnectiveTok
     public string ReadableName { get; }
 }
 
-public enum ConnectiveToken
+public enum ConnectiveType
 {
-    Antecedent = 1,
-    Consequent = 2,
-    Conjunction = 3,
-    Disjunction = 4
+    Antecedent,
+    Consequent,
+    Conjunction,
+    Disjunction
 }

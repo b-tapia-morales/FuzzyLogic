@@ -5,32 +5,32 @@ using static System.Math;
 
 namespace FuzzyLogic.Proposition.Enums;
 
-public class LinguisticHedge : SmartEnum<LinguisticHedge>, IEnum<LinguisticHedge, HedgeToken>
+public class LinguisticHedge : SmartEnum<LinguisticHedge>, IEnum<LinguisticHedge, HedgeType>
 {
     public static readonly LinguisticHedge None =
-        new(nameof(None), string.Empty, y => y, (int) HedgeToken.None);
+        new(nameof(None), string.Empty, y => y, (int) HedgeType.None);
 
     public static readonly LinguisticHedge Very =
-        new(nameof(Very), "Very", y => Pow(y.Value, 2), (int) HedgeToken.Very);
+        new(nameof(Very), "Very", y => Pow(y.Value, 2), (int) HedgeType.Very);
 
     public static readonly LinguisticHedge VeryVery =
-        new(nameof(VeryVery), "Very, very", y => Pow(y.Value, 4), (int) HedgeToken.VeryVery);
+        new(nameof(VeryVery), "Very, very", y => Pow(y.Value, 4), (int) HedgeType.VeryVery);
 
     public static readonly LinguisticHedge Plus =
-        new(nameof(Plus), "Plus", y => Pow(y.Value, 5 / 4.0), (int) HedgeToken.Plus);
+        new(nameof(Plus), "Plus", y => Pow(y.Value, 5 / 4.0), (int) HedgeType.Plus);
 
     public static readonly LinguisticHedge Slightly =
-        new(nameof(Slightly), "Slightly", y => Sqrt(y.Value), (int) HedgeToken.Slightly);
+        new(nameof(Slightly), "Slightly", y => Sqrt(y.Value), (int) HedgeType.Slightly);
 
     public static readonly LinguisticHedge Minus =
-        new(nameof(Minus), "Minus", y => Pow(y.Value, 3 / 4.0), (int) HedgeToken.Minus);
+        new(nameof(Minus), "Minus", y => Pow(y.Value, 3 / 4.0), (int) HedgeType.Minus);
 
     public static readonly LinguisticHedge Indeed = new(nameof(Indeed), "Indeed",
         y =>
         {
             if (y == 0.5) return y;
             return y < 0.5 ? 2 * Pow(y.Value, 2) : 1 - 2 * Pow(1 - y.Value, 2);
-        }, (int) HedgeToken.Indeed);
+        }, (int) HedgeType.Indeed);
 
     private LinguisticHedge(string name, string readableName, Func<FuzzyNumber, FuzzyNumber> function, int value) :
         base(name, value)
@@ -43,13 +43,13 @@ public class LinguisticHedge : SmartEnum<LinguisticHedge>, IEnum<LinguisticHedge
     public Func<FuzzyNumber, FuzzyNumber> Function { get; }
 }
 
-public enum HedgeToken
+public enum HedgeType
 {
-    None = 0,
-    Very = 1,
-    VeryVery = 2,
-    Plus = 3,
-    Slightly = 4,
-    Minus = 5,
-    Indeed = 6
+    None,
+    Very,
+    VeryVery,
+    Plus,
+    Slightly,
+    Minus,
+    Indeed
 }
