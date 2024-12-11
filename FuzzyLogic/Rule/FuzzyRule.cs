@@ -157,10 +157,10 @@ file static class FuzzyRuleExtensions
         if (rule.Conditional != null)
             throw new DuplicatedAntecedentException();
 
-        if (!rule.LinguisticBase.ContainsTerm(variableName, termName))
+        if (!rule.LinguisticBase.ContainsFunction(variableName, termName))
             throw new InvalidOperationException();
 
-        var membershipFunction = rule.LinguisticBase.RetrieveTerm(variableName, termName)!;
+        var membershipFunction = rule.LinguisticBase.RetrieveFunction(variableName, termName)!;
         rule.Conditional = new FuzzyProposition(variableName, Connective.If, literal, linguisticHedge, membershipFunction);
         return rule;
     }
@@ -172,10 +172,10 @@ file static class FuzzyRuleExtensions
         if (rule.Conditional == null)
             throw new MissingAntecedentException();
 
-        if (!rule.LinguisticBase.ContainsTerm(variableName, termName))
+        if (!rule.LinguisticBase.ContainsFunction(variableName, termName))
             throw new InvalidOperationException();
 
-        var membershipFunction = rule.LinguisticBase.RetrieveTerm(variableName, termName)!;
+        var membershipFunction = rule.LinguisticBase.RetrieveFunction(variableName, termName)!;
         rule.Connectives.Add(new FuzzyProposition(variableName, connective, literal, linguisticHedge, membershipFunction));
         return rule;
     }
@@ -189,10 +189,10 @@ file static class FuzzyRuleExtensions
         if (literal == Literal.IsNot)
             throw new NegatedConsequentException();
 
-        if (!rule.LinguisticBase.ContainsTerm(variableName, termName))
+        if (!rule.LinguisticBase.ContainsFunction(variableName, termName))
             throw new InvalidOperationException();
 
-        var membershipFunction = rule.LinguisticBase.RetrieveTerm(variableName, termName)!;
+        var membershipFunction = rule.LinguisticBase.RetrieveFunction(variableName, termName)!;
         rule.Consequent = new FuzzyProposition(variableName, Connective.Then, literal, linguisticHedge, membershipFunction);
         return rule;
     }

@@ -31,6 +31,8 @@ public interface ILinguisticBase
     /// <seealso cref="IVariable.Name" />
     IVariable? RetrieveVariable(string name);
 
+    bool TryGetVariable(string name, out IVariable? variable);
+
     /// <summary>
     /// Verifies whether both of the following conditions are satisfied:
     /// <list type="number">
@@ -55,7 +57,7 @@ public interface ILinguisticBase
     /// </returns>
     /// <seealso cref="LinguisticVariables" />
     /// <seealso cref="IVariable.SemanticalMappings" />
-    bool ContainsTerm(string variable, string term);
+    bool ContainsFunction(string variable, string term);
 
     /// <summary>
     /// Retrieves the membership function associated with the specified linguistic term
@@ -81,7 +83,9 @@ public interface ILinguisticBase
     /// </returns>
     /// <seealso cref="LinguisticVariables" />
     /// <seealso cref="IVariable.SemanticalMappings" />
-    IMembershipFunction? RetrieveTerm(string variable, string term);
+    IMembershipFunction? RetrieveFunction(string variable, string term);
+
+    bool TryGetFunction(string variable, string term, out IMembershipFunction? function);
 
     void Add(IVariable variable);
 

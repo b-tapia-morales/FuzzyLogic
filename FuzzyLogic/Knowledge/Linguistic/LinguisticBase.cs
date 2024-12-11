@@ -25,12 +25,25 @@ public class LinguisticBase : ILinguisticBase
     public bool ContainsVariable(string name) =>
         LinguisticVariables.ContainsKey(name);
 
-    public IVariable? RetrieveVariable(string name) => LinguisticVariables.TryGetValue(name, out var variable) ? variable : null;
+    public IVariable? RetrieveVariable(string name) =>
+        ContainsVariable(name) ? LinguisticVariables[name] : null;
 
-    public bool ContainsTerm(string variable, string term) => RetrieveTerm(variable, term) != null;
+    public bool TryGetVariable(string name, out IVariable? variable) =>
+        LinguisticVariables.TryGetValue(name, out variable);
 
-    public IMembershipFunction? RetrieveTerm(string variable, string term) =>
-        RetrieveVariable(variable)?.RetrieveFunction(term);
+    public bool ContainsFunction(string variable, string term) =>
+        ContainsVariable(variable) && LinguisticVariables[variable].ContainsFunction(term);
+
+    public IMembershipFunction? RetrieveFunction(string variable, string term) =>
+        ContainsVariable(variable) ? LinguisticVariables[variable].RetrieveFunction(term) : null;
+
+    public bool TryGetFunction(string variable, string term, out IMembershipFunction? function)
+    {
+        if (ContainsVariable(variable))
+            return LinguisticVariables[variable].TryGetFunction(term, out function);
+        function = null;
+        return false;
+    }
 
     public void Add(IVariable variable)
     {

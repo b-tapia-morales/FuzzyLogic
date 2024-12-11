@@ -13,8 +13,8 @@ namespace FuzzyLogic.Variable;
 /// <b>X</b>: The <i>Name</i> of the variable, represented by the <see cref="Name"/> property (e.g., "Temperature").
 /// </item>
 /// <item>
-/// <b>U</b>: The <i>Universe of Discourse</i>, represented by the interval defined by <see cref="LowerBoundary"/>
-/// and <see cref="UpperBoundary"/>, which specifies the range of possible numerical values for the variable
+/// <b>U</b>: The <i>Universe of Discourse</i>, represented by the interval defined by <see cref="LowerBound"/>
+/// and <see cref="UpperBound"/>, which specifies the range of possible numerical values for the variable
 /// (e.g.: [0, 100] for Temperature in Celsius).
 /// </item>
 /// <item>
@@ -29,7 +29,7 @@ namespace FuzzyLogic.Variable;
 /// <item>
 /// <b>G</b>: The syntactic rules that allow for combining linguistic terms (e.g., "Very Hot" or "Somewhat Cold").
 /// While <b>G</b> is not explicitly represented here, it can be modeled through the use of
-/// <see cref="Proposition.Enums.LinguisticHedge">Linguistic Hedges</see> in conjunction with membership functions.
+/// <see cref="Proposition.Enums.LinguisticHedge">Linguistic Hedges</see> in conjunction with <see cref="IMembershipFunction">Membership Functions</see>.
 /// </item>
 /// </list>
 /// <para>
@@ -41,12 +41,43 @@ namespace FuzzyLogic.Variable;
 /// <seealso cref="Proposition.IProposition"/>
 public interface IVariable
 {
-    public double LowerBoundary { get; }
-    public double UpperBoundary { get; }
+    /// <summary>
+    /// The lower bound for the Universe of Discourse Interval <b>U</b>.
+    /// </summary>
+    public double LowerBound { get; }
+
+    /// <summary>
+    /// The upper bound for the Universe of Discourse Interval <b>U</b>.
+    /// </summary>
+    public double UpperBound { get; }
+
+    /// <summary>
+    /// The name of the variable <b>X</b>.
+    /// </summary>
     public string Name { get; }
+
+    /// <summary>
+    /// The semantical associations between each Linguistic Term (t ∈ <b>T(X)</b>),
+    /// and its corresponding Membership Function (m ∈ <b>M</b>),
+    /// represented as a Dictionary.
+    /// </summary>
     public IDictionary<string, IMembershipFunction> SemanticalMappings { get; }
 
-    IVariable AddAll(IDictionary<string, IMembershipFunction> semanticalMappings);
+    static abstract IVariable Create(string name, double lowerBound, double upperBound);
+
+    static abstract IVariable Create(string name);
+
+    static abstract IVariable Create(string name, double lowerBound, double upperBound, IDictionary<string, IMembershipFunction> semanticalMappings);
+
+    static abstract IVariable Create(string name, IDictionary<string, IMembershipFunction> semanticalMappings);
+
+    static abstract IVariable Create(string name, double lowerBound, double upperBound, params IEnumerable<IMembershipFunction> functions);
+
+    static abstract IVariable Create(string name, params IEnumerable<IMembershipFunction> functions);
+
+    static abstract IVariable Create(string name, double lowerBound, double upperBound, ICollection<IMembershipFunction> functions);
+
+    static abstract IVariable Create(string name, ICollection<IMembershipFunction> functions);
 
     IVariable AddTrapezoidFunction(string name, double a, double b, double c, double d, double h = 1);
 
@@ -62,9 +93,11 @@ public interface IVariable
 
     IVariable AddSigmoidFunction(string name, double a, double c, double h = 1);
 
-    IVariable AddFunction(string name, IMembershipFunction function);
+    IVariable AddFunction(IMembershipFunction function);
 
-    bool ContainsTerm(string name);
+    bool ContainsFunction(string term);
 
-    IMembershipFunction? RetrieveFunction(string name);
+    IMembershipFunction? RetrieveFunction(string term);
+
+    bool TryGetFunction(string term, out IMembershipFunction? function);
 }
