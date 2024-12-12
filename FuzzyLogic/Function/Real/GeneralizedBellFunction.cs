@@ -11,8 +11,6 @@ public class GeneralizedBellFunction : AsymptoteFunction
     private double? _leftMost;
     private double? _rightMost;
 
-    public override double Inflection { get; }
-
     public GeneralizedBellFunction(string name, double a, double b, double c, double uMax = 1) : base(name, uMax)
     {
         CheckAValue(a);
@@ -21,6 +19,8 @@ public class GeneralizedBellFunction : AsymptoteFunction
         B = b;
         C = Inflection = c;
     }
+
+    public override double Inflection { get; }
 
     public double A { get; }
     public double B { get; }
@@ -32,7 +32,7 @@ public class GeneralizedBellFunction : AsymptoteFunction
 
     public override bool IsSymmetric() => true;
 
-    public override bool IsSingleton() => false;
+    public override bool IsPrototypical() => false;
 
     public override double? PeakLeft() => C;
 
@@ -42,26 +42,30 @@ public class GeneralizedBellFunction : AsymptoteFunction
 
     public override double? CoreRight() => Abs(1 - UMax) <= FuzzyNumber.Epsilon ? C : null;
 
-    public override double? AlphaCutLeft(FuzzyNumber cut)
+    public override double? AlphaCutLeft(FuzzyNumber alpha)
     {
-        if (cut.Value > UMax)
+        if (alpha.Value > UMax)
             return null;
-        if (Abs(cut.Value - UMax) <= FuzzyNumber.Epsilon)
+        if (Abs(alpha.Value - UMax) <= FuzzyNumber.Epsilon)
             return C;
-        return C - A * Pow((1 - cut.Value) / cut.Value, 1 / (2 * B));
+        return C - A * Pow((1 - alpha.Value) / alpha.Value, 1 / (2 * B));
     }
 
-    public override double? AlphaCutRight(FuzzyNumber cut)
+    public override double? AlphaCutRight(FuzzyNumber alpha)
     {
-        if (cut.Value > UMax)
+        if (alpha.Value > UMax)
             return null;
-        if (Abs(cut.Value - UMax) <= FuzzyNumber.Epsilon)
+        if (Abs(alpha.Value - UMax) <= FuzzyNumber.Epsilon)
             return C;
-        return C + A * Pow((1 - cut.Value) / cut.Value, 1 / (2 * B));
+        return C + A * Pow((1 - alpha.Value) / alpha.Value, 1 / (2 * B));
     }
 
     public override Func<double, double> LarsenProduct(FuzzyNumber lambda) =>
         x => lambda.Value * (1 / (1 + Pow(Abs((x - C) / A), 2 * B)));
+
+    public override IMembershipFunction DeepCopy() => new GeneralizedBellFunction(Name, A, B, C, UMax);
+
+    public override IMembershipFunction DeepCopyRenamed(string name) => new GeneralizedBellFunction(name, A, B, C, UMax);
 
     public override bool IsMonotonicallyIncreasing() => false;
 

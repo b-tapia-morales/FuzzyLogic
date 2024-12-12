@@ -34,7 +34,7 @@ public class TriangularFunction : MembershipFunction
 
     public override bool IsSymmetric() => _isSymmetric;
 
-    public override bool IsSingleton() => Abs(1 - UMax) <= FuzzyNumber.Epsilon;
+    public override bool IsPrototypical() => Abs(1 - UMax) <= FuzzyNumber.Epsilon;
 
     public override double? PeakLeft() => C;
 
@@ -50,22 +50,22 @@ public class TriangularFunction : MembershipFunction
     public override double? CoreRight() =>
         Abs(1 - UMax) <= FuzzyNumber.Epsilon ? B : null;
 
-    public override double? AlphaCutLeft(FuzzyNumber cut)
+    public override double? AlphaCutLeft(FuzzyNumber alpha)
     {
-        if (cut.Value > UMax)
+        if (alpha.Value > UMax)
             return null;
-        if (Abs(cut.Value - UMax) <= FuzzyNumber.Epsilon)
+        if (Abs(alpha.Value - UMax) <= FuzzyNumber.Epsilon)
             return C;
-        return A + cut.Value * (B - A);
+        return A + alpha.Value * (B - A);
     }
 
-    public override double? AlphaCutRight(FuzzyNumber cut)
+    public override double? AlphaCutRight(FuzzyNumber alpha)
     {
-        if (cut.Value > UMax)
+        if (alpha.Value > UMax)
             return null;
-        if (Abs(cut.Value - UMax) <= FuzzyNumber.Epsilon)
+        if (Abs(alpha.Value - UMax) <= FuzzyNumber.Epsilon)
             return C;
-        return C - cut.Value * (C - B);
+        return C - alpha.Value * (C - B);
     }
 
     public override Func<double, double> LarsenProduct(FuzzyNumber lambda) => x =>
@@ -78,6 +78,10 @@ public class TriangularFunction : MembershipFunction
             return lambda.Value * ((C - x) / (C - B));
         return 0;
     };
+
+    public override IMembershipFunction DeepCopy() => new TriangularFunction(Name, A, B, C, UMax);
+
+    public override IMembershipFunction DeepCopyRenamed(string name) => new TriangularFunction(name, A, B, C, UMax);
 
     public override string ToString() => $"Linguistic term: {Name} - Membership Function: Triangular - Sides: (a: {A}, b: {B}, c: {C}) - μMax: {UMax}";
 

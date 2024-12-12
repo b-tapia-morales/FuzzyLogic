@@ -5,9 +5,6 @@ namespace FuzzyLogic.Function.Real;
 
 public abstract class MembershipFunction : IMembershipFunction
 {
-    public string Name { get; }
-    public double UMax { get; }
-
     protected MembershipFunction(string name, double uMax)
     {
         CheckName(name);
@@ -16,13 +13,16 @@ public abstract class MembershipFunction : IMembershipFunction
         UMax = uMax;
     }
 
+    public string Name { get; }
+    public double UMax { get; }
+
     public abstract bool IsOpenLeft();
 
     public abstract bool IsOpenRight();
 
     public abstract bool IsSymmetric();
 
-    public abstract bool IsSingleton();
+    public abstract bool IsPrototypical();
 
     public abstract double? PeakLeft();
 
@@ -36,15 +36,19 @@ public abstract class MembershipFunction : IMembershipFunction
 
     public abstract double? CoreRight();
 
-    public abstract double? AlphaCutLeft(FuzzyNumber cut);
+    public abstract double? AlphaCutLeft(FuzzyNumber alpha);
 
-    public abstract double? AlphaCutRight(FuzzyNumber cut);
+    public abstract double? AlphaCutRight(FuzzyNumber alpha);
 
     public abstract Func<double, double> LarsenProduct(FuzzyNumber lambda);
 
     public virtual double FiniteSupportLeft() => SupportLeft();
 
     public virtual double FiniteSupportRight() => SupportRight();
+
+    public abstract IMembershipFunction DeepCopy();
+
+    public abstract IMembershipFunction DeepCopyRenamed(string name);
 
     private static void CheckHeight(double h)
     {

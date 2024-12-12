@@ -8,12 +8,10 @@ namespace FuzzyLogic.Function.Real;
 
 public class SigmoidFunction : AsymptoteFunction
 {
-    private double? _supportLeft;
-    private double? _supportRight;
     private double? _coreLeft;
     private double? _coreRight;
-
-    public override double Inflection { get; }
+    private double? _supportLeft;
+    private double? _supportRight;
 
     public SigmoidFunction(string name, double a, double c, double uMax = 1) : base(name, uMax)
     {
@@ -21,6 +19,8 @@ public class SigmoidFunction : AsymptoteFunction
         A = a;
         C = Inflection = c;
     }
+
+    public override double Inflection { get; }
 
     public double A { get; }
     public double C { get; }
@@ -31,7 +31,7 @@ public class SigmoidFunction : AsymptoteFunction
 
     public override bool IsSymmetric() => false;
 
-    public override bool IsSingleton() => false;
+    public override bool IsPrototypical() => false;
 
     public override double? PeakLeft() => null;
 
@@ -41,22 +41,26 @@ public class SigmoidFunction : AsymptoteFunction
 
     public override double? CoreRight() => null;
 
-    public override double? AlphaCutLeft(FuzzyNumber cut)
+    public override double? AlphaCutLeft(FuzzyNumber alpha)
     {
-        if (cut.Value > UMax || Abs(UMax - cut.Value) <= FuzzyNumber.Epsilon || Abs(cut.Value) <= FuzzyNumber.Epsilon)
+        if (alpha.Value > UMax || Abs(UMax - alpha.Value) <= FuzzyNumber.Epsilon || Abs(alpha.Value) <= FuzzyNumber.Epsilon)
             return null;
-        return IsMonotonicallyDecreasing() ? double.NegativeInfinity : C - (1 / A) * Log(1 / cut.Value - 1);
+        return IsMonotonicallyDecreasing() ? double.NegativeInfinity : C - 1 / A * Log(1 / alpha.Value - 1);
     }
 
-    public override double? AlphaCutRight(FuzzyNumber cut)
+    public override double? AlphaCutRight(FuzzyNumber alpha)
     {
-        if (cut.Value > UMax || Abs(UMax - cut.Value) <= FuzzyNumber.Epsilon || Abs(cut.Value) <= FuzzyNumber.Epsilon)
+        if (alpha.Value > UMax || Abs(UMax - alpha.Value) <= FuzzyNumber.Epsilon || Abs(alpha.Value) <= FuzzyNumber.Epsilon)
             return null;
-        return IsMonotonicallyIncreasing() ? double.PositiveInfinity : C + (1 / A) * Log(1 / cut.Value - 1);
+        return IsMonotonicallyIncreasing() ? double.PositiveInfinity : C + 1 / A * Log(1 / alpha.Value - 1);
     }
 
     public override Func<double, double> LarsenProduct(FuzzyNumber lambda) =>
         x => lambda.Value * (1 / (1 + Exp(-A * (x - C))));
+
+    public override IMembershipFunction DeepCopy() => new SigmoidFunction(Name, A, C, UMax);
+
+    public override IMembershipFunction DeepCopyRenamed(string name) => new SigmoidFunction(name, A, C, UMax);
 
     public override bool IsMonotonicallyIncreasing() => A > 0;
 

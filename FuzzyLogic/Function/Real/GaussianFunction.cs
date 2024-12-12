@@ -8,14 +8,14 @@ namespace FuzzyLogic.Function.Real;
 
 public class GaussianFunction : AsymptoteFunction
 {
-    public override double Inflection { get; }
-
     public GaussianFunction(string name, double mu, double sigma, double uMax = 1) : base(name, uMax)
     {
         CheckSigma(sigma);
         Mu = mu;
         Sigma = Inflection = sigma;
     }
+
+    public override double Inflection { get; }
 
     public double Mu { get; }
     public double Sigma { get; }
@@ -26,7 +26,7 @@ public class GaussianFunction : AsymptoteFunction
 
     public override bool IsSymmetric() => true;
 
-    public override bool IsSingleton() => false;
+    public override bool IsPrototypical() => false;
 
     public override double? PeakLeft() => Mu;
 
@@ -36,26 +36,30 @@ public class GaussianFunction : AsymptoteFunction
 
     public override double? CoreRight() => Abs(1 - UMax) <= FuzzyNumber.Epsilon ? Mu : null;
 
-    public override double? AlphaCutLeft(FuzzyNumber cut)
+    public override double? AlphaCutLeft(FuzzyNumber alpha)
     {
-        if (cut.Value > UMax)
+        if (alpha.Value > UMax)
             return null;
-        if (Abs(cut.Value - UMax) <= FuzzyNumber.Epsilon)
+        if (Abs(alpha.Value - UMax) <= FuzzyNumber.Epsilon)
             return Mu;
-        return Mu - Sigma * Sqrt(2 * Log(1 / cut.Value));
+        return Mu - Sigma * Sqrt(2 * Log(1 / alpha.Value));
     }
 
-    public override double? AlphaCutRight(FuzzyNumber cut)
+    public override double? AlphaCutRight(FuzzyNumber alpha)
     {
-        if (cut.Value > UMax)
+        if (alpha.Value > UMax)
             return null;
-        if (Abs(cut.Value - UMax) <= FuzzyNumber.Epsilon)
+        if (Abs(alpha.Value - UMax) <= FuzzyNumber.Epsilon)
             return Mu;
-        return Mu + Sigma * Sqrt(2 * Log(1 / cut.Value));
+        return Mu + Sigma * Sqrt(2 * Log(1 / alpha.Value));
     }
 
     public override Func<double, double> LarsenProduct(FuzzyNumber lambda) =>
         x => lambda.Value * Exp(-(1 / 2.0) * Pow((x - Mu) / Sigma, 2));
+
+    public override IMembershipFunction DeepCopy() => new GaussianFunction(Name, Mu, Sigma, UMax);
+
+    public override IMembershipFunction DeepCopyRenamed(string name) => new GaussianFunction(name, Mu, Sigma, UMax);
 
     public override bool IsMonotonicallyIncreasing() => false;
 

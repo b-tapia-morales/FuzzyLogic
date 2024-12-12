@@ -1,4 +1,5 @@
-﻿using FuzzyLogic.Number;
+﻿using FuzzyLogic.Function.Interface;
+using FuzzyLogic.Number;
 using static System.Math;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -23,7 +24,7 @@ public class LeftTrapezoidalFunction : MembershipFunction
 
     public override bool IsSymmetric() => false;
 
-    public override bool IsSingleton() => false;
+    public override bool IsPrototypical() => false;
 
     public override double? PeakLeft() => double.NegativeInfinity;
 
@@ -39,16 +40,16 @@ public class LeftTrapezoidalFunction : MembershipFunction
     public override double? CoreRight() =>
         Abs(1 - UMax) <= FuzzyNumber.Epsilon ? A : null;
 
-    public override double? AlphaCutLeft(FuzzyNumber cut) =>
-        cut.Value > UMax ? null : double.NegativeInfinity;
+    public override double? AlphaCutLeft(FuzzyNumber alpha) =>
+        alpha.Value > UMax ? null : double.NegativeInfinity;
 
-    public override double? AlphaCutRight(FuzzyNumber cut)
+    public override double? AlphaCutRight(FuzzyNumber alpha)
     {
-        if (cut.Value > UMax)
+        if (alpha.Value > UMax)
             return null;
-        if (Abs(UMax - cut.Value) <= FuzzyNumber.Epsilon)
+        if (Abs(UMax - alpha.Value) <= FuzzyNumber.Epsilon)
             return A;
-        return B - cut.Value * (B - A);
+        return B - alpha.Value * (B - A);
     }
 
     public override Func<double, double> LarsenProduct(FuzzyNumber lambda) =>
@@ -60,6 +61,10 @@ public class LeftTrapezoidalFunction : MembershipFunction
                 return lambda.Value;
             return 0;
         };
+
+    public override IMembershipFunction DeepCopy() => new LeftTrapezoidalFunction(Name, A, B, UMax);
+
+    public override IMembershipFunction DeepCopyRenamed(string name) => new LeftTrapezoidalFunction(name, A, B, UMax);
 
     public override string ToString() => $"Linguistic term: {Name} - Membership Function: Open Left Trapezoidal - Sides: (a: {A}, b: {B}) - μMax: {UMax}";
 
