@@ -8,10 +8,27 @@ public class LinguisticBase : ILinguisticBase
 {
     public IDictionary<string, IVariable> LinguisticVariables { get; } = new Dictionary<string, IVariable>(InvariantCultureIgnoreCase);
 
+    /// <summary>
+    /// Creates a new instance of a <see cref="ILinguisticBase"/>.
+    /// </summary>
+    /// <returns>A new instance of a <see cref="ILinguisticBase"/></returns>
     public static ILinguisticBase Create() => new LinguisticBase();
 
+    /// <summary>
+    /// Creates a new instance of a
+    /// <see cref="ILinguisticBase"/> that contains all the linguistic variables provided as parameters.
+    /// </summary>
+    /// <param name="variables">A varying number of linguistic variables</param>
+    /// <returns>The linguistic base itself containing the linguistic variables</returns>
     public static ILinguisticBase Create(params IEnumerable<IVariable> variables) => Create(variables.ToList());
 
+    /// <summary>
+    /// Creates a new instance of a
+    /// <see cref="ILinguisticBase"/> that contains the collection of linguistic variables
+    /// provided as a parameter.
+    /// </summary>
+    /// <param name="variables">A collection of linguistic variables</param>
+    /// <returns>The linguistic base itself containing the collection of linguistic variables</returns>
     public static ILinguisticBase Create(ICollection<IVariable> variables)
     {
         if (new HashSet<string>(variables.Select(e => e.Name)).Count != variables.Count)

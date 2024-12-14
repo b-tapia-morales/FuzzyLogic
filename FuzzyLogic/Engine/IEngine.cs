@@ -18,8 +18,6 @@ public interface IEngine
     ImplicationMethod ImplicationMethod { get; set; }
     IDefuzzifier Defuzzifier { get; set; }
 
-    static abstract IEngine Create(IRuleBase ruleBase, IWorkingMemory workingMemory);
-
     IEngine UseImplicationMethod(ImplicationMethod method);
 
     IEngine UseDefuzzificationMethod(DefuzzificationMethod method);

@@ -92,27 +92,4 @@ public interface ILinguisticBase
     void AddAll(ICollection<IVariable> variables);
 
     void AddAll(params IEnumerable<IVariable> variables) => AddAll(variables.ToList());
-
-    /// <summary>
-    /// Creates a new instance of a <see cref="ILinguisticBase"/>.
-    /// </summary>
-    /// <returns>A new instance of a <see cref="ILinguisticBase"/></returns>
-    static abstract ILinguisticBase Create();
-
-    /// <summary>
-    /// Creates a new instance of a
-    /// <see cref="ILinguisticBase"/> that contains all the linguistic variables provided as parameters.
-    /// </summary>
-    /// <param name="variables">A varying number of linguistic variables</param>
-    /// <returns>The linguistic base itself containing the linguistic variables</returns>
-    static abstract ILinguisticBase Create(params IEnumerable<IVariable> variables);
-
-    /// <summary>
-    /// Creates a new instance of a
-    /// <see cref="ILinguisticBase"/> that contains the collection of linguistic variables
-    /// provided as a parameter.
-    /// </summary>
-    /// <param name="variables">A collection of linguistic variables</param>
-    /// <returns>The linguistic base itself containing the collection of linguistic variables</returns>
-    static abstract ILinguisticBase Create(ICollection<IVariable> variables);
 }

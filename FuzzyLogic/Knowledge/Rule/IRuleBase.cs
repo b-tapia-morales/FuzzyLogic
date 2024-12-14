@@ -7,12 +7,6 @@ public interface IRuleBase
     ICollection<IRule> ProductionRules { get; }
     IComparer<IRule> RuleComparer { get; }
 
-    static abstract IRuleBase Create(ComparingMethod method = ComparingMethod.HighestPriority);
-
-    static abstract IRuleBase Create(ComparingMethod method, params IEnumerable<IRule> rules);
-
-    static abstract IRuleBase Create(params IEnumerable<IRule> rules);
-
     void Add(IRule rule);
 
     void AddAll(ICollection<IRule> rules);
