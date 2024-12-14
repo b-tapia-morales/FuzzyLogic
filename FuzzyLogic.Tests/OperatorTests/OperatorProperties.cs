@@ -1,7 +1,5 @@
 ﻿using System.Collections;
-using FuzzyLogic.Engine;
 using FuzzyLogic.Enum;
-using FuzzyLogic.Enum.Family;
 using FuzzyLogic.Enum.Negation;
 using FuzzyLogic.Enum.TConorm;
 using FuzzyLogic.Enum.TNorm;
@@ -87,7 +85,7 @@ public class OperatorProperties
     [ClassData(typeof(GodelDataOperators))]
     public void StrictMonotonicityHoldsForGodelOperators(FuzzyNumber x, FuzzyNumber y, FuzzyNumber _)
     {
-        var (min, max) = (x & y, x | y);
+        var (min, max) = (Minimum.Intersection(x, y), Maximum.Union(x, y));
         Assert.Equal(Minimum.Intersection(min, min), Minimum.Intersection(max, max));
         Assert.Equal(Maximum.Union(min, min), Maximum.Union(max, max));
     }
