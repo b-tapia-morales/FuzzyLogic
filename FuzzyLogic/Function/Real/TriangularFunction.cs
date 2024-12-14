@@ -36,9 +36,9 @@ public class TriangularFunction : MembershipFunction
 
     public override bool IsPrototypical() => Abs(1 - UMax) <= FuzzyNumber.Epsilon;
 
-    public override double? PeakLeft() => C;
+    public override double? PeakLeft() => B;
 
-    public override double? PeakRight() => C;
+    public override double? PeakRight() => B;
 
     public override double SupportLeft() => A;
 
