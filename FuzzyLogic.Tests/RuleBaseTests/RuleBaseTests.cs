@@ -7,11 +7,6 @@ using Xunit;
 
 namespace FuzzyLogic.Tests.RuleBaseTests;
 
-file static class GlobalConst
-{
-    public const int N = 1000;
-}
-
 public class RuleBaseTests
 {
     private static readonly ServiceProvider ServiceProvider = TipProblemProvider.ConfigureTipProblemProvider();
@@ -21,7 +16,7 @@ public class RuleBaseTests
     [Theory]
     [InlineData("food quality", 2)]
     [InlineData("service quality", 3)]
-    public void TotalForRulesUsingPremiseIsCorrect(string variableName, int expectedCount)
+    public void RulesUsingPremiseCountIsCorrect(string variableName, int expectedCount)
     {
         Assert.Equal(expectedCount, RuleBaseExample.FindRulesWithPremise(variableName).Count);
         Assert.Empty(RuleBaseExample.FindRulesWithConclusion(variableName));
@@ -71,19 +66,12 @@ public class RuleBaseTests
 
 file class RandomTestData : IEnumerable<object[]>
 {
-    private static readonly Random Random = new();
+    private static readonly IList<int> Ratings = Enumerable.Range(1, 10).ToList();
 
     private static readonly IEnumerable<object[]> TestData =
-        Enumerable
-            .Range(0, GlobalConst.N)
-            .Select(_ => new object[] {GetRandomNumber(0, 10), GetRandomNumber(0, 10)});
+        from x in Ratings from y in Ratings select new object[] {(double) x, (double) y};
 
     public IEnumerator<object[]> GetEnumerator() => TestData.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-    private static double GetRandomNumber(double minimum, double maximum)
-    {
-        return Random.NextDouble() * (maximum - minimum) + minimum;
-    }
 }
