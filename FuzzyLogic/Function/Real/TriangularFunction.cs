@@ -55,7 +55,7 @@ public class TriangularFunction : MembershipFunction
         if (alpha.Value > UMax)
             return null;
         if (Abs(alpha.Value - UMax) <= FuzzyNumber.Epsilon)
-            return C;
+            return B;
         return A + alpha.Value * (B - A);
     }
 
@@ -64,7 +64,7 @@ public class TriangularFunction : MembershipFunction
         if (alpha.Value > UMax)
             return null;
         if (Abs(alpha.Value - UMax) <= FuzzyNumber.Epsilon)
-            return C;
+            return B;
         return C - alpha.Value * (C - B);
     }
 
