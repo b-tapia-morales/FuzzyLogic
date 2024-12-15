@@ -180,13 +180,7 @@ public class WorkingMemory : IWorkingMemory
         }
     }
 
-    public void UpdateFact(string key, double value)
-    {
-        if (!Facts.TryAdd(key, value))
-        {
-            Facts[key] = value;
-        }
-    }
+    public void UpdateFact(string key, double value) => Facts[key] = value;
 
     public bool RemoveFact(string key)
     {
