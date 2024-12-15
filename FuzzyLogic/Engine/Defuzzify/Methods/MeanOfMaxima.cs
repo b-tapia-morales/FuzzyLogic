@@ -14,11 +14,12 @@ public class MeanOfMaxima : IDefuzzifier
         INorm tNorm, IConorm tConorm, ImplicationMethod method = Mamdani)
     {
         IDefuzzifier.RulesCheck(rules, facts);
+        var minValue = rules.Select(e => e.Consequent!.Function).Min(func => func.FiniteSupportLeft());
         var tuple = rules
             .Select(rule => (Function: rule.Consequent!.Function, Weight: rule.EvaluatePremiseWeight(facts, negation, tNorm, tConorm)))
             .MaxBy(tuple => tuple.Weight);
         if (tuple.Weight == 0)
-            return null;
+            return minValue;
         var (function, weight) = tuple;
         var (x1, x2) = method == Mamdani ? function.AlphaCutInterval(weight) : function.PeakInterval();
         return (x1 + x2) / 2;
