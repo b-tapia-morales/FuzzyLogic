@@ -1,4 +1,5 @@
-﻿using FuzzyLogic.Knowledge.Linguistic;
+﻿using FuzzyLogic.Engine;
+using FuzzyLogic.Knowledge.Linguistic;
 using FuzzyLogic.Knowledge.Rule;
 using FuzzyLogic.Memory;
 using FuzzyLogic.Rule;
@@ -44,6 +45,9 @@ public static class TipProblemProvider
         serviceCollection.AddTransient<IRuleBase>(_ => ruleBase);
         var workingMemory = WorkingMemory.Create(("food quality", 6), ("service quality", 9.8));
         serviceCollection.AddTransient<IWorkingMemory>(_ => workingMemory);
+        var inferenceEngine = InferenceEngine
+            .Create(ruleBase, workingMemory);
+        serviceCollection.AddTransient<IEngine>(_ => inferenceEngine);
         return serviceCollection.BuildServiceProvider();
     }
 }
